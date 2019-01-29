@@ -1,0 +1,127 @@
+
+<script src="/assets/js/HighCharts/highcharts.js"></script>
+<script src="/assets/js/HighCharts/highcharts-3d.js"></script>
+<script src="/assets/js/HighCharts/exporting.js"></script>
+<script src="/assets/js/HighCharts/export-data.js"></script>
+<script src="/assets/js/moment.js"></script>
+
+
+
+<style>
+* {
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */      
+}
+
+#opd-stats {
+  width: 100%;
+}
+
+#opd-stats-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 5px;
+}
+
+.stat-boxes td {
+  width: 25%;
+  height: 70px;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow:         3px 3px 5px 6px #ccc;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+  border-color: white;
+  background-color: lightyellow;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+</style>
+
+<div id='opd-stats'>
+
+<table id='opd-stats-table'>
+  <tr class='stat-boxes'>
+    <td>Registered today<br /><span id="reg-today"></span>0</td>
+    <td>Returning clients<br /><span id="returning-today">0</span></td>
+    <td>Admitted today<br /><span id="admitted-today">0</span></td>
+    <td style="background-color: yellowgreen;">Ever registered<br /><span id="reg-total">0</span></td>
+  </tr>
+</table>
+
+<div id="opd-encounters"></div>
+
+</div>
+
+<script>
+
+Highcharts.chart('opd-encounters', {
+    chart: {
+        type: 'column',
+        height: 320
+    },
+    title: {
+        text: 'New registered vs Returning clients'
+    },
+    subtitle: {
+        text: 'For the past 12 months'
+    },
+    xAxis: {
+        categories: [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec'
+        ],
+        crosshair: true
+    },
+    yAxis: {
+        min: 0,
+        title: {
+            text: 'Number of clients'
+        }
+    },
+    credits: {
+        enabled: false
+    },
+    exporting: {
+        enabled: false
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+    },
+    plotOptions: {
+        column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+        }
+    },
+    series: [{
+        name: 'Tokyo',
+        data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+
+    }, {
+        name: 'Berlin',
+        data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+
+    }]
+});
+
+
+</script>
+
