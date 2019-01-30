@@ -1,0 +1,255 @@
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+<link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script type="text/javascript" src="/apps/ART/assets/js/arv_number.js"></script>
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+<script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+
+<link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+
+<style>
+.tt_controls_select_clinic .keyboard, .tt_controls_select_ward .keyboard {
+  display: none !important;
+}
+
+#tt_page_select_clinic .options, #tt_page_select_ward .options {
+  height: 92% !important;
+}
+
+#tt_page_select_clinic .inputFrameClass, #tt_page_select_ward .inputFrameClass {
+  height: 90% !important;
+  width: 96%;
+}
+
+</style>
+
+<script>
+var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + sessionStorage.patientID;
+
+function setupLoadWards() {
+  var nextButton = document.getElementById('nextButton');
+  nextButton.setAttribute("onmousedown","admitPatient();");
+  nextButton.innerHTML = "<span>Finish</span>";
+}
+
+function setupExternalReferal() {
+  var nextButton = document.getElementById('nextButton');
+  nextButton.setAttribute("onmousedown","referExternal();");
+  nextButton.innerHTML = "<span>Finish</span>";
+}
+
+function setupInternalReferal() {
+  var nextButton = document.getElementById('nextButton');
+  nextButton.setAttribute("onmousedown","referInternal();");
+  nextButton.innerHTML = "<span>Finish</span>";
+}
+
+function referExternal() {
+  var loc = document.getElementById('touchscreenInput' + tstCurrentPage);
+  var location_id = loc.getAttribute('tstvalue'); 
+  
+  if(location_id.length < 1) {
+    showMessage('Please select location');
+    return;
+  }
+
+  var currentTime = moment().format(' HH:mm:ss');
+  var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+  encounter_datetime += currentTime;
+                        	
+  var encounter = {
+    encounter_type_name: 'Referral',
+    encounter_type_id:  114,
+    patient_id: sessionStorage.patientID,
+    encounter_datetime: encounter_datetime
+  }
+
+  submitParameters(encounter, "/encounters", "postLoactionObs");
+}
+
+function postLoactionObs(encounter) {
+  var loc = document.getElementById('touchscreenInput' + tstCurrentPage);
+  var location_id = loc.getAttribute('tstvalue'); 
+  
+  var obs = {
+    encounter_id: encounter["encounter_id"],
+    observations: [{concept_id: 6541, value_coded: location_id, value_text: loc.value}]
+  }; 
+
+  submitParameters(obs, "/observations", "nextPage")  
+}
+
+function nextPage(obs){
+  document.location = tt_cancel_destination;
+}
+
+var specialistic_clinic = {};
+
+function loadSpecialistClinics() {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += "/concept_set?id=8717&name=";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      loadClinics(obj);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function loadClinics(clinics) {
+  specialistic_clinic = {};
+  var select = document.getElementById('specialistic_clinic');
+  
+  for(var i = 0 ; i < clinics.length ; i++) {
+    var name = clinics[i].name.replace(/(^\s+|\s+$)/g,'');
+    var opt = document.createElement('option');
+    opt.innerHTML = clinics[i].name;
+    opt.setAttribute("value", name);
+    select.appendChild(opt);
+    specialistic_clinic[name] = clinics[i].concept_id;
+  }
+  select.setAttribute('tt_onLoad','');
+  gotoPage((tstCurrentPage), null, true);
+  setupInternalReferal();
+}
+
+function resetLoadSpecialistClinics() {
+  var select = document.getElementById('specialistic_clinic');
+  select.setAttribute('tt_onLoad','loadSpecialistClinics();');
+}
+
+function referInternal() {
+  var loc = document.getElementById('touchscreenInput' + tstCurrentPage);
+ 
+  var concept_id = specialistic_clinic[loc.value];
+  if(parseInt(concept_id) < 1 || concept_id == undefined) {
+    showMessage('Please select clinic');
+    return;
+  }
+  
+  var currentTime = moment().format(' HH:mm:ss');
+  var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+  encounter_datetime += currentTime;
+                        	
+  var encounter = {
+    encounter_type_name: 'Referral',
+    encounter_type_id:  114,
+    patient_id: sessionStorage.patientID,
+    encounter_datetime: encounter_datetime
+  }
+
+  submitParameters(encounter, "/encounters", "postSpecialistObs");
+}
+
+function postSpecialistObs(encounter) {
+  var loc = document.getElementById('touchscreenInput' + tstCurrentPage);
+  var concept_id = specialistic_clinic[loc.value];
+   
+  var obs = {
+    encounter_id: encounter["encounter_id"],
+    observations: [{concept_id: 8717, value_coded: concept_id}]
+  }; 
+
+  submitParameters(obs, "/observations", "nextPage")  
+}
+
+function admitPatient() {
+  var loc = document.getElementById('touchscreenInput' + tstCurrentPage);
+  var location_id = (loc.getAttribute('tstvalue'));
+  
+  if(location_id.length < 1 || location_id == undefined) {
+    showMessage('Please select ward');
+    return;
+  }
+
+
+  var currentTime = moment().format(' HH:mm:ss');
+  var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+  encounter_datetime += currentTime;
+                        	
+  var encounter = {
+    encounter_type_name: 'ADMIT PATIENT',
+    encounter_type_id:  42,
+    patient_id: sessionStorage.patientID,
+    encounter_datetime: encounter_datetime
+  }
+
+  submitParameters(encounter, "/encounters", "postAdmitObs");
+} 
+
+function postAdmitObs(encounter) {
+  var loc = document.getElementById('touchscreenInput' + tstCurrentPage);
+  var location_id = (loc.getAttribute('tstvalue'));
+   
+  var obs = {
+    encounter_id: encounter["encounter_id"],
+    observations: [{concept_id: 6734, value_coded: location_id, value_text: loc.value}]
+  }; 
+
+  submitParameters(obs, "/observations", "nextPage")  
+}
+
+
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+      <form>
+        <select allowFreeText="false" helpText="Select outcome"
+           name="outcome" id="opd_outcome" key="outcome">
+            <option value=""></option>
+            <option value="Admission">Admit</option>
+            <option value="Internal referral">Internal referral</option>
+            <option value="External referral">Refer to another hospital / clinic</option>
+        </select>
+
+        <select objectType="location" ajaxURL="/locations?name="
+          allowFreeText="true"
+          condition="$('opd_outcome').value == 'External referral'"
+          field_type="alpha"
+          helpText="Please select facility name"
+          id="facility_name"
+          tt_onLoad="setupExternalReferal();"
+          name="facility_name">
+        </select>
+        
+        <select allowFreeText="false" helpText="Select clinic"
+           name="outcome" id="specialistic_clinic" key="clinic"
+          condition="$('opd_outcome').value == 'Internal referral'"
+          tt_onLoad="loadSpecialistClinics();"
+          tt_onUnload="resetLoadSpecialistClinics();">
+            <option value=""></option>
+        </select>
+
+        <select objectType="location" ajaxURL="/locations?tag=Facility adult sections&name="
+          allowFreeText="true"
+          condition="$('opd_outcome').value == 'Admission'"
+          field_type="alpha"
+          helpText="Select ward"
+          id="wards"
+          tt_onLoad="setupLoadWards();"
+          name="facility_name">
+        </select>
+
+      </form>
+
+   </div>
+ </div>
+</body>
+
+

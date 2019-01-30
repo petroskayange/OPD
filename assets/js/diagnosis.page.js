@@ -405,10 +405,10 @@ function submitDignosis() {
     encounter_datetime: encounter_datetime
   }
 
-  submitParameters(encounter, "/encounters", "postVitalsObs");
+  submitParameters(encounter, "/encounters", "postDignosisObs");
 }
 
-function postVitalsObs(encounter) {
+function postDignosisObs(encounter) {
 
   var primary_obs = {};
   var secondary_obs = {};
