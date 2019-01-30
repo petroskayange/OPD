@@ -27,7 +27,8 @@
   #tt_page_hiv_test_year .inputFrameClass,
   #tt_page_hiv_test_month .inputFrameClass ,
   #tt_page_hiv_test_day .inputFrameClass,
-  #tt_page_location_of_hiv_test .inputFrameClass {
+  #tt_page_location_of_hiv_test .inputFrameClass,
+  #tt_page_hiv_test_day_estimation .inputFrameClass {
   width: 96%;
 }
 
@@ -158,8 +159,12 @@ function validateTestDate() {
   currDate = moment().format('YYYY-MM-DD');
   setDate = moment(set_test_date).format('YYYY-MM-DD');
   
-  console.log(currDate);
-  console.log(setDate)
+  if (setDate == 'Invalid date') {
+    if(set_test_date.match(/unknown/i)){
+      gotoNextPage();
+      return;
+    }
+  }
 
   if (setDate > currDate) {
       showMessage("Test date more than the current date");
@@ -170,6 +175,7 @@ function validateTestDate() {
 }
 
 var set_test_date
+
 function setTestDate() {
   try {
       dob_year = document.getElementById('test_year').value; //getElementsByTagName("input")[0].value
@@ -241,6 +247,110 @@ function validateEnteredDate(inputText) {
   return true;
 }
 
+function setupHIVtestLocation() {
+ var nextButton = document.getElementById('nextButton');
+ nextButton.setAttribute('onmousedown','submitHIVstatus();'); 
+}
+
+function submitHIVstatus() {
+  try {
+    var set_hiv_date = set_test_date.split('-');
+  }catch(e) {
+    var set_hiv_date;
+  }
+
+  var test_year   = document.getElementById('test_year').value;
+  var test_month  = document.getElementById('test_month').value;
+  var test_day    = document.getElementById('test_day').value;
+  var estimated = true;
+
+  if(test_year.match(/unknown/i)){
+    set_hiv_date = getEstimatedHIVtestDate();
+  }else if(test_month.match(/unknown/i)){
+    if(parseInt(test_year) == parseInt(moment().format('YYYY'))){
+      set_hiv_date = new Date(parseInt(test_year), 0, 1);
+    }else{
+      set_hiv_date = new Date(parseInt(test_year), 6, 1);
+    }
+  }else if(test_day.match(/unknown/i)){
+    var temp_date = moment(test_year + "-" + test_month + "-01").format('YYYY-MM-DD');
+    temp_date = temp_date.split('-');
+    set_hiv_date = new Date(parseInt(temp_date[0]), (parseInt(temp_date[1]) - 1), 15);
+  }else{
+    set_hiv_date = new Date(parseInt(set_hiv_date[0]), (parseInt(set_hiv_date[1]) - 1), parseInt(set_hiv_date[2]));
+    estimated = false;
+  }
+
+  console.log(set_hiv_date + "  " + estimated);
+}
+
+function getEstimatedHIVtestDate() {
+  var startDate;
+  var ARTstartDateEstimate = document.getElementById('hiv_test_day_estimation').value;
+  var todays_date = moment(sessionStorage.sessionDate).format('YYYY-MM-DD');
+  
+  todays_date = new Date(todays_date.split('-')[0], parseInt(todays_date.split('-')[1] - 1),todays_date.split('-')[2]);
+  
+  if (ARTstartDateEstimate == "6 months") {
+      startDate = new Date(sessionStorage.sessionDate);
+      startDate.setDate(todays_date.getDate() - (28 * 6) );
+  } else if (ARTstartDateEstimate == "12 months") {
+      startDate = new Date(sessionStorage.sessionDate)
+      startDate.setDate(todays_date.getDate() - (28 * 12) );
+  } else if (ARTstartDateEstimate == "18 months") {
+      startDate = new Date(sessionStorage.sessionDate)
+      startDate.setDate(todays_date.getDate() - (28 * 18) );
+  } else if (ARTstartDateEstimate == "24 months") {
+      startDate = new Date(sessionStorage.sessionDate)
+      startDate.setDate(todays_date.getDate() - (28 * 24) );
+  } else if (ARTstartDateEstimate == "Over 2 years") {
+      startDate = new Date(sessionStorage.sessionDate)
+      startDate.setDate(todays_date.getDate() - (28 * 30));
+  } 
+
+  return startDate;
+}
+
+function setupHIVstatus() {
+  var element = document.getElementById('inputFrame' + tstCurrentPage);
+  var list = element.getElementsByTagName('li');
+  for(var i = 0 ; i < list.length ; i++){
+    list[i].setAttribute('onmousedown','checkForChanges(this);');
+  }
+}
+
+function checkForChanges(e) {
+  var nextButton = document.getElementById('nextButton');
+  
+  if(e.innerHTML.match(/Never tested/i)){
+    nextButton.innerHTML = '<span>Finish</span>';
+    nextButton.setAttribute('onmousedown','submitNeverTest();');
+  }else{
+    nextButton.innerHTML = '<span>Next</span>';
+    nextButton.setAttribute('onmousedown','gotoNextPage();');
+  }
+
+}
+
+function submitNeverTest() {
+  var observations = [];
+  var type_of_visit = document.getElementById('visit_type').value;
+  var national_id_available = document.getElementById('national_id_available').value;
+  var national_id = document.getElementById('national_id').value;
+  if(sessionStorage.patientGender == 'F')
+    var patient_pregnant  = document.getElementById('patient_pregnant').value;
+
+  var hiv_status  = document.getElementById('touchscreenInput' + tstCurrentPage).value;
+
+   observations.push({concept_id: 6189, value_text: type_of_visit});
+
+   var hiv_statues = {};
+   hiv_statues['Never tested'] = 9432;
+   hiv_statues['New negative'] = 9432;
+
+   observations.push({concept_id: 3753, value_coded: });
+}
+
 </script>
 
 <body id="mateme">
@@ -277,7 +387,8 @@ function validateEnteredDate(inputText) {
         </select>
 
         <select allowFreeText="false" helpText="HIV status"
-           name="outcome" id="hiv_status" key="outcome">
+           name="outcome" id="hiv_status" key="outcome"
+           tt_onLoad="setupHIVstatus();">
             <option value=""></option>
             <option value="Positive not ART">Positive not ART</option>
             <option value="Positive on ART">Positive on ART</option>
@@ -294,9 +405,20 @@ function validateEnteredDate(inputText) {
            absoluteMin="1900" min="1900" tt_onLoad="setAbsoluteMaxYear()"
            tt_pageStyleClass="Numeric NumbersOnly"/>
 
+        <select allowFreeText="false" helpText="HIV test day (estimation)"
+           name="outcome" id="hiv_test_day_estimation" key="outcome"
+          condition="$('test_year').value.toLowerCase() == 'unknown' && $('hiv_status').value.toLowerCase() != 'never tested';">
+            <option value=""></option>
+            <option value="6 months">6 months</option>
+            <option value="12 months">12 months</option>
+            <option value="18 months">18 months</option>
+            <option value="24 months">24 months</option>
+            <option value="Over 2 years">Over 2 years</option>
+        </select>
+
 
         <select name="test_month" id="test_month" helpText="HIV test month"
-                condition="$('test_year').value.toLowerCase() != 'unknown'"
+                condition="$('test_year').value.toLowerCase() != 'unknown' && $('hiv_status').value.toLowerCase() != 'never tested';"
                 validationMessage="Please enter a valid date" 
                 tt_onLoad=" validateMonth();__$(keyboard).style.display = none;">
             <option value=""></option>
@@ -318,7 +440,7 @@ function validateEnteredDate(inputText) {
         <input type="text" name="test_day"
            id="test_day"
            field_type="number" helpText="HIV test day"
-           condition="($('test_year').value != 'Unknown') && ($('test_month').value != 'Unknown')"
+           condition="($('test_year').value != 'Unknown') && ($('test_month').value != 'Unknown') && $('hiv_status').value.toLowerCase() != 'never tested';"
            tt_onLoad="getDayOfMonthPicker($('test_year').value, $('test_month').value);setUpPageForDateValidation();"/>
 
 
@@ -328,7 +450,7 @@ function validateEnteredDate(inputText) {
           field_type="alpha"
           helpText="Location of HIV test"
           id="facility_name"
-          tt_onLoad="setupExternalReferal();"
+          tt_onLoad="setupHIVtestLocation();"
           name="facility_name">
         </select>
         
