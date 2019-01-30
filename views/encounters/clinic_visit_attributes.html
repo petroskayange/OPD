@@ -1,0 +1,343 @@
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+<link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script type="text/javascript" src="/apps/ART/assets/js/arv_number.js"></script>
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+<script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+
+<link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+
+<style>
+.tt_controls_hiv_status .keyboard, .tt_controls_hiv_test_month .keyboard {
+  display: none !important;
+}
+
+#tt_page_hiv_status .inputFrameClass,
+ #tt_page_patient_pregnant .inputFrameClass,
+  #tt_page_type_of_visit .inputFrameClass,
+    #tt_page_national_id_available .inputFrameClass,
+     #tt_page_enter_national_id .inputFrameClass,
+  #tt_page_hiv_test_year .inputFrameClass,
+  #tt_page_hiv_test_month .inputFrameClass ,
+  #tt_page_hiv_test_day .inputFrameClass,
+  #tt_page_location_of_hiv_test .inputFrameClass {
+  width: 96%;
+}
+
+#tt_page_hiv_test_month .options {
+  height: 80%;
+}
+
+.tt_controls_hiv_test_year #unknown {
+  display: block !important;
+}
+
+.tt_controls_hiv_test_day #unknown {
+  display: block !important;
+}
+
+</style>
+
+<script>
+var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + sessionStorage.patientID;
+
+function setupNotes() {
+  var nextButton = document.getElementById('nextButton');
+  nextButton.setAttribute('onmousedown','createCN();');
+  clearInput();
+}
+
+function createCN() {
+  var text = document.getElementById('touchscreenInput' + tstCurrentPage);
+  if(isEmpty(text.value)){
+    showMessage('Please type in your notes');
+    return;
+  }
+  
+  var currentTime = moment().format(' HH:mm:ss');
+  var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+  encounter_datetime += currentTime;
+                        	
+  var encounter = {
+    encounter_type_name: 'NOTES',
+    encounter_type_id:  105,
+    patient_id: sessionStorage.patientID,
+    encounter_datetime: encounter_datetime
+  }
+
+  submitParameters(encounter, "/encounters", "postNotesObs");
+    
+}
+
+function postNotesObs(encounter) {
+  var notes = document.getElementById('touchscreenInput' + tstCurrentPage);
+   
+  var obs = {
+    encounter_id: encounter["encounter_id"],
+    observations: [{concept_id: 2688, value_text: notes.value}]
+  }; 
+
+  submitParameters(obs, "/observations", "nextPage")  
+}
+
+function nextPage(obs){
+  document.location = tt_cancel_destination;
+}
+
+
+
+
+function isEmpty(str){
+  try {
+    return (str.replace(/\s+/g, '').length < 1);
+  }catch(e){
+    return true;
+  }
+}
+
+function showPregnantQuestion() {
+  if(sessionStorage.patientGender == 'M')
+    return false;
+
+  var age = parseInt(sessionStorage.patientAge);   
+  if(age >= 9 && age <= 55)
+    return true;
+
+  return false;  
+}
+
+function setAbsoluteMaxYear() {
+  var element = document.getElementById('touchscreenInput' + tstCurrentPage);
+  element.setAttribute("absoluteMax", (new Date().getFullYear()));
+  element.setAttribute("min", (new Date().getFullYear() - 100));
+  element.setAttribute("absoluteMin", (new Date().getFullYear() - 120));
+}
+            
+function validateMonth() {
+  var nextBtn = __$("nextButton");
+  nextBtn.setAttribute('onmousedown', "validateYearMonth();");
+  nextBtn.setAttribute('onclick', "");
+}
+
+function validateYearMonth() {
+  setYear = parseInt(document.getElementById('test_year').value);
+  if (setYear == (new Date().getFullYear())) {
+      var element = document.getElementById('touchscreenInput' + tstCurrentPage);
+      var selectedMonth = parseInt(element.getAttribute('tstValue'));
+      var currMonth = parseInt(new Date().getMonth() + 1);
+      if (selectedMonth > currMonth) {
+          showMessage("Selected month is greater than current month");
+          return;
+      }
+  }
+
+  gotoNextPage();
+}
+
+function setUpPageForDateValidation() {
+  var nextBtn = document.getElementById("nextButton");
+  nextBtn.setAttribute('onmousedown', "validateTestDate();");
+}
+
+function validateTestDate() {
+  setTestDate();
+  var valid_date = validateEnteredDate(set_test_date);
+
+  if (!valid_date) {
+      showMessage("Invalid Date");
+      return;
+  }
+
+  currDate = moment().format('YYYY-MM-DD');
+  setDate = moment(set_test_date).format('YYYY-MM-DD');
+  
+  console.log(currDate);
+  console.log(setDate)
+
+  if (setDate > currDate) {
+      showMessage("Test date more than the current date");
+      return;
+  }
+
+  gotoNextPage();
+}
+
+var set_test_date
+function setTestDate() {
+  try {
+      dob_year = document.getElementById('test_year').value; //getElementsByTagName("input")[0].value
+  } catch (e) {
+      dob_year = dob_year
+  }
+  try {
+      dob_month = document.getElementById('test_month').value; //getElementsByTagName("input")[0].getAttribute('tstvalue')
+      if (dob_month.length == 1)
+          dob_month = 0 + dob_month
+  } catch (e) {
+      dob_month = dob_month
+  }
+  try {
+      dob_day = document.getElementById('touchscreenInput' + tstCurrentPage).value; 
+      if (dob_day.length < 1)
+          dob_day = document.getElementById('touchscreenInput' + tstCurrentPage).value; //getElementsByTagName("input")[0].value
+
+      if (dob_day.length == 1)
+          dob_day = 0 + dob_day
+  } catch (e) {
+      dob_day = dob_day
+  }
+
+  set_test_date = (dob_year + '-' + dob_month + '-' + dob_day)
+}
+
+function validateEnteredDate(inputText) {
+  // Match the date format through regular expression
+  if (inputText.match(/-/i)) {
+
+    //Test which seperator is used '/' or '-'
+    var pdate = inputText.split('-');
+
+    var dd = parseInt(pdate[2]);
+    var mm = parseInt(pdate[1]);
+    var yy = parseInt(pdate[0]);
+
+    if (dd == 0) {
+        return false;
+    }
+
+    // Create list of days of a month [assume there is no leap year by default]
+    var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (mm == 1 || mm > 2) {
+      if (dd > ListofDays[mm - 1]) {
+        return false;
+      }
+    }
+
+    if (mm == 2) {
+      var lyear = false;
+      if ((!(yy % 4) && yy % 100) || !(yy % 400)) {
+        lyear = true;
+      }
+
+      if ((lyear == false) && (dd >= 29)) {
+        return false;
+      }
+
+      if ((lyear == true) && (dd > 29)) {
+        return false;
+      }
+    }
+  } else {
+    return false;
+  }
+
+  return true;
+}
+
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+      <form>
+        <select allowFreeText="false" helpText="Type of visit"
+           name="outcome" id="visit_type" key="outcome">
+            <option value=""></option>
+            <option value="New">New</option>
+            <option value="Referral">Internal referral</option>
+            <option value="Revisiting">Re-visiting</option>
+        </select>
+
+        <select allowFreeText="false" helpText="National ID available"
+           name="outcome" id="national_id_available" key="outcome">
+            <option value=""></option>
+            <option value="Available">Available</option>
+            <option value="Not available">Not available</option>
+            <option value="Forgot at home">Forgot at home</option>
+        </select>
+
+        <input type="text" name="national_id" id="national_id" textCase="upper"
+          condition='$("national_id_available").value == "Available";' helpText="Enter National ID" />
+ 
+        <select allowFreeText="false" helpText="Patient pregnant"
+           name="outcome" id="patient_pregnant" key="outcome"
+           condition='showPregnantQuestion() == true;'>
+            <option value=""></option>
+            <option value="Not">No</option>
+            <option value="Yes">Yes</option>
+            <option value="Unknown">Unknown</option>
+        </select>
+
+        <select allowFreeText="false" helpText="HIV status"
+           name="outcome" id="hiv_status" key="outcome">
+            <option value=""></option>
+            <option value="Positive not ART">Positive not ART</option>
+            <option value="Positive on ART">Positive on ART</option>
+            <option value="Previous negative">Previous negative</option>
+            <option value="New positive">New positive</option>
+            <option value="New negative">New negative</option>
+            <option value="Never tested">Never tested</option>
+        </select>
+
+       <!-- ................. test date ...................... --> 
+        <input type="text" name="test_year" id="test_year" helpText="HIV test year"
+           field_type="number"
+           condition="$('hiv_status').value.toLowerCase() != 'never tested';"
+           absoluteMin="1900" min="1900" tt_onLoad="setAbsoluteMaxYear()"
+           tt_pageStyleClass="Numeric NumbersOnly"/>
+
+
+        <select name="test_month" id="test_month" helpText="HIV test month"
+                condition="$('test_year').value.toLowerCase() != 'unknown'"
+                validationMessage="Please enter a valid date" 
+                tt_onLoad=" validateMonth();__$(keyboard).style.display = none;">
+            <option value=""></option>
+            <option value="1">Jan</option>
+            <option value="2">Feb</option>
+            <option value="3">Mar</option>
+            <option value="4">Apr</option>
+            <option value="5">May</option>
+            <option value="6">Jun</option>
+            <option value="7">Jul</option>
+            <option value="8">Aug</option>
+            <option value="9">Sep</option>
+            <option value="10">Oct</option>
+            <option value="11">Nov</option>
+            <option value="12">Dec</option>
+            <option value="Unknown">Unknown</option>
+        </select>
+            
+        <input type="text" name="test_day"
+           id="test_day"
+           field_type="number" helpText="HIV test day"
+           condition="($('test_year').value != 'Unknown') && ($('test_month').value != 'Unknown')"
+           tt_onLoad="getDayOfMonthPicker($('test_year').value, $('test_month').value);setUpPageForDateValidation();"/>
+
+
+        <select objectType="location" ajaxURL="/locations?name="
+          allowFreeText="true"
+          condition="$('hiv_status').value.toLowerCase() != 'never tested';"
+          field_type="alpha"
+          helpText="Location of HIV test"
+          id="facility_name"
+          tt_onLoad="setupExternalReferal();"
+          name="facility_name">
+        </select>
+        
+
+       <!-- ................. test date ends ...................... --> 
+      
+      </form>
+
+   </div>
+ </div>
+</body>
+
