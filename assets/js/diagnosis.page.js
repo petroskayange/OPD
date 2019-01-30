@@ -37,6 +37,8 @@ function buildOPDdiagnosisPage() {
   }
 
 
+  var nextButton = document.getElementById('nextButton');
+  nextButton.setAttribute("onmousedown","submitDignosis();");
 }
 
 function showDiagnosisKeyboard(e) {
@@ -72,13 +74,14 @@ function showDiagnosisKeyboard(e) {
   addControls();
 
   popipPosition = e;
+  document.getElementById('selected-side').innerHTML = e.innerHTML.toLowerCase();
 }
 
 function addControls() {
   var container = document.getElementById('diagnosis-container');
 
   var helpText = document.createElement('div');
-  helpText.innerHTML = "<span id='sideeffectTag'>Select diagnosis</span>";
+  helpText.innerHTML = "<span id='sideeffectTag'>Select&nbsp;<span id='selected-side'></span>&nbsp;diagnosis</span>";
   helpText.setAttribute('class','helpTextClass');
   helpText.style = "width: 97%;";
   container.appendChild(helpText);
@@ -366,3 +369,85 @@ function removeDig(e) {
     ul.appendChild(li);
   }
 }
+
+function submitDignosis() {
+  if(isHashEmpty(selectedDignosis)) {
+    showMessage("Please select one / more diagnosis by click;<br/><b>Primary</b> or <b>Secondary</b>");
+    return;
+  }
+
+  var primary_obs = {};
+  var secondary_obs = {};
+
+  var temp = selectedDignosis['left'];
+  for(concept_id in temp) {
+    primary_obs[concept_id] = temp[concept_id];
+  }
+
+  var temp = selectedDignosis['right'];
+  for(concept_id in temp) {
+    secondary_obs[concept_id] = temp[concept_id];
+  }
+
+  if(isHashEmpty(secondary_obs) && isHashEmpty(primary_obs)) {
+    showMessage("Please select one / more diagnosis by click;<br/><b>Primary</b> or <b>Secondary</b>");
+    return;
+  }
+
+  var currentTime = moment().format(' HH:mm:ss');
+  var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+  encounter_datetime += currentTime;
+                        	
+  var encounter = {
+    encounter_type_name: 'OUTPATIENT DIAGNOSIS',
+    encounter_type_id:  8,
+    patient_id: sessionStorage.patientID,
+    encounter_datetime: encounter_datetime
+  }
+
+  submitParameters(encounter, "/encounters", "postVitalsObs");
+}
+
+function postVitalsObs(encounter) {
+
+  var primary_obs = {};
+  var secondary_obs = {};
+
+  var temp = selectedDignosis['left'];
+  for(concept_id in temp) {
+    primary_obs[concept_id] = temp[concept_id];
+  }
+
+  var temp = selectedDignosis['right'];
+  for(concept_id in temp) {
+    secondary_obs[concept_id] = temp[concept_id];
+  }
+  observations = []
+  
+  for(concept_id in primary_obs) {
+    observations.push({
+      concept_id: 6542,
+      value_coded: concept_id
+    });
+  }
+
+  for(concept_id in secondary_obs) {
+    observations.push({
+      concept_id: 6543,
+      value_coded: concept_id
+    });
+  }
+
+  var obs = {
+    encounter_id: encounter["encounter_id"],
+    observations: observations
+  }; 
+
+  submitParameters(obs, "/observations", "nextPage")  
+}
+
+function nextPage(obs){
+  nextEncounter(sessionStorage.patientID, sessionStorage.programID);
+}
+
+
