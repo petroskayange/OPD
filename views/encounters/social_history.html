@@ -1,0 +1,147 @@
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+<link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script type="text/javascript" src="/apps/ART/assets/js/arv_number.js"></script>
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+<script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+
+<link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+
+<link rel="stylesheet" href="/apps/OPD/assets/css/presenting.complaints.css" type="text/css">
+<script type="text/javascript" src="/apps/OPD/assets/js/presenting.complaints.js"></script>
+
+<style>
+
+.inputFrameClass {
+  width: 96% !important;
+}
+
+.tt_controls_marital_status .keyboard, .tt_controls_religion .keyboard {
+  display: none !important;
+}
+
+#tt_page_religion .options {
+  height: 83%;
+}
+
+</style>
+
+<script>
+var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + sessionStorage.patientID;
+
+function addYesNo() {
+  var tar = document.getElementById("inputFrame" + tstCurrentPage);
+  var attr = 'Patient currently smokes,3339#Does the patient drink alcohol,2318'
+  buildYesNoUI('Social activities', attr, tar);
+}
+
+function prepareToSave() {
+  var nextButton = document.getElementById('nextButton');
+  nextButton.setAttribute('onmousedown','saveSocialHistory();');
+}
+
+function saveSocialHistory() {
+  var marital_status = document.getElementById('marital_status').getAttribute('tstvalue');
+  var region = document.getElementById('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
+  var smokes;
+  var drinks;
+
+  var social_activities = yesNo_Hash['Social activities'];
+  smokes = social_activities['Patient currently smokes'] == 'No' ? 1066 : 1065;
+  drinks = social_activities['Does the patient drink alcohol'] == 'No' ? 1066 : 1065;
+
+  if(region == null) {
+    showMessage('Please select a religion');
+    return;
+  }
+
+  var currentTime = moment().format(' HH:mm:ss');
+  var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+  encounter_datetime += currentTime;
+                        	
+  var encounter = {
+    encounter_type_name: 'SOCIAL HISTORY',
+    encounter_type_id:  84,
+    patient_id: sessionStorage.patientID,
+    encounter_datetime: encounter_datetime
+  }
+
+  submitParameters(encounter, "/encounters", "saveObs");
+}
+
+function saveObs(encounter) {
+  var marital_status = document.getElementById('marital_status').getAttribute('tstvalue');
+  var religion = document.getElementById('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
+  var smokes;
+  var drinks;
+
+  var social_activities = yesNo_Hash['Social activities'];
+  smokes = social_activities['Patient currently smokes'] == 'No' ? 1066 : 1065;
+  drinks = social_activities['Does the patient drink alcohol'] == 'No' ? 1066 : 1065;
+  
+  var observations = [];
+  observations.push({concept_id: 1054, value_text: marital_status});
+  observations.push({concept_id: 8366, value_text: religion});
+  observations.push({concept_id: 3339, value_coded: smokes});
+  observations.push({concept_id: 2318, value_coded: drinks});
+
+  var obs = {
+    encounter_id: encounter["encounter_id"],
+    observations: observations
+  }; 
+
+  submitParameters(obs, "/observations", "nextPage")  
+}
+
+function nextPage(obs){
+  nextEncounter(sessionStorage.patientID, sessionStorage.programID);
+}
+
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+      <form>
+        <input type="text" name="summary"
+          tt_onLoad="__$('keyboard').style.display = 'none';addYesNo();"
+          tt_pageStyleClass= "NoControls" helpText="Social activities" optional = "true"/>
+
+        <select allowFreeText="false" helpText="Marital status"
+           name="outcome" id="marital_status" key="outcome">
+            <option value=""></option>
+            <option value="Single">Single</option>
+            <option value="Engaged">Engaged</option>
+            <option value="Married">Married</option>
+            <option value="Separated">Divorced</option>
+            <option value="Widowed">Widowed</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <select allowFreeText="false" helpText="Religion"
+           name="outcome" id="religion" key="outcome"
+           tt_onLoad="prepareToSave();">
+            <option value=""></option>
+            <option value="Catholic">Catholic</option>
+            <option value="CCAP">CCAP</option>
+            <option value="SDA">SDA</option>
+            <option value="Angelican">Angelican</option>
+            <option value="Muslim">Muslim</option>
+            <option value="Pentecostalism">Pentecostalism</option>
+            <option value="Jehovah witness">Jehovah witness</option>
+            <option value="Other">Other</option>
+        </select>
+        
+      </form>
+
+   </div>
+ </div>
+</body>
+
