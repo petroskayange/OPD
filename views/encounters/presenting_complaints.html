@@ -1,0 +1,56 @@
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+<link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script type="text/javascript" src="/apps/ART/assets/js/arv_number.js"></script>
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+<script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+
+<link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+
+<link rel="stylesheet" href="/apps/OPD/assets/css/presenting.complaints.css" type="text/css">
+<script type="text/javascript" src="/apps/OPD/assets/js/presenting.complaints.js"></script>
+
+<style>
+
+.inputFrameClass {
+  width: 96% !important;
+}
+
+</style>
+
+<script>
+var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patientID;
+
+function changeNextButton() {
+  var nextButton = document.getElementById('nextButton');
+  nextButton.setAttribute('onmousedown','prepareToSave();');
+}
+
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+      <form>
+        <input type="text" name="summary"
+          tt_onLoad="__$('keyboard').style.display = 'none';buildPresentaingComplaints('Presenting complaint');"
+          tt_pageStyleClass= "NoControls" helpText="Presenting complaints" optional = "true"/>
+
+        <input type="text" name="summary"
+          tt_onLoad="__$('keyboard').style.display = 'none';changeNextButton();buildPresentaingComplaints('Specific presenting complaint');"
+          tt_pageStyleClass= "NoControls" helpText="Specific presenting complaints" optional = "true"/>
+
+      </form>
+
+   </div>
+ </div>
+</body>
+
