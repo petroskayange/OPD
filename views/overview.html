@@ -45,8 +45,8 @@
 <table id='opd-stats-table'>
   <tr class='stat-boxes'>
     <td>Registered today<br /><span id="reg-today"></span>0</td>
-    <td>Returning clients<br /><span id="returning-today">0</span></td>
-    <td>Admitted today<br /><span id="admitted-today">0</span></td>
+    <td>Returning today<br /><span id="returning-today">0</span></td>
+    <td>Referred today<br /><span id="referred-today">0</span></td>
     <td style="background-color: yellowgreen;">Ever registered<br /><span id="reg-total">0</span></td>
   </tr>
 </table>
@@ -112,13 +112,16 @@ Highcharts.chart('opd-encounters', {
         }
     },
     series: [{
-        name: 'Tokyo',
+        name: 'New',
         data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
 
     }, {
-        name: 'Berlin',
+        name: 'Returning',
         data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
 
+    }, {
+        name: 'Referred',
+        data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
     }]
 });
 
