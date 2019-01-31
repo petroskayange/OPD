@@ -28,7 +28,8 @@
   #tt_page_hiv_test_month .inputFrameClass ,
   #tt_page_hiv_test_day .inputFrameClass,
   #tt_page_location_of_hiv_test .inputFrameClass,
-  #tt_page_hiv_test_day_estimation .inputFrameClass {
+  #tt_page_hiv_test_day_estimation .inputFrameClass,
+  #tt_page_referred_from .inputFrameClass {
   width: 96%;
 }
 
@@ -91,9 +92,6 @@ function postNotesObs(encounter) {
 function nextPage(obs){
   document.location = tt_cancel_destination;
 }
-
-
-
 
 function isEmpty(str){
   try {
@@ -190,9 +188,9 @@ function setTestDate() {
       dob_month = dob_month
   }
   try {
-      dob_day = document.getElementById('touchscreenInput' + tstCurrentPage).value; 
+      dob_day = document.getElementById('touchscreenInput' + tstCurrentPage).tstvalue; 
       if (dob_day.length < 1)
-          dob_day = document.getElementById('touchscreenInput' + tstCurrentPage).value; //getElementsByTagName("input")[0].value
+          dob_day = document.getElementById('touchscreenInput' + tstCurrentPage).tstvalue; //getElementsByTagName("input")[0].value
 
       if (dob_day.length == 1)
           dob_day = 0 + dob_day
@@ -252,17 +250,18 @@ function setupHIVtestLocation() {
  nextButton.setAttribute('onmousedown','submitHIVstatus();'); 
 }
 
+var hiv_test_date_estimated = true;
+var set_hiv_date;
+
 function submitHIVstatus() {
   try {
-    var set_hiv_date = set_test_date.split('-');
+    set_hiv_date = set_test_date.split('-');
   }catch(e) {
-    var set_hiv_date;
   }
 
   var test_year   = document.getElementById('test_year').value;
   var test_month  = document.getElementById('test_month').value;
   var test_day    = document.getElementById('test_day').value;
-  var estimated = true;
 
   if(test_year.match(/unknown/i)){
     set_hiv_date = getEstimatedHIVtestDate();
@@ -278,10 +277,26 @@ function submitHIVstatus() {
     set_hiv_date = new Date(parseInt(temp_date[0]), (parseInt(temp_date[1]) - 1), 15);
   }else{
     set_hiv_date = new Date(parseInt(set_hiv_date[0]), (parseInt(set_hiv_date[1]) - 1), parseInt(set_hiv_date[2]));
-    estimated = false;
+    hiv_test_date_estimated = false;
   }
 
-  console.log(set_hiv_date + "  " + estimated);
+  var test_location = $('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
+  if(isEmpty(test_location)) {
+    showMessage('Please select HIV test location');
+  }else{
+    var currentTime = moment().format(' HH:mm:ss');
+    var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+    encounter_datetime += currentTime;
+                            
+    var encounter = {
+      encounter_type_name: 'PATIENT REGISTRATION',
+      encounter_type_id:  104,
+      patient_id: sessionStorage.patientID,
+      encounter_datetime: encounter_datetime
+    }
+
+    submitParameters(encounter, "/encounters", "createEncounterNeverTested");
+  }
 }
 
 function getEstimatedHIVtestDate() {
@@ -333,22 +348,116 @@ function checkForChanges(e) {
 }
 
 function submitNeverTest() {
+  var hiv_status  = document.getElementById('touchscreenInput' + tstCurrentPage).tstvalue;
+  
+  if(isEmpty(hiv_status)){
+    showMessage('Please select HIV status');
+    return;
+  }
+
+  var currentTime = moment().format(' HH:mm:ss');
+  var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+  encounter_datetime += currentTime;
+                        	
+  var encounter = {
+    encounter_type_name: 'PATIENT REGISTRATION',
+    encounter_type_id:  104,
+    patient_id: sessionStorage.patientID,
+    encounter_datetime: encounter_datetime
+  }
+
+  submitParameters(encounter, "/encounters", "createEncounterNeverTested");
+
+}
+
+function createEncounterNeverTested(encounter) { 
   var observations = [];
+  
+  /* ........................ HIV status starts ................*/
+  if(hiv_status == 'Never tested') {
+    var hiv_status  = document.getElementById('touchscreenInput' + tstCurrentPage).value;
+  }else{
+    var hiv_status  = document.getElementById('hiv_status').value;
+  }
+  observations.push({concept_id: 3753, value_text: hiv_status});
+  /* ........................ HIV status ends ................*/
+  
+  
+  /* ........................ type of visits ................*/
   var type_of_visit = document.getElementById('visit_type').value;
+  var types = {}
+  types['New'] = 7572;
+  types['Referral'] = 9675;
+  types['Re-visiting'] = 9674;
+
+  observations.push({concept_id: 6189, value_coded: types[type_of_visit]});
+  /* ........................ type of visits ends ................*/
+
+
+  /* ........................ Patient pregnant starts ................*/
+  if(showPregnantQuestion() == true){
+    var patient_pregnant  = document.getElementById('patient_pregnant').value;
+    var pregnant_ans = {};
+    pregnant_ans['Yes'] = 1065;
+    pregnant_ans['No'] = 1066;
+    pregnant_ans['Unknown'] = 1067;
+    
+    observations.push({concept_id: 1755, value_coded: pregnant_ans[patient_pregnant]});
+  }
+  /* ........................ Patient pregnant ends ................ */
+
+  if(type_of_visit == 'Referral') {
+    var reffering_facility = document.getElementById('referring_facility_name');
+    observations.push({concept_id: 7414, 
+    value_coded: reffering_facility.getAttribute('tstvalue'), 
+      value_text: reffering_facility.value});
+  }
+ 
+  if(hiv_status != 'Never tested') {
+    var test_date = moment(set_hiv_date).format('YYYY-MM-DD');
+    var estimated = hiv_test_date_estimated == true ? 'Date estimated' : 'Date NOT estimated';
+    var test_location = $('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
+
+    observations.push({concept_id: 1837, comments: estimated, value_datetime: test_date});
+    observations.push({concept_id: 7878, value_coded: test_location});
+  }
+  
+  var obs = {
+    encounter_id: encounter["encounter_id"],
+    observations: observations
+  }; 
+
+  submitParameters(obs, "/observations", "createNationalID");
+}
+
+
+function createNationalID(obs) {
   var national_id_available = document.getElementById('national_id_available').value;
   var national_id = document.getElementById('national_id').value;
-  if(sessionStorage.patientGender == 'F')
-    var patient_pregnant  = document.getElementById('patient_pregnant').value;
+  
+  var nid_available = {};
+  nid_available['No'] = 1065;
+  nid_available['Yes'] = 1066;
+  nid_available['Unknown'] = 1067;
+  if(national_id_available == 'Yes') {
+    createNID(national_id);
+  }else{
+    nextPage("");
+  }
+  
+}
 
-  var hiv_status  = document.getElementById('touchscreenInput' + tstCurrentPage).value;
+function createNID(nid){
+  var identifier_type = 28;
 
-   observations.push({concept_id: 6189, value_text: type_of_visit});
-
-   var hiv_statues = {};
-   hiv_statues['Never tested'] = 9432;
-   hiv_statues['New negative'] = 9432;
-
-   observations.push({concept_id: 3753, value_coded: });
+  var patient_identifier = {
+    identifier: nid,
+    identifier_type: identifier_type,
+    patient_id: sessionStorage.patientID
+  }
+  
+  var pathURL = "/patient_identifiers/";
+  submitParameters(patient_identifier, pathURL, "nextPage");
 }
 
 </script>
@@ -362,27 +471,36 @@ function submitNeverTest() {
            name="outcome" id="visit_type" key="outcome">
             <option value=""></option>
             <option value="New">New</option>
-            <option value="Referral">Internal referral</option>
-            <option value="Revisiting">Re-visiting</option>
+            <option value="Referral">Referral</option>
+            <option value="Re-visiting">Re-visiting</option>
         </select>
 
+        <select objectType="location" ajaxURL="/locations?name="
+          allowFreeText="true"
+          condition="$('visit_type').value.toLowerCase() == 'referral';"
+          field_type="alpha"
+          helpText="Referred from"
+          id="referring_facility_name"
+          name="referring_facility_name">
+        </select>
+        
         <select allowFreeText="false" helpText="National ID available"
            name="outcome" id="national_id_available" key="outcome">
             <option value=""></option>
-            <option value="Available">Available</option>
-            <option value="Not available">Not available</option>
-            <option value="Forgot at home">Forgot at home</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="Unknown">Unknown</option>
         </select>
 
         <input type="text" name="national_id" id="national_id" textCase="upper"
-          condition='$("national_id_available").value == "Available";' helpText="Enter National ID" />
+          condition='$("national_id_available").value == "Yes";' helpText="Enter National ID" />
  
         <select allowFreeText="false" helpText="Patient pregnant"
            name="outcome" id="patient_pregnant" key="outcome"
            condition='showPregnantQuestion() == true;'>
             <option value=""></option>
-            <option value="Not">No</option>
             <option value="Yes">Yes</option>
+            <option value="No">No</option>
             <option value="Unknown">Unknown</option>
         </select>
 
