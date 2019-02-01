@@ -154,8 +154,8 @@ function validateTestDate() {
       return;
   }
 
-  currDate = moment().format('YYYY-MM-DD');
-  setDate = moment(set_test_date).format('YYYY-MM-DD');
+  var currDate = new Date();
+  var setDate;
   
   if (setDate == 'Invalid date') {
     if(set_test_date.match(/unknown/i)){
@@ -164,41 +164,48 @@ function validateTestDate() {
     }
   }
 
+  try {
+   var y = moment(set_test_date).format('YYYY');
+   var m = moment(set_test_date).format('MM');
+   var d = moment(set_test_date).format('DD');
+   setDate = new Date(parseInt(y), (parseInt(m) - 1), parseInt(d)); 
+  }catch(e){
+  }
+
   if (setDate > currDate) {
       showMessage("Test date more than the current date");
       return;
+  }else{
+    gotoNextPage();
   }
-
-  gotoNextPage();
 }
 
 var set_test_date
 
 function setTestDate() {
   try {
-      dob_year = document.getElementById('test_year').value; //getElementsByTagName("input")[0].value
+      dob_year = document.getElementById('test_year').value; 
   } catch (e) {
       dob_year = dob_year
   }
   try {
-      dob_month = document.getElementById('test_month').value; //getElementsByTagName("input")[0].getAttribute('tstvalue')
+      dob_month = document.getElementById('test_month').value; 
       if (dob_month.length == 1)
           dob_month = 0 + dob_month
   } catch (e) {
       dob_month = dob_month
   }
   try {
-      dob_day = document.getElementById('touchscreenInput' + tstCurrentPage).tstvalue; 
-      if (dob_day.length < 1)
-          dob_day = document.getElementById('touchscreenInput' + tstCurrentPage).tstvalue; //getElementsByTagName("input")[0].value
-
+      dob_day = $('touchscreenInput' + tstCurrentPage).value;
+      
       if (dob_day.length == 1)
           dob_day = 0 + dob_day
+  
   } catch (e) {
       dob_day = dob_day
   }
 
-  set_test_date = (dob_year + '-' + dob_month + '-' + dob_day)
+  set_test_date = (dob_year + '-' + dob_month + '-' + dob_day);
 }
 
 function validateEnteredDate(inputText) {
