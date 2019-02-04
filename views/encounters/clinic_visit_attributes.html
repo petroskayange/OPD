@@ -428,7 +428,6 @@ function createEncounterNeverTested(encounter) {
   if(type_of_visit == 'Referral') {
     var reffering_facility = document.getElementById('referring_facility_name');
     observations.push({concept_id: 7414, 
-    value_coded: reffering_facility.getAttribute('tstvalue'), 
       value_text: reffering_facility.value});
   }
  
@@ -625,7 +624,6 @@ function patientOnART(id) {
    
     if(isEmpty(reffering_facility.value) == false) { 
       observations.push({concept_id: 7414, 
-      value_coded: reffering_facility.getAttribute('tstvalue'), 
       value_text: reffering_facility.value});
     }
   }
