@@ -45,6 +45,18 @@
   display: block !important;
 }
 
+#cover {
+  display: inline;
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 102%;
+  left: 0%;
+  top: 0%;
+  z-index: 990;
+  opacity: 0.65;
+}
+
 </style>
 
 <script>
@@ -355,7 +367,7 @@ function checkForChanges(e) {
 }
 
 function submitNeverTest() {
-  var hiv_status  = document.getElementById('touchscreenInput' + tstCurrentPage).tstvalue;
+  var hiv_status  = document.getElementById('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
   
   if(isEmpty(hiv_status)){
     showMessage('Please select HIV status');
@@ -467,6 +479,200 @@ function createNID(nid){
   submitParameters(patient_identifier, pathURL, "nextPage");
 }
 
+var npid_available;
+
+function fetchNID() {
+  var url = apiProtocol+'://'+apiURL+':'+apiPort+'/api/v1/';
+  url += "patient_identifiers?patient_id=" + sessionStorage.patientID;
+  url += "&identifier_type=28";
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var obj = JSON.parse(this.responseText);
+      npid_available = (obj.length < 1 ? false : true);
+      document.getElementById('cover').style = 'display: none;';
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+var opd_hiv_status;
+function getHIVOPDstatus() {
+  
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += "/observations?person_id=" + sessionStorage.patientID;
+  url += "&concept_id=3753&page_size=1&date=";
+  url += moment().format("YYYY-MM-DD");
+  
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      fetchNID();
+      if(obj.length > 0) 
+        opd_hiv_status = obj[0].value_text;
+    
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+getHIVOPDstatus();
+
+function ARTpatient() {
+  if(opd_hiv_status == undefined)
+    return false;
+  
+  return (opd_hiv_status.match(/on ART/i) ? true : false);
+}
+
+function patientPositiveButNotART() {
+  if(opd_hiv_status == undefined)
+    return false;
+  
+  return (opd_hiv_status.match(/not ART/i) ? true : false);
+}
+
+function endEncounter(id) {
+  var nextButton = document.getElementById('nextButton');
+
+  if(id == 'patient_pregnant' && ARTpatient()) {
+    nextButton.innerHTML = '<span>Finish</span>';
+    nextButton.setAttribute("onmousedown","patientOnART('patient_pregnant');");
+  }else if(id == 'national_id' && ARTpatient() && showPregnantQuestion() == false) {
+    nextButton.innerHTML = '<span>Finish</span>';
+    nextButton.setAttribute("onmousedown","patientOnART('national_id');");
+  }else if(id == 'national_id_available' && ARTpatient() && showPregnantQuestion() == false) {
+    nextButton.innerHTML = '<span>Finish</span>';
+    nextButton.setAttribute("onmousedown","patientOnART('national_id_available');");
+  }
+}
+
+function patientOnART(id) {
+  var pregnant;
+  var national_id;
+  var visit_type;
+
+  if(id == 'patient_pregnant' && ARTpatient()) {
+    pregnant = document.getElementById('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
+  }
+
+  if(npid_available == false) {
+    var national_id_available = document.getElementById('national_id_available');
+    if(national_id_available == null){
+      national_id_available = document.getElementById('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
+    }else{
+      national_id_available = national_id_available.value;
+    }
+    
+    if(national_id_available == 'Yes'){
+      var nid = document.getElementById('national_id');
+      if(nid == null){
+        national_id = document.getElementById('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
+      }else{
+        national_id = nid.value;
+      }
+    }
+  }
+
+  var observations = []
+  
+  if(pregnant != undefined || pregnant == null) {
+    var pregnant_ans = {};
+    pregnant_ans['Yes'] = 1065;
+    pregnant_ans['No'] = 1066;
+    pregnant_ans['Unknown'] = 1067;
+    
+    if(isEmpty(pregnant)) {
+      showMessage('Please select pregnant status');
+      return;
+    }else{
+      observations.push({concept_id: 1755, value_coded: pregnant_ans[pregnant]});
+    }
+  }
+
+  var type_of_visit = document.getElementById('visit_type');
+  if(type_of_visit == null) {
+    type_of_visit = document.getElementById('touchscreenInput' + tstCurrentPage).getAttribute('tstvalue');
+  }else{
+    type_of_visit = type_of_visit.value;
+  }
+
+  var types = {}
+  types['New'] = 7572;
+  types['Referral'] = 9675;
+  types['Re-visiting'] = 9674;
+  
+  if(types[type_of_visit] == undefined){
+    showMessage('Please select visit type');
+    return;
+  }else{
+    observations.push({concept_id: 6189, value_coded: types[type_of_visit]});
+  }
+
+  if(type_of_visit == 'Referral') {
+    var reffering_facility = document.getElementById('referring_facility_name');
+    if(reffering_facility == null) {
+      reffering_facility = document.getElementById('touchscreenInput' + tstCurrentPage);
+    }
+   
+    if(isEmpty(reffering_facility.value) == false) { 
+      observations.push({concept_id: 7414, 
+      value_coded: reffering_facility.getAttribute('tstvalue'), 
+      value_text: reffering_facility.value});
+    }
+  }
+
+  if(observations.length < 1) {
+    showMessage('Information is not complete');
+    return;
+  }
+
+  gloabl_obs = observations;
+  if(national_id != undefined && isEmpty(national_id) == false)
+    global_nid = national_id;
+
+  var currentTime = moment().format(' HH:mm:ss');
+  var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD'); 
+  encounter_datetime += currentTime;
+                        	
+  var encounter = {
+    encounter_type_name: 'NOTES',
+    encounter_type_id:  105,
+    patient_id: sessionStorage.patientID,
+    encounter_datetime: encounter_datetime
+  }
+
+  submitParameters(encounter, "/encounters", "createObs");
+}
+
+function createObs(encounter) {
+  var obs = {
+    encounter_id: encounter["encounter_id"],
+    observations: gloabl_obs
+  }; 
+
+  if(global_nid == undefined) {
+    submitParameters(obs, "/observations", "nextPage");
+  }else{
+    submitParameters(obs, "/observations", "setNID");
+  }
+}
+
+function setNID(obs) {
+  createNID(global_nid);
+}
+
+var gloabl_obs;
+var global_nid;
+
 </script>
 
 <body id="mateme">
@@ -492,7 +698,8 @@ function createNID(nid){
         </select>
         
         <select allowFreeText="false" helpText="National ID available"
-           name="outcome" id="national_id_available" key="outcome">
+           name="outcome" id="national_id_available" key="outcome"
+          condition='npid_available == false;' tt_onLoad="endEncounter('national_id_available');"> 
             <option value=""></option>
             <option value="Yes">Yes</option>
             <option value="No">No</option>
@@ -500,11 +707,13 @@ function createNID(nid){
         </select>
 
         <input type="text" name="national_id" id="national_id" textCase="upper"
-          condition='$("national_id_available").value == "Yes";' helpText="Enter National ID" />
+          condition='npid_available == false && $("national_id_available").value == "Yes";' 
+          helpText="Enter National ID" tt_onLoad="endEncounter('national_id');"/>
  
         <select allowFreeText="false" helpText="Patient pregnant"
            name="outcome" id="patient_pregnant" key="outcome"
-           condition='showPregnantQuestion() == true;'>
+           condition='showPregnantQuestion() == true;'
+           tt_onLoad="endEncounter('patient_pregnant');">
             <option value=""></option>
             <option value="Yes">Yes</option>
             <option value="No">No</option>
@@ -513,7 +722,8 @@ function createNID(nid){
 
         <select allowFreeText="false" helpText="HIV status"
            name="outcome" id="hiv_status" key="outcome"
-           tt_onLoad="setupHIVstatus();">
+           tt_onLoad="setupHIVstatus();"
+           condition="ARTpatient() == false;">
             <option value=""></option>
             <option value="Positive not ART">Positive not ART</option>
             <option value="Positive on ART">Positive on ART</option>
@@ -526,13 +736,13 @@ function createNID(nid){
        <!-- ................. test date ...................... --> 
         <input type="text" name="test_year" id="test_year" helpText="HIV test year"
            field_type="number"
-           condition="$('hiv_status').value.toLowerCase() != 'never tested';"
+           condition="$('hiv_status').value.toLowerCase() != 'never tested' && ARTpatient() == false;"
            absoluteMin="1900" min="1900" tt_onLoad="setAbsoluteMaxYear()"
            tt_pageStyleClass="Numeric NumbersOnly"/>
 
         <select allowFreeText="false" helpText="HIV test day (estimation)"
            name="outcome" id="hiv_test_day_estimation" key="outcome"
-          condition="$('test_year').value.toLowerCase() == 'unknown' && $('hiv_status').value.toLowerCase() != 'never tested';">
+          condition="$('test_year').value.toLowerCase() == 'unknown' && $('hiv_status').value.toLowerCase() != 'never tested' && ARTpatient() == false;">
             <option value=""></option>
             <option value="6 months">6 months</option>
             <option value="12 months">12 months</option>
@@ -543,7 +753,7 @@ function createNID(nid){
 
 
         <select name="test_month" id="test_month" helpText="HIV test month"
-                condition="$('test_year').value.toLowerCase() != 'unknown' && $('hiv_status').value.toLowerCase() != 'never tested';"
+                condition="$('test_year').value.toLowerCase() != 'unknown' && $('hiv_status').value.toLowerCase() != 'never tested' && ARTpatient() == false"
                 validationMessage="Please enter a valid date" 
                 tt_onLoad=" validateMonth();__$(keyboard).style.display = none;">
             <option value=""></option>
@@ -565,13 +775,13 @@ function createNID(nid){
         <input type="text" name="test_day"
            id="test_day"
            field_type="number" helpText="HIV test day"
-           condition="($('test_year').value != 'Unknown') && ($('test_month').value != 'Unknown') && $('hiv_status').value.toLowerCase() != 'never tested';"
+           condition="($('test_year').value != 'Unknown') && ($('test_month').value != 'Unknown') && $('hiv_status').value.toLowerCase() != 'never tested' && ARTpatient() == false;"
            tt_onLoad="getDayOfMonthPicker($('test_year').value, $('test_month').value);setUpPageForDateValidation();"/>
 
 
         <select objectType="location" ajaxURL="/locations?name="
           allowFreeText="true"
-          condition="$('hiv_status').value.toLowerCase() != 'never tested';"
+          condition="$('hiv_status').value.toLowerCase() != 'never tested' && ARTpatient() == false;"
           field_type="alpha"
           helpText="Location of HIV test"
           id="facility_name"
@@ -586,5 +796,8 @@ function createNID(nid){
 
    </div>
  </div>
+
+<div id="cover"></div>
+
 </body>
 
