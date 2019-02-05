@@ -76,13 +76,14 @@ var chart_data = stats['down'];
 for(key in chart_data){
   var keys = chart_data[key];
   for(key in keys){
-    chart_keys.push(key);
+    chart_keys.push(parseInt(key));
   }
   break;
 }
 
 var dates = [];
-chart_keys = chart_keys.sort();
+chart_keys = chart_keys.sort(function(a, b){return a-b});
+console.log(chart_keys);
 var chart_numbers_new = [];
 
 var types = ['registered','returning','referred'];
