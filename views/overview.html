@@ -5,6 +5,8 @@
 <script src="/assets/js/HighCharts/export-data.js"></script>
 <script src="/assets/js/moment.js"></script>
 
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/core.js"></script>
 
 
 <style>
@@ -44,10 +46,10 @@
 
 <table id='opd-stats-table'>
   <tr class='stat-boxes'>
-    <td>Registered today<br /><span id="reg-today"></span>0</td>
+    <td>Registered today<br /><span id="reg-today">0</span></td>
     <td>Returning today<br /><span id="returning-today">0</span></td>
     <td>Referred today<br /><span id="referred-today">0</span></td>
-    <td style="background-color: yellowgreen;">Ever registered<br /><span id="reg-total">0</span></td>
+    <td style="background-color: yellowgreen;">Total<br /><span id="reg-total">0</span></td>
   </tr>
 </table>
 
@@ -56,6 +58,57 @@
 </div>
 
 <script>
+
+function dashboardStats(stats) {
+
+var top_colunm = stats['top']; 
+document.getElementById('reg-today').innerHTML = top_colunm.registered_today;
+document.getElementById('returning-today').innerHTML = top_colunm.returning_today;
+document.getElementById('referred-today').innerHTML = top_colunm.referred_today;
+var total = parseInt(top_colunm.referred_today);
+total += parseInt(top_colunm.returning_today);
+total += parseInt(top_colunm.registered_today);
+document.getElementById('reg-total').innerHTML = total;
+
+var chart_keys = [];
+var chart_data = stats['down'];
+
+for(key in chart_data){
+  var keys = chart_data[key];
+  for(key in keys){
+    chart_keys.push(key);
+  }
+  break;
+}
+
+var dates = [];
+chart_keys = chart_keys.sort();
+var chart_numbers_new = [];
+
+var types = ['registered','returning','referred'];
+var numbers = {};
+
+for(var i = 0 ; i < chart_keys.length ; i++){
+  var sdate = (chart_data[types[0]][chart_keys[i]].start_date);
+  dates.push(moment(sdate).format('MMM/YYYY'));
+}
+
+for(var i = 0 ; i < dates.length ; i++){
+  for(name in chart_data){
+    var attr = chart_data[name];
+    for(key in attr){
+      var sdate = chart_data[name][key].start_date;
+      sdate = moment(sdate).format('MMM/YYYY');
+      if(sdate != dates[i])
+        continue;
+    
+      if(numbers[name] == undefined)
+        numbers[name] = [];
+
+      numbers[name].push(chart_data[name][key].count);
+    }
+  }
+}
 
 Highcharts.chart('opd-encounters', {
     chart: {
@@ -69,24 +122,12 @@ Highcharts.chart('opd-encounters', {
         text: 'For the past 12 months'
     },
     xAxis: {
-        categories: [
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jul',
-            'Aug',
-            'Sep',
-            'Oct',
-            'Nov',
-            'Dec'
-        ],
-        crosshair: true
+      categories: dates,
+      crosshair: true
     },
     yAxis: {
         min: 0,
+        allowDecimals: false,
         title: {
             text: 'Number of clients'
         }
@@ -97,14 +138,6 @@ Highcharts.chart('opd-encounters', {
     exporting: {
         enabled: false
     },
-    tooltip: {
-        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-        footerFormat: '</table>',
-        shared: true,
-        useHTML: true
-    },
     plotOptions: {
         column: {
             pointPadding: 0.2,
@@ -113,18 +146,38 @@ Highcharts.chart('opd-encounters', {
     },
     series: [{
         name: 'New',
-        data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+        data: numbers['registered']
 
     }, {
         name: 'Returning',
-        data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+        data: numbers['returning']
 
     }, {
         name: 'Referred',
-        data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+        data: numbers['referred']
     }]
 });
 
+}
 
+function fetchDashboardStats() {
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += "/dashboard_stats?date=" + sessionStorage.sessionDate;
+  url+= "&program_id=" + sessionStorage.programID;
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      var obj = JSON.parse(this.responseText);
+      dashboardStats(obj);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+setTimeout("fetchDashboardStats()", 200);
 </script>
 
