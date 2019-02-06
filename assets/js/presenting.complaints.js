@@ -31,6 +31,15 @@ function presentingComplaints(concept_sets, type_of_complaint) {
     if(concept_sets[i].name.toLowerCase() == 'none')
       continue;
 
+    if(sessionStorage.patientGender == 'M') {
+      if(concept_sets[i].name.toLowerCase().match(/pregna/i)) 
+        continue;
+    
+      if(concept_sets[i].name.toLowerCase().match(/pv bleeding/i)) 
+        continue;
+    
+    }
+
     concept_names.push(concept_sets[i].name);
   }
   
@@ -89,6 +98,11 @@ function complaintClicked(e) {
   var type_of_complaint = e.getAttribute('complaint-type');
 
   if(e.getAttribute('selected') == 'false'){
+    if(e.innerHTML.toUpperCase() == 'NONE'){
+      deSelectAll(type_of_complaint);
+    }else{
+      deSelectNone(type_of_complaint)
+    }
     e.setAttribute('selected', 'true');
     e.style = 'background-color: lightblue;';
     addToHash(type_of_complaint, e.getAttribute('concept_id'));    
@@ -98,6 +112,24 @@ function complaintClicked(e) {
     removeFromHash(type_of_complaint, e.getAttribute('concept_id'));
   }
 
+}
+
+function deSelectAll(key) {
+  var list = document.getElementsByClassName('complaints-container-cell');
+  for(var i = 0 ; i < list.length ; i++){
+    list[i].style = 'background-color: "";';
+  }
+  presentingComplaintsHash[key] = [];
+}
+
+function deSelectNone(key) {
+  var list = document.getElementsByClassName('complaints-container-cell');
+  for(var i = 0 ; i < list.length ; i++){
+    if(list[i].innerHTML.toUpperCase() == 'NONE' && list[i].getAttribute('selected') == 'true') {
+      list[i].style = 'background-color: "";';
+      removeFromHash(key, list[i].getAttribute('concept_id'));
+    }
+  }
 }
 
 function addToHash(key, concept_id) {
