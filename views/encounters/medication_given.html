@@ -1,0 +1,51 @@
+
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js" defer="true"></script>
+<!-- <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script> -->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+<script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+
+<link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+
+<link rel="stylesheet" href="/apps/OPD/assets/css/drugs.given.css" type="text/css">
+<script type="text/javascript" src="/apps/OPD/assets/js/drugs.given.js"></script>
+
+<script>
+var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + sessionStorage.patientID;
+
+function buildMedicationGivenPage() {
+  var frame = document.getElementById('inputFrame' + tstCurrentPage);
+  frame.style = 'width: 96%;height:90%;';
+
+  var addButton = document.getElementById('clearButton');
+  addButton.innerHTML = '<span>Add medication</span>';
+  addButton.setAttribute('onmousedown','showDiagnosisKeyboard();');
+
+  var giveButton = document.getElementById('nextButton');
+  giveButton.setAttribute('onmousedown','submitDignosis();');
+
+
+}
+
+</script>
+
+<body id="mateme">
+  <div id="container">
+    <div id="content">
+
+      <form>
+        <input type="text" name="summary"
+          tt_onLoad="__$('keyboard').style.display = 'none';buildMedicationGivenPage();"
+          tt_pageStyleClass= "NoControls" helpText="Medication given" optional = "true"/>
+
+      </form>
+
+   </div>
+ </div>
+</body>
+

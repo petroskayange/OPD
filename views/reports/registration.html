@@ -1,0 +1,142 @@
+
+<link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
+
+<script type="text/javascript" src="/apps/OPD/assets/js/jquery-3.3.1.min.js"></script>
+
+<!--link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/datatables.css"/-->
+<link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/jquery.dataTables.min.css"/>
+<script type="text/javascript" src="/apps/OPD/assets/js/DataTables/datatables.min.js"></script>
+
+
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+
+<style>
+
+.title-table {
+  display: table;
+  width: 100%;
+}
+
+.title-row {
+  display: table-row;
+}
+
+.title-cell {
+  display: table-cell;
+  height: 30px;
+  vertical-align: top;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+}
+
+#title-cell-left {
+  vertical-align: middle;
+  width: 100px;
+}
+
+#title-cell-left img {
+  height: 95px;
+  width: 95px;
+  margin: 5px;
+}
+
+#title-cell-right {
+  margin-left: 5px;
+}
+
+#data-cell {
+  display: table-cell;
+  width: 100%;
+}
+
+#report {
+  width: 100%;
+}
+
+</style>
+
+<div class="title-table">
+  <div class='title-row'>
+    <div class='title-cell' id='title-cell-left'>
+      <img src="/assets/images/login-logos/Malawi-Coat_of_arms_of_arms.png" />
+    </div>
+    <div class='title-cell' id='title-cell-right'>
+      <table style="width: 100%; text-align: left; margin-left: 10px;">
+        <tr>
+          <th>Title:</th><td colspan="2" id="report-title"><td>
+        </tr>
+        <tr>
+          <th>Period:</th>
+          <td id="start-date"><td>
+          <td id="end-date"><td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+  
+<div class="title-table">
+  <div class='title-row'>
+    <div id='data-cell'>
+      <table id="report" class="display" style="width:100%">
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div id="buttons" class="buttonsDiv">
+  <button class="button green navButton"><span>Finish</span></button>
+</div>
+
+<script>
+
+var url = window.location.href;
+url = new URL(url);
+var report_type = url.searchParams.get("type");
+var start_date = url.searchParams.get("start_date");
+var end_date = url.searchParams.get("end_date");
+
+document.getElementById('start-date').innerHTML = moment(start_date).format('DD/MMM/YYYY');
+document.getElementById('end-date').innerHTML = moment(end_date).format('DD/MMM/YYYY');
+
+function buildReportingTable() {
+  buildHeaders();
+ // initializeTable();
+}
+
+var table_columns= [];
+
+function buildHeaders(tr) {
+  var headers = [];
+
+  if(report_type == 'registration'){
+    headers = ['First name','Last name','Gender','DOB','Date reg','Address',''];
+  }else if(report_type == 'registration'){
+  }
+
+  for(var i = 0 ; i < headers.length ; i++){
+    table_columns.push({title: headers[i]});
+  }
+
+  initializeTable();
+}
+
+var data_table;
+function initializeTable() {
+  data_table = $('#report').DataTable({
+    columns: table_columns,
+    fixedHeader: true,
+    searching: false,
+    paging: false,
+    scrollY: 430,
+    scroller: {
+      loadingIndicator: true
+    }
+  });
+}
+
+
+buildReportingTable();
+</script>
+

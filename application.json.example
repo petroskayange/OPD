@@ -10,11 +10,6 @@
       "activitiesIcon": "/assets/images/diagnosis.png",
       "url": "/apps/OPD/views/encounters/diagnosis.html"
     },
-    "dispensation": {
-      "available": true,
-      "activitiesIcon": "/assets/images/dispensing.png",
-      "url": "/views/patient/dispensing.html"
-    },
     "Outcome status": {
       "available": true,
       "activitiesIcon": "/assets/images/outcomes.png",
@@ -40,10 +35,10 @@
       "activitiesIcon": "/assets/images/medical-report.png",
       "url": "/apps/OPD/views/encounters/social_history.html"
     },
-    "prescription": {
+    "drugs given": {
       "available": true,
-      "activitiesIcon": "/assets/images/prescription.png",
-      "url": "/views/patient/prescription.html"
+      "activitiesIcon": "/assets/images/drugs-given.png",
+      "url": "/apps/OPD/views/encounters/medication_given.html"
     }
   },
   "activities": {
