@@ -374,7 +374,8 @@ function postDignosisObs(encounter) {
   for(concept_id in primary_obs) {
     observations.push({
       concept_id: 9236,
-      value_drug: concept_id
+      value_drug: concept_id,
+      value_text: primary_obs[concept_id]
     });
   }
 
