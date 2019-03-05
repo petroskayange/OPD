@@ -12,6 +12,19 @@
 <script type="text/javascript" src="/assets/js/core.js"></script>
 
 <style>
+#high-level-view {
+  display: none;
+  background-color: #F4F4F4;
+  border: 2px solid #E0E0E0;
+  border-radius: 15px;
+  height: 92%;
+  padding: 5px;
+  position: absolute;
+  top: 10px;
+  width: 95%;
+  left: 2%;
+  z-index: 991;
+}
 
 #spinner {
   position: absolute;
@@ -108,12 +121,25 @@ th {
 
 
 <div id="buttons" class="buttonsDiv">
-  <button class="button green navButton" onmousedown="location='/'"><span>Finish</span></button>
+  <button class="button blue navButton" onmousedown="location='/'"><span>Finish</span></button>
+  <button class="button green navButton" onmousedown="highLevelView();"><span>High level view</span></button>
 </div>
 
 <img src="/apps/OPD/assets/images/formloader.gif" id="spinner" />
 <div id="report-cover"></div>
-
+<div id="high-level-view">
+  <table id="high-level-stats">
+    <thead>
+      <tr>
+        <th>Visit type</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+  </table>
+  <div id="popupdiv" style="top: 630px;width: 97%;" class="buttonsDiv">
+    <button class="button green navButton" onmousedown="closePopUp();"><span>Close</span></button>
+  </div>
+</div>
 
 <script>
 
@@ -125,6 +151,34 @@ var end_date = url.searchParams.get("end_date");
 
 document.getElementById('start-date').innerHTML = moment(start_date).format('DD/MMM/YYYY');
 document.getElementById('end-date').innerHTML = moment(end_date).format('DD/MMM/YYYY');
+
+function closePopUp() {
+  document.getElementById('report-cover').style = 'display: none;';
+  var pop = document.getElementById('high-level-view');
+  pop.style = 'display: none;';
+}
+
+function highLevelView() {
+  document.getElementById('report-cover').style = 'display: inline;';
+  document.getElementById('high-level-view').style = 'display: inline;';
+  
+  hls_table = $('#high-level-stats').DataTable({
+    fixedHeader: true,
+    searching: false,
+    paging: false,
+    scrollY: 400,
+    scroller: {
+      loadingIndicator: true
+    }
+  });
+
+  hls_table.clear();
+  for(var t in high_level_stats) {
+    hls_table.row.add([t, high_level_stats[t]]); 
+    hls_table.draw();
+  }
+
+}
 
 function buildReportingTable() {
   buildHeaders();
@@ -190,6 +244,7 @@ function getData() {
   xhttp.send();
 }
 
+var high_level_stats = {};
 function loadData(data) {
   for(var i = 0 ; i < data.length ; i++){
     var given_name = data[i].given_name;
@@ -206,6 +261,10 @@ function loadData(data) {
       var visit_date;
     }
     var visit_type = data[i].visit_type;
+    if(high_level_stats[visit_type] == undefined)
+      high_level_stats[visit_type] = 0;
+
+    high_level_stats[visit_type] += 1;
 
     data_table.row.add([visit_type, given_name, family_name, gender, birthdate, visit_date, '']); 
     data_table.draw();
