@@ -9,8 +9,26 @@
 
 
 <script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/core.js"></script>
 
 <style>
+
+#spinner {
+  position: absolute;
+  top: 15%;
+  left: 40%;
+}
+
+#report-cover {
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 102%;
+  left: 0%;
+  top: 0%;
+  z-index: 990;
+  opacity: 0.65;
+}
 
 .title-table {
   display: table;
@@ -53,6 +71,10 @@
   width: 100%;
 }
 
+th {
+  text-align: left;
+}
+
 </style>
 
 <div class="title-table">
@@ -63,7 +85,7 @@
     <div class='title-cell' id='title-cell-right'>
       <table style="width: 100%; text-align: left; margin-left: 10px;">
         <tr>
-          <th>Title:</th><td colspan="2" id="report-title"><td>
+          <th>Title:</th><td colspan="2" id="report-title">Registration<td>
         </tr>
         <tr>
           <th>Period:</th>
@@ -86,8 +108,12 @@
 
 
 <div id="buttons" class="buttonsDiv">
-  <button class="button green navButton"><span>Finish</span></button>
+  <button class="button green navButton" onmousedown="location='/'"><span>Finish</span></button>
 </div>
+
+<img src="/apps/OPD/assets/images/formloader.gif" id="spinner" />
+<div id="report-cover"></div>
+
 
 <script>
 
@@ -111,7 +137,7 @@ function buildHeaders(tr) {
   var headers = [];
 
   if(report_type == 'registration'){
-    headers = ['First name','Last name','Gender','DOB','Date reg','Address',''];
+    headers = ['Reg','First name','Last name','Gender','DOB','Date reg','Address',''];
   }else if(report_type == 'registration'){
   }
 
@@ -120,6 +146,7 @@ function buildHeaders(tr) {
   }
 
   initializeTable();
+  getData();
 }
 
 var data_table;
@@ -136,6 +163,54 @@ function initializeTable() {
   });
 }
 
+function getData() {
+
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += '/registration?start_date=' + start_date;
+  url += '&end_date=' + end_date + "&date=" + sessionStorage.sessionDate;
+  url += '&program_id=' + sessionStorage.programID;
+
+  if(apiProtocol == undefined) {
+    setTimeout("getData()", 3000);
+    return;
+  }
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      document.getElementById('spinner').style = 'display: none;';
+      document.getElementById('report-cover').style = 'display: none;';
+      var obj = JSON.parse(this.responseText);
+      loadData(obj);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function loadData(data) {
+  for(var i = 0 ; i < data.length ; i++){
+    var given_name = data[i].given_name;
+    var family_name = data[i].family_name;
+    var gender  = data[i].gender;
+    try {
+      var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
+    }catch(e) { 
+      var birthdate;
+    }
+    try {
+      var visit_date  = moment(data[i].date).format('DD/MMM/YYYY');
+    }catch(e) { 
+      var visit_date;
+    }
+    var visit_type = data[i].visit_type;
+
+    data_table.row.add([visit_type, given_name, family_name, gender, birthdate, visit_date, '']); 
+    data_table.draw();
+  }
+}
 
 buildReportingTable();
 </script>
