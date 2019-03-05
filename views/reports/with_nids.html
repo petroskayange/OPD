@@ -1,0 +1,210 @@
+
+<link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
+
+<script type="text/javascript" src="/apps/OPD/assets/js/jquery-3.3.1.min.js"></script>
+
+<!--link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/datatables.css"/-->
+<link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/jquery.dataTables.min.css"/>
+<script type="text/javascript" src="/apps/OPD/assets/js/DataTables/datatables.min.js"></script>
+
+
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/core.js"></script>
+
+<style>
+
+#spinner {
+  position: absolute;
+  top: 15%;
+  left: 40%;
+}
+
+#report-cover {
+  position: absolute;
+  background-color: black;
+  width: 100%;
+  height: 102%;
+  left: 0%;
+  top: 0%;
+  z-index: 990;
+  opacity: 0.65;
+}
+
+.title-table {
+  display: table;
+  width: 100%;
+}
+
+.title-row {
+  display: table-row;
+}
+
+.title-cell {
+  display: table-cell;
+  height: 30px;
+  vertical-align: top;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+}
+
+#title-cell-left {
+  vertical-align: middle;
+  width: 100px;
+}
+
+#title-cell-left img {
+  height: 95px;
+  width: 95px;
+  margin: 5px;
+}
+
+#title-cell-right {
+  margin-left: 5px;
+}
+
+#data-cell {
+  display: table-cell;
+  width: 100%;
+}
+
+#report {
+  width: 100%;
+}
+
+th {
+  text-align: left;
+}
+
+</style>
+
+<div class="title-table">
+  <div class='title-row'>
+    <div class='title-cell' id='title-cell-left'>
+      <img src="/assets/images/login-logos/Malawi-Coat_of_arms_of_arms.png" />
+    </div>
+    <div class='title-cell' id='title-cell-right'>
+      <table style="width: 100%; text-align: left; margin-left: 10px;">
+        <tr>
+          <th>Title:</th><td colspan="2" id="report-title">Clients / Patients with NIDs<td>
+        </tr>
+        <tr>
+          <th>Period:</th>
+          <td id="start-date"><td>
+          <td id="end-date"><td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+  
+<div class="title-table">
+  <div class='title-row'>
+    <div id='data-cell'>
+      <table id="report" class="display" style="width:100%">
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div id="buttons" class="buttonsDiv">
+  <button class="button blue navButton" onmousedown="location='/'"><span>Finish</span></button>
+</div>
+
+<img src="/apps/OPD/assets/images/formloader.gif" id="spinner" />
+<div id="report-cover"></div>
+
+<script>
+
+document.getElementById('start-date').innerHTML = moment().format('DD/MMM/YYYY');
+document.getElementById('end-date').innerHTML = moment().format('DD/MMM/YYYY');
+
+function closePopUp() {
+  document.getElementById('report-cover').style = 'display: none;';
+  var pop = document.getElementById('high-level-view');
+  pop.style = 'display: none;';
+}
+
+function buildReportingTable() {
+  buildHeaders();
+ // initializeTable();
+}
+
+var table_columns = [];
+
+function buildHeaders(tr) {
+  var headers = ['NID','First name','Last name','Gender','DOB','Date reg','Address',''];
+
+  for(var i = 0 ; i < headers.length ; i++){
+    table_columns.push({title: headers[i]});
+  }
+
+  initializeTable();
+  getData();
+}
+
+var data_table;
+function initializeTable() {
+  data_table = $('#report').DataTable({
+    columns: table_columns,
+    fixedHeader: true,
+    searching: false,
+    paging: false,
+    scrollY: 430,
+    scroller: {
+      loadingIndicator: true
+    }
+  });
+}
+
+function getData() {
+
+  var url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1";
+  url += '/with_nids?date=' + sessionStorage.sessionDate;
+  url += '&program_id=' + sessionStorage.programID;
+
+  if(apiProtocol == undefined) {
+    setTimeout("getData()", 3000);
+    return;
+  }
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      document.getElementById('spinner').style = 'display: none;';
+      document.getElementById('report-cover').style = 'display: none;';
+      var obj = JSON.parse(this.responseText);
+      loadData(obj);
+    }
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
+
+function loadData(data) {
+  for(var i = 0 ; i < data.length ; i++){
+    var given_name = data[i].given_name;
+    var family_name = data[i].family_name;
+    var gender  = data[i].gender;
+    try {
+      var birthdate = moment(data[i].birthdate).format('DD/MMM/YYYY');
+    }catch(e) { 
+      var birthdate;
+    }
+    try {
+      var visit_date  = moment(data[i].date).format('DD/MMM/YYYY');
+    }catch(e) { 
+      var visit_date;
+    }
+    var nid = data[i].nid;
+    
+    data_table.row.add([nid, given_name, family_name, gender, birthdate, visit_date, '']); 
+    data_table.draw();
+  }
+}
+
+buildReportingTable();
+</script>
+
