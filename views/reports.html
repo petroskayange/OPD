@@ -62,10 +62,9 @@ function reportGrouping(group) {
     ];
   }else if(group == 'Clinic'){
     return [
-      ['Diagnosis by address','','#', 'link'],
+      ['Diagnosis by address','','reports/report_dates.html?report=diagnosis_by_address', 'link'],
       ["Diagnosis","","reports/report_dates.html?report=diagnosis",'link'],
-      ["Registration report","","reports/report_dates.html?report=registration",'link'],
-      ["Referrals","","#",'link']
+      ["Registration report","","reports/report_dates.html?report=registration",'link']
     ];
   }else if(group == 'PEPFAR'){
     return [
