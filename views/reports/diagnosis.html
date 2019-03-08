@@ -7,8 +7,9 @@
 <link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/jquery.dataTables.min.css"/>
 <script type="text/javascript" src="/apps/OPD/assets/js/DataTables/datatables.min.js"></script>
 
-
 <script type="text/javascript" src="/assets/js/moment.js"></script>
+
+<script type="text/javascript" src="/assets/js/virtual.keyboard.js"></script>
 
 <style>
 #spinner {
@@ -200,13 +201,17 @@ var data_table;
 function initializeTable() {
   data_table = $('#report').DataTable({
     fixedHeader: true,
-    searching: false,
+    searching: true,
     paging: false,
-    scrollY: 410,
+    scrollY: 400,
+    Processing: true,
+    ServerSide: true,
     scroller: {
       loadingIndicator: true
     }
   });
+
+  lookForTag();
 }
 
 function getData() {
@@ -237,6 +242,7 @@ function getData() {
 }
 
 function loadData(data) {
+  var count = 0;
 
   for(var diagnosis in data) {
     col_one_female    = data[diagnosis].female_less_than_six_months;
@@ -264,6 +270,14 @@ function loadData(data) {
       buildMinStat(col_five_female, col_five_male),
       buildTotal(total_diagnosis)]);
     data_table.draw();
+    
+    count ++;
+
+    if(count == 99){
+      count = 0;
+      sleep(3000);  
+    }
+
   }
 }
 
