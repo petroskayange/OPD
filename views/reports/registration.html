@@ -11,6 +11,8 @@
 <script type="text/javascript" src="/assets/js/moment.js"></script>
 <script type="text/javascript" src="/assets/js/core.js"></script>
 
+<script type="text/javascript" src="/assets/js/virtual.keyboard.js"></script>
+
 <style>
 #high-level-view {
   display: none;
@@ -208,7 +210,7 @@ function initializeTable() {
   data_table = $('#report').DataTable({
     columns: table_columns,
     fixedHeader: true,
-    searching: false,
+    searching: true,
     paging: false,
     scrollY: 430,
     Processing: true,
@@ -217,6 +219,8 @@ function initializeTable() {
       loadingIndicator: true
     }
   });
+
+  lookForTag();
 }
 
 function getData() {
