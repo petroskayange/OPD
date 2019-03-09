@@ -126,14 +126,15 @@ function setEnteredKey(key) {
 
 function addNavButtons(e) {
   var nextB = document.createElement('button');
-  nextB.innerHTML = '<span>Done</span>';
+  nextB.innerHTML = '<span>Next</span>';
   nextB.setAttribute('class', 'button green navButton nav-diagnosis-btns');
   nextB.setAttribute('onmousedown', 'selectDignosis();');
+  //nextB.setAttribute('onmousedown', 'selectAmount();');
   nextB.setAttribute('id', 'next-button');
   e.appendChild(nextB);
 
   var cancelB = document.createElement('button');
-  cancelB.innerHTML = '<span>Back</span>';
+  cancelB.innerHTML = '<span>Cancel</span>';
   cancelB.style = 'float: left; left: 5px;';
   cancelB.setAttribute('class', 'button red navButton nav-diagnosis-btns');
   cancelB.setAttribute('onmousedown', 'cancelDiagnosis();');
@@ -231,36 +232,26 @@ function selectDignosis() {
 
   if(selected != undefined){
     addSelectedDignosis(selected);
-    cancelDiagnosis();
+    //cancelDiagnosis();
+    selectAmount();
   }
 }
 
+var selected_medication;
+
 function addSelectedDignosis(selected){
+  selected_medication = selected.getAttribute('concept_id');
+
   if(isHashEmpty(selectedDignosis)) {
     selectedDignosis['Selected medication'] = {};
-    selectedDignosis['Selected medication'][selected.getAttribute('concept_id')] = null;
+    selectedDignosis['Selected medication'][selected.getAttribute('concept_id')] = {medication: null, quantity: null};
   }
 
   try {
-    selectedDignosis['Selected medication'][selected.getAttribute('concept_id')] = selected.getAttribute('tstvalue');
+    selectedDignosis['Selected medication'][selected.getAttribute('concept_id')].medication = selected.getAttribute('tstvalue');
   }catch(z) {
-    selectedDignosis['Selected medication'] = {};
-    selectedDignosis['Selected medication'][selected.getAttribute('concept_id')] = null;
-    selectedDignosis['Selected medication'][selected.getAttribute('concept_id')] = selected.getAttribute('tstvalue');
-  }
-
-  var container = document.getElementById('inputFrame' + tstCurrentPage);
-  container.innerHTML = null;
-
-  var ul = document.createElement('ul');
-  ul.setAttribute("style","list-style-type: none;")
-  container.appendChild(ul);
-
-  var level2 = selectedDignosis['Selected medication'];
-  for(var concept_id in level2){
-    var li = document.createElement('li');
-    addTable(level2[concept_id], li);
-    ul.appendChild(li);
+    selectedDignosis['Selected medication'][selected.getAttribute('concept_id')] = {medication: null, quantity: null};
+    selectedDignosis['Selected medication'][selected.getAttribute('concept_id')].medication = selected.getAttribute('tstvalue');
   }
 }
 
@@ -280,9 +271,16 @@ function addTable(diagnosis, li) {
   table.appendChild(tr);
 
   var td = document.createElement('td');
-  td.innerHTML = diagnosis;
+  td.innerHTML = diagnosis.medication;
   td.style = "font-weight: bold; font-size: 17px;";
   tr.appendChild(td);
+
+
+  var td = document.createElement('td');
+  td.innerHTML = diagnosis.quantity;
+  td.style = "font-weight: bold; font-size: 17px;";
+  tr.appendChild(td);
+
 
   var td = document.createElement('td');
   var img = document.createElement('img');
@@ -302,13 +300,15 @@ function removeDig(e) {
   var side = 'Selected medication';
   var temp = selectedDignosis[side];
   var diagnosis = e.getAttribute('diagnosis');
+  
   selectedDignosis[side] = {};
 
   for(var concept_id in temp){
-    if(temp[concept_id] == diagnosis)
+    if(temp[concept_id].medication == diagnosis)
       continue;
 
-    selectedDignosis[side][concept_id] = temp[concept_id];
+    selectedDignosis[side][concept_id].medication = temp[concept_id];
+    selectedDignosis[side][concept_id].quantity = temp[concept_id].quantity;
   }
 
   var container = document.getElementById('inputFrame' + tstCurrentPage);
@@ -375,7 +375,8 @@ function postDignosisObs(encounter) {
     observations.push({
       concept_id: 9236,
       value_drug: concept_id,
-      value_text: primary_obs[concept_id]
+      value_text: primary_obs[concept_id].medication,
+      value_numeric:  primary_obs[concept_id].quantity
     });
   }
 
@@ -389,6 +390,184 @@ function postDignosisObs(encounter) {
 
 function nextPage(obs){
   nextEncounter(sessionStorage.patientID, sessionStorage.programID);
+}
+
+
+/* .............................................................................. */
+
+function selectAmount() {
+  var container = document.getElementById('diagnosis-container');
+  container.innerHTML = null;
+
+  var helpText = document.createElement('div');
+  helpText.innerHTML = "<span id='sideeffectTag'>Quantity</span>";
+  helpText.setAttribute('class','helpTextClass');
+  helpText.style = "width: 97%;";
+  container.appendChild(helpText);
+
+
+  var search = document.createElement('div');
+  search.setAttribute('class','inputFrameClass');
+  var searchCSS = "width: 94.5%; height: 250px;";
+  search.style = searchCSS;
+  container.appendChild(search);
+
+  var input = document.createElement('input');
+  input.setAttribute("type","text");
+  input.setAttribute("id","key-input");
+  input.setAttribute("class","touchscreenTextInput");
+  //input.setAttribute("onmouseup","checkForChanges();");
+  //input.setAttribute("onkeyup","checkForChanges();");
+  search.appendChild(input);
+
+  var search_results = document.createElement('div');
+  search_results.setAttribute("id","search-results");
+  search_results.style = "height: 260px; overflow: auto;";
+  search.appendChild(search_results);
+
+  var keyboard = document.createElement('div');
+  keyboard.setAttribute('class','keyboard');
+  keyboard.style = "bottom: 120px;";
+  container.appendChild(keyboard);
+
+  var finishButton = document.getElementById('next-button');
+  finishButton.innerHTML = "<span>Finish</span>";
+  finishButton.setAttribute('onmousedown', 'addQuantity();');
+
+
+  removeBackButton();
+  addBackButton();
+  addKeyPad(keyboard); 
+}
+
+function addBackButton() {
+  var root = document.getElementById('diagnosis-nav-bar');
+  var nextB = document.createElement('button');
+  nextB.innerHTML = '<span>Back</span>';
+  nextB.setAttribute('class', 'button blue navButton nav-diagnosis-btns');
+  //nextB.setAttribute('onmousedown', 'selectDignosis();');
+  nextB.setAttribute('onmousedown', 'displayMedicationController();');
+  nextB.setAttribute('id', 'back-button');
+  root.appendChild(nextB); 
+}
+
+function displayMedicationController() {
+  var container = document.getElementById('diagnosis-container');
+  container.innerHTML = null;
+  removeBackButton();
+
+  var finishButton = document.getElementById('next-button');
+  finishButton.innerHTML = "<span>Next</span>";
+  finishButton.setAttribute('onmousedown', 'selectAmount();');
+
+  addControls();
+}
+
+function removeBackButton() {
+  var backButton = document.getElementById('back-button');
+  if(backButton == undefined)
+    return;
+
+  var root = document.getElementById('diagnosis-nav-bar');
+  root.removeChild(backButton);  
+}
+
+function addKeyPad(keypadContainer) {
+
+  var keypress = [
+    ["1", "2", "3"],
+    ["4", "5", "6"],
+    ["7", "8", "9"],
+    ["Del.", "0", "."]
+  ];
+
+  //var table = document.createElement("div");
+  //table.setAttribute("class","keyboard");
+
+  for(var i = 0 ; i < keypress.length ; i++){
+    var row = document.createElement("span")
+    row.setAttribute("class","buttonLine");
+    keypadContainer.appendChild(row);
+
+    for(var x = 0 ; x < keypress[i].length ; x++){
+      var cell = document.createElement("button")
+      cell.setAttribute("class","keyboardButton");
+      row.appendChild(cell);
+
+      cell.setAttribute("onmousedown","keyPressedX(this);");
+      cell.innerHTML = "<span>" + keypress[i][x] + "</span>";
+
+
+    }
+  }
+
+  targetInput = document.getElementById('key-input');
+}
+
+var targetInput;
+
+function keyPressedX(e) {
+  var inputBox = targetInput;
+  var value_string = e.innerHTML.replace('<span>','');
+  value_string = value_string.replace('</span>','');
+
+  try{
+
+    if(value_string.match(/Del/i)){
+      inputBox.value = inputBox.value.substring(0, inputBox.value.length - 1);
+    }else if(e.innerHTML.match(/Caps/i)){
+    }else if(e.innerHTML.match(/Hide/i)){
+      var vl = document.getElementById('virtual-keyboard');
+      var w = document.getElementsByTagName('body')[0];
+      w.removeChild(vl);
+    }else{
+      inputBox.value += value_string;
+    }
+ 
+    try {
+      $('input[type="search"]').val(inputBox.value).keyup();
+    }catch(z) {}
+  }catch(x) { }
+
+}
+
+function addQuantity() {
+  var qty = document.getElementById('key-input').value;
+  if(isEmpty(qty))
+    return;
+    
+  qty = parseFloat(qty);
+  if(!isNumeric(qty))
+    return;
+        
+  selectedDignosis['Selected medication'][selected_medication].quantity = qty;
+  cancelDiagnosis();
+
+  var container = document.getElementById('inputFrame' + tstCurrentPage);
+  container.innerHTML = null;
+
+  var ul = document.createElement('ul');
+  ul.setAttribute("style","list-style-type: none;")
+  container.appendChild(ul);
+
+  var level2 = selectedDignosis['Selected medication'];
+  for(var concept_id in level2){
+    var li = document.createElement('li');
+    addTable(level2[concept_id], li);
+    ul.appendChild(li);
+  }
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function isEmpty(str){
+  try {
+    return (str.replace(/\s+/g, '').length < 1);
+  }catch(e){
+    return true;
+  }
 }
 
 
