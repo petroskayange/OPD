@@ -201,14 +201,15 @@ function buildHeaders(tr) {
     table_columns.push({title: headers[i]});
   }
 
-  initializeTable();
   getData();
 }
 
 var data_table;
+
 function initializeTable() {
   data_table = $('#report').DataTable({
     columns: table_columns,
+    data: table_data,
     fixedHeader: true,
     searching: true,
     paging: false,
@@ -251,6 +252,8 @@ function getData() {
 }
 
 var high_level_stats = {};
+var table_data = [];
+
 function loadData(data) {
   for(var i = 0 ; i < data.length ; i++){
     var given_name = data[i].given_name;
@@ -273,9 +276,12 @@ function loadData(data) {
 
     high_level_stats[visit_type] += 1;
 
-    data_table.row.add([visit_type, given_name, family_name, gender, birthdate, visit_date, address]); 
-    data_table.draw();
+    //data_table.row.add([visit_type, given_name, family_name, gender, birthdate, visit_date, address]); 
+    //data_table.draw();
+    table_data.push([visit_type, given_name, family_name, gender, birthdate, visit_date, address]);
   }
+
+  initializeTable();
 }
 
 buildReportingTable();

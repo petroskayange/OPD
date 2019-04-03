@@ -127,26 +127,27 @@ function closePopUp() {
 
 function buildReportingTable() {
   buildHeaders();
- // initializeTable();
 }
 
 var table_columns = [];
 
 function buildHeaders(tr) {
-  var headers = ['NID','First name','Last name','Gender','DOB','Date reg','Address',''];
+  var headers = ['NID','First name','Last name','Gender','DOB','Date reg','Address'];
 
   for(var i = 0 ; i < headers.length ; i++){
     table_columns.push({title: headers[i]});
   }
 
-  initializeTable();
   getData();
 }
 
 var data_table;
+var table_data = [];
+
 function initializeTable() {
   data_table = $('#report').DataTable({
     columns: table_columns,
+    data: table_data,
     fixedHeader: true,
     searching: false,
     paging: false,
@@ -200,9 +201,12 @@ function loadData(data) {
     }
     var nid = data[i].nid;
     
-    data_table.row.add([nid, given_name, family_name, gender, birthdate, visit_date, '']); 
-    data_table.draw();
+    //data_table.row.add([nid, given_name, family_name, gender, birthdate, visit_date, '']); 
+    //data_table.draw();
+    table_data.push([nid, given_name, family_name, gender, birthdate, visit_date, '']);
   }
+
+  initializeTable();
 }
 
 buildReportingTable();
