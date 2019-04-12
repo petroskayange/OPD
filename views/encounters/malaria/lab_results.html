@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+
+    <script type="text/javascript" language="javascript" src="/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+            defer="true"></script>
+    <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+            defer="true"></script>
+    <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+    <link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
+    <script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+    <script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+    <script type="text/javascript" src="/apps/ART/assets/js/arv_number.js"></script>
+    <script type="text/javascript" src="/assets/js/moment.js"></script>
+    <script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+    <script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+    <link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+
+    <script type="text/javascript">
+        var patientID = sessionStorage.getItem("patientID");
+        var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patientID;
+        var checkForBarcodeTimeout = 1500;
+        var requiredAccessionNumber = '37'; //TODO
+        tstCurrentDate = sessionStorage.sessionDate;
+
+        function formatBarcodeSpace() {
+            __$('inputFrame' + tstCurrentPage).style.background = "white";
+            __$('inputFrame' + tstCurrentPage).style.marginTop = "6%";
+            __$('page' + tstCurrentPage).style.marginTop = "2.5%";
+            __$('inputFrame' + tstCurrentPage).style.border = "hidden";
+
+            var barcode = document.getElementById("touchscreenInput0");
+            var helptext = __$("helpText" + tstCurrentPage);
+
+            barcode.style.width = "400px"
+            barcode.style.fontSize = "50px"
+            barcode.style.marginLeft = "33%";
+            barcode.style.height = "80px";
+
+            helptext.style.marginLeft = "32.5%";
+            helptext.style.paddingTop = "50px";
+        }
+
+        function focusForBarcodeInput() {
+            var barcode = document.getElementById("touchscreenInput0");
+            if (barcode) {
+                barcode.focus();
+            }
+        }
+
+        jQuery(document).ready(function ($) {
+
+            $("#barcode").keydown(function (event) {
+                alert("here")
+                if ($.inArray(event.keyCode, [46, 8, 9, 27, 13, 190]) !== -1 ||
+                    (event.keyCode == 65 && event.ctrlKey === true) ||
+                    (event.keyCode >= 35 && event.keyCode <= 39)) {
+                    return;
+                }
+                else {
+                    if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                        event.preventDefault();
+                    }
+                }
+            });
+        });
+
+        function loadBarcodePage() {
+            focusForBarcodeInput();
+            moveNext();
+        }
+
+        function moveNext() {
+            usertext = document.getElementById("touchscreenInput0");
+            if (usertext && usertext.value.match(/.+\$$/i) != null) {
+                usertext.value = usertext.value.substring(0, usertext.value.length - 1);
+                scannedAccessionNumber = usertext.value
+
+                if (parseInt(requiredAccessionNumber) == parseInt(scannedAccessionNumber)) {
+                    gotoNextPage();
+                } else {
+                    if (requiredAccessionNumber.match(/RESULTS DETECTED/i)) {
+                        showMessage("Results already captured")
+                    }
+                    else {
+                        showMessage("Invalid Accession Number. Accession Number:  <b>" + requiredAccessionNumber + " </b> is expected")
+                    }
+                }
+
+            }
+        }
+
+        function updateAccessionNumber(id) {
+            accesionNumber = $("barcode").value.split(":")[1];
+            console.log($("barcode"));
+            $(id).value = accesionNumber;
+        }
+
+        function changeDefultSettings() {
+            $('nextButton').onmousedown = function () {
+                scannedAccessionNumber = document.getElementById("touchscreenInput0").value;
+                if (parseInt(requiredAccessionNumber) == parseInt(scannedAccessionNumber)) {
+                    gotoNextPage();
+                } else {
+                    showMessage("Invalid Accession Number. Accession Number:  <b>" + requiredAccessionNumber + " </b> is expected")
+                }
+            }
+        }
+
+        function resetDefaultSettings() {
+            $('nextButton').onmousedown = function () {
+                gotoNextPage();
+            }
+        }
+
+
+        var accession_numbers = [];
+
+        var malaria_test_result_concept_id = 9227;
+
+        function initializeVariables() {
+            /*jQuery(".loader").show();
+            jQuery('#keyboard').hide();
+            jQuery("#buttons").hide(); //inputFrame0
+            jQuery("#inputFrame" + tstCurrentPage).hide();*/
+
+            var blood_concept_id = 8612;
+
+            var malaria_tests_ordered_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+            malaria_tests_ordered_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
+            malaria_tests_ordered_url += "&concept_id=" + blood_concept_id;
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                    var malaria_tests_ordered_observations = JSON.parse(this.responseText);
+                    if (malaria_tests_ordered_observations.length > 0) {
+                        for (var i=0; i<=malaria_tests_ordered_observations.length - 1; i++){
+                           var accession_number =  malaria_tests_ordered_observations[i]["accession_number"];
+                           if (accession_number){
+                               accession_numbers.push(accession_number)
+                           }
+                        }
+                        getMalariaTestResultsWithOrders(accession_numbers)
+                    }
+                }
+            };
+
+            xhttp.open("GET", malaria_tests_ordered_url, true);
+            xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+            xhttp.setRequestHeader('Content-type', "application/json");
+            xhttp.send();
+        }
+
+        function getMalariaTestResultsWithOrders(acc_numbers){
+            var malaria_tests_ordered_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+            malaria_tests_ordered_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
+            malaria_tests_ordered_url += "&concept_id=" + malaria_test_result_concept_id;
+
+            for (var i=0; i<=acc_numbers.length - 1; i++){
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                        var malaria_tests_ordered_observations = JSON.parse(this.responseText);
+                        if (malaria_tests_ordered_observations.length > 0) {
+                            for (var i=0; i<=malaria_tests_ordered_observations.length - 1; i++){
+                                var accession_number =  malaria_tests_ordered_observations[i]["accession_number"];
+                                if (accession_number){
+                                    accession_numbers.push(accession_number)
+                                }
+                            }
+                            getMalariaTestResultsWithOrders(accession_numbers)
+                        }
+                    }
+                };
+
+                xhttp.open("GET", malaria_tests_ordered_url, true);
+                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                xhttp.setRequestHeader('Content-type', "application/json");
+                xhttp.send();
+            }
+        }
+
+    </script>
+</head>
+
+<body id="container">
+<div id="content">
+    <form>
+        <select helpText="Select Recent Tests Below" id="barcode" name="accession_number"
+                tt_pageStyleclass="LongListSelect">
+            <option value="Malaria (Microscopy):37">Accession #: 37 Test: Malaria (Microscopy) Date: 2019-04-09</option>
+            <option value="Malaria (mRDT):28">Accession #: 28 Test: Malaria (mRDT) Date: 2019-04-09</option>
+            <option value="Complete blood count:19">Accession #: 19 Test: Complete blood count Date: 2018-11-19</option>
+        </select>
+
+        <select accession_number="" allowFreeText="false"
+                condition="$('barcode').value.split(':')[0].match(/MICROSCOPY/i)"
+                helpText="Select Microscopy Results Below" id="microscopy" name="observations[][value_coded_or_text]"
+                tt_onLoad="updateAccessionNumber('microscopy_');" tt_pageStyleClass="NoKeyboard">
+            <option value=''></option>
+            <option value="Thick Smear Positive">Thick Smear Positive</option>
+            <option value="Thick Smear Negative">Thick Smear Negative</option>
+            <option value="Unknown">Unknown</option>
+        </select>
+
+        <select
+                accession_number="" allowFreeText="false" condition="$('barcode').value.split(':')[0].match(/MRDT/i)"
+                helpText="Select mRDT Results Below" id="mRDT" name="observations[][value_coded_or_text]"
+                tt_onLoad="updateAccessionNumber('mRDT_');" tt_pageStyleClass="NoKeyboard">
+            <option value=''></option>
+            <option value="Malaria RDT Positive">Malaria RDT Positive</option>
+            <option value="Malaria RDT Negative">Malaria RDT Negative</option>
+            <option value="Unknown">Unknown</option>
+        </select>
+
+    </form>
+</div>
+</body>
+</html>

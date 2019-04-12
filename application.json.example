@@ -20,6 +20,21 @@
       "activitiesIcon": "/assets/images/clinical-notes.png",
       "url": "/apps/OPD/views/encounters/clinical_notes.html"
     },
+    "malaria_lab_orders": {
+          "available": true,
+          "activitiesIcon": "/assets/images/clinical-notes.png",
+          "url": "/apps/OPD/views/encounters/malaria/lab_orders.html"
+    },
+    "malaria_lab_results": {
+          "available": true,
+          "activitiesIcon": "/assets/images/clinical-notes.png",
+          "url": "/apps/OPD/views/encounters/malaria/lab_results.html"
+    },
+    "malaria_prescription": {
+          "available": true,
+          "activitiesIcon": "/assets/images/clinical-notes.png",
+          "url": "/apps/OPD/views/encounters/malaria/prescription.html"
+    },
     "patient registration": {
       "available": true,
       "activitiesIcon": "/assets/images/attributes.png",
