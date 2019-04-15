@@ -252,6 +252,75 @@
             liElementObject.innerHTML = liElements;
         }
 
+        function submitLabResults() {
+            var currentTime = moment().format(' HH:mm:ss');
+            var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD');
+            encounter_datetime += currentTime;
+
+            var encounter = {
+                encounter_type_id: 32,
+                patient_id: patientID,
+                encounter_datetime: encounter_datetime
+            };
+
+            submitParameters(encounter, "/encounters", "postLabResultsObs");
+        }
+
+        var concept_map = {
+            "Unknown": "1067"
+        };
+
+        function postLabResultsObs(encounter) {
+            var selected_value = __$('touchscreenInput' + tstCurrentPage).value;
+            var accession_number = __$('barcode').value.split(':')[1];
+            var obs;
+
+            if (selected_value.match(/UNKNOWN/i)) {
+                obs = {
+                    encounter_id: encounter["encounter_id"],
+                    observations: [
+                        {
+                            concept_id: malaria_test_result_concept_id,
+                            value_coded: concept_map["Unknown"],
+                            accession_number: accession_number
+                        }
+                    ]
+                };
+            } else {
+                obs = {
+                    encounter_id: encounter["encounter_id"],
+                    observations: [
+                        {
+                            concept_id: malaria_test_result_concept_id,
+                            value_text: selected_value,
+                            accession_number: accession_number
+                        }
+                    ]
+                };
+            }
+
+            submitParameters(obs, "/observations", "gotoPatientDashboard")
+        }
+
+        function changeSubmitButton() {
+            __$("nextButton").innerHTML = "<span>Finish</span>";
+            __$('nextButton').onmousedown = function () {
+                var value = __$('touchscreenInput' + tstCurrentPage).value;
+                if (!value) {
+                    showMessage("Select value to continue");
+                    return
+                }
+                __$("nextButton").onmousedown = function () {
+                    gotoNextPage();
+                }
+                submitLabResults()
+            }
+        }
+
+        function gotoPatientDashboard() {
+            window.location = tt_cancel_destination;
+        }
+
     </script>
 
     <style type="text/css">
@@ -297,7 +366,8 @@
 
         <select accession_number="" allowFreeText="false"
                 condition="$('barcode').value.split(':')[0].match(/MICROSCOPY/i)"
-                helpText="Select Microscopy Results Below" id="microscopy" name="observations[][value_coded_or_text]"
+                helpText="Select Microscopy Results Below" id="microscopy" name="microscopy_result"
+                tt_onLoad="changeSubmitButton();"
                 tt_pageStyleClass="NoKeyboard">
             <option value=''></option>
             <option value="Thick Smear Positive">Thick Smear Positive</option>
@@ -307,7 +377,8 @@
 
         <select
                 accession_number="" allowFreeText="false" condition="$('barcode').value.split(':')[0].match(/MRDT/i)"
-                helpText="Select mRDT Results Below" id="mRDT" name="observations[][value_coded_or_text]"
+                helpText="Select mRDT Results Below" id="mRDT" name="mrdt_result"
+                tt_onLoad="changeSubmitButton();"
                 tt_pageStyleClass="NoKeyboard">
             <option value=''></option>
             <option value="Malaria RDT Positive">Malaria RDT Positive</option>
