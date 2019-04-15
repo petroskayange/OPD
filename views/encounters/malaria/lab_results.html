@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
     <script type="text/javascript" src="/assets/js/post_parameters.js"></script>
     <script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
-    <script type="text/javascript" src="/apps/ART/assets/js/arv_number.js"></script>
     <script type="text/javascript" src="/assets/js/moment.js"></script>
     <script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
     <script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
@@ -120,12 +119,13 @@
         var accession_numbers = [];
 
         var malaria_test_result_concept_id = 9227;
+        var malaria_observations = [];
 
         function initializeVariables() {
-            /*jQuery(".loader").show();
+            jQuery(".loader").show();
             jQuery('#keyboard').hide();
-            jQuery("#buttons").hide(); //inputFrame0
-            jQuery("#inputFrame" + tstCurrentPage).hide();*/
+            jQuery("#buttons").hide();
+            jQuery("#inputFrame" + tstCurrentPage).hide();
 
             var blood_concept_id = 8612;
 
@@ -133,18 +133,20 @@
             malaria_tests_ordered_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
             malaria_tests_ordered_url += "&concept_id=" + blood_concept_id;
 
+
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
                     var malaria_tests_ordered_observations = JSON.parse(this.responseText);
                     if (malaria_tests_ordered_observations.length > 0) {
-                        for (var i=0; i<=malaria_tests_ordered_observations.length - 1; i++){
-                           var accession_number =  malaria_tests_ordered_observations[i]["accession_number"];
-                           if (accession_number){
-                               accession_numbers.push(accession_number)
-                           }
+                        for (var i = 0; i <= malaria_tests_ordered_observations.length - 1; i++) {
+                            var accession_number = malaria_tests_ordered_observations[i]["accession_number"];
+                            if (accession_number) {
+                                accession_numbers.push(accession_number)
+                                malaria_observations.push(malaria_tests_ordered_observations[i])
+                            }
                         }
-                        getMalariaTestResultsWithOrders(accession_numbers)
+                        getMalariaTestOrdersWithoutResults(accession_numbers)
                     }
                 }
             };
@@ -155,52 +157,148 @@
             xhttp.send();
         }
 
-        function getMalariaTestResultsWithOrders(acc_numbers){
-            var malaria_tests_ordered_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-            malaria_tests_ordered_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
-            malaria_tests_ordered_url += "&concept_id=" + malaria_test_result_concept_id;
 
-            for (var i=0; i<=acc_numbers.length - 1; i++){
+        var liElements = "";
+        var optionElements = "";
+        var counter = 0;
+        var className = "even";
+
+        function getMalariaTestOrdersWithoutResults(acc_numbers) {
+            var accession_numbers_without_results = [];
+            for (var i = 0; i <= acc_numbers.length - 1; i++) {
+                var malaria_test_result_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+                malaria_test_result_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
+                malaria_test_result_url += "&concept_id=" + malaria_test_result_concept_id;
+                malaria_test_result_url += "&accession_number=" + acc_numbers[i];
+
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                        var malaria_tests_ordered_observations = JSON.parse(this.responseText);
-                        if (malaria_tests_ordered_observations.length > 0) {
-                            for (var i=0; i<=malaria_tests_ordered_observations.length - 1; i++){
-                                var accession_number =  malaria_tests_ordered_observations[i]["accession_number"];
-                                if (accession_number){
-                                    accession_numbers.push(accession_number)
-                                }
-                            }
-                            getMalariaTestResultsWithOrders(accession_numbers)
+                        var malaria_test_result_observations = JSON.parse(this.responseText);
+                        if (malaria_test_result_observations.length == 0) {
+                            accession_numbers_without_results.push(acc_numbers[i])
                         }
                     }
                 };
-
-                xhttp.open("GET", malaria_tests_ordered_url, true);
+                xhttp.open("GET", malaria_test_result_url, false);
                 xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
                 xhttp.setRequestHeader('Content-type', "application/json");
                 xhttp.send();
             }
+
+            for (var i = 0; i <= accession_numbers_without_results.length - 1; i++) {
+                var accession_number = accession_numbers_without_results[i];
+                for (var j = 0; j <= malaria_observations.length - 1; j++) {
+                    var malaria_observation = malaria_observations[j];
+                    if (accession_number == malaria_observation["accession_number"]) {
+                        var test_name = malaria_observation["value_text"];
+                        var obs_datetime = malaria_observation["obs_datetime"];
+                        obs_datetime = moment(obs_datetime).format('YYYY-MM-DD');
+                        if (!test_name) {
+                            var value_coded = malaria_observation["value_coded"];
+                            if (value_coded) {
+                                var concept_name_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+                                concept_name_url += "/api/v1/concepts/" + value_coded;
+
+                                var xhttp1 = new XMLHttpRequest();
+                                xhttp1.onreadystatechange = function () {
+                                    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                                        var concept = JSON.parse(this.responseText);
+                                        if (concept) {
+                                            var concept_names = concept["concept_names"];
+                                            for (var key in concept_names) {
+                                                if (concept_names[key]["concept_name_type"].match(/FULLY_SPECIFIED/i)) {
+                                                    test_name = concept_names[key]["name"];
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                };
+                                xhttp1.open("GET", concept_name_url, false);
+                                xhttp1.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                                xhttp1.setRequestHeader('Content-type', "application/json");
+                                xhttp1.send();
+                            }
+                        }
+                        var html = "Accession #:" + accession_number + " Test: " + test_name + " Date: " + obs_datetime;
+                        var test_value = test_name + ":" + accession_number;
+                        optionElements += "<option value='" + test_value + "'>" + html + "</option>";
+                        liElements += '<li id="' + counter + '" tstvalue="' + test_value + '" class="' + className + '" tag="' + className + '" onclick="null; updateTouchscreenInputForSelect(this); " style="display: block;">' + html + '</li>';
+                        if (className == "even") {
+                            className = "odd"
+                        } else {
+                            className = "even"
+                        }
+                        counter = counter + 1;
+                        break
+                    }
+                }
+            }
+            __$("barcode").innerHTML = optionElements;
+            gotoNextPage()
+        }
+
+        function resetPage() {
+            jQuery('#keyboard').show();
+            jQuery("#buttons").show();
+            jQuery("#innerPop").show()
+            jQuery("#inputFrame" + tstCurrentPage).show();
+            jQuery(".loader").hide();
+        }
+
+        function loadMalariaTestOptions() {
+            var liElementObject = __$("tt_currentUnorderedListOptions");
+            liElementObject.innerHTML = liElements;
         }
 
     </script>
+
+    <style type="text/css">
+
+        .loader {
+            position: absolute;
+            display: none;
+            top: 30%;
+            left: 40%;
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            z-index: 9999999999999;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
 </head>
 
 <body id="container">
 <div id="content">
     <form>
+        <input type="text" name="initialize"
+               tt_onLoad="initializeVariables();"
+               tt_onUnLoad="resetPage();"
+               tt_pageStyleClass="NoControls" optional="true"/>
+
         <select helpText="Select Recent Tests Below" id="barcode" name="accession_number"
+                tt_onLoad="loadMalariaTestOptions();"
                 tt_pageStyleclass="LongListSelect">
-            <option value="Malaria (Microscopy):37">Accession #: 37 Test: Malaria (Microscopy) Date: 2019-04-09</option>
-            <option value="Malaria (mRDT):28">Accession #: 28 Test: Malaria (mRDT) Date: 2019-04-09</option>
-            <option value="Complete blood count:19">Accession #: 19 Test: Complete blood count Date: 2018-11-19</option>
         </select>
 
         <select accession_number="" allowFreeText="false"
                 condition="$('barcode').value.split(':')[0].match(/MICROSCOPY/i)"
                 helpText="Select Microscopy Results Below" id="microscopy" name="observations[][value_coded_or_text]"
-                tt_onLoad="updateAccessionNumber('microscopy_');" tt_pageStyleClass="NoKeyboard">
+                tt_pageStyleClass="NoKeyboard">
             <option value=''></option>
             <option value="Thick Smear Positive">Thick Smear Positive</option>
             <option value="Thick Smear Negative">Thick Smear Negative</option>
@@ -210,7 +308,7 @@
         <select
                 accession_number="" allowFreeText="false" condition="$('barcode').value.split(':')[0].match(/MRDT/i)"
                 helpText="Select mRDT Results Below" id="mRDT" name="observations[][value_coded_or_text]"
-                tt_onLoad="updateAccessionNumber('mRDT_');" tt_pageStyleClass="NoKeyboard">
+                tt_pageStyleClass="NoKeyboard">
             <option value=''></option>
             <option value="Malaria RDT Positive">Malaria RDT Positive</option>
             <option value="Malaria RDT Negative">Malaria RDT Negative</option>
@@ -218,6 +316,8 @@
         </select>
 
     </form>
+
+    <div class="loader"></div>
 </div>
 </body>
 </html>
