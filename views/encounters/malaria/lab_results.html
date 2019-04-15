@@ -224,6 +224,10 @@
                         var html = "Accession #:" + accession_number + " Test: " + test_name + " Date: " + obs_datetime;
                         var test_value = test_name + ":" + accession_number;
                         optionElements += "<option value='" + test_value + "'>" + html + "</option>";
+
+                        if (!test_name.match(/Microscopy|MRDT/i)){
+                            continue;
+                        }
                         liElements += '<li id="' + counter + '" tstvalue="' + test_value + '" class="' + className + '" tag="' + className + '" onclick="null; updateTouchscreenInputForSelect(this); " style="display: block;">' + html + '</li>';
                         if (className == "even") {
                             className = "odd"
@@ -245,6 +249,12 @@
             jQuery("#innerPop").show()
             jQuery("#inputFrame" + tstCurrentPage).show();
             jQuery(".loader").hide();
+        }
+
+        function resetFinsishButton(){
+            __$('nextButton').onmousedown = function () {
+                    gotoNextPage();
+            }
         }
 
         function loadMalariaTestOptions() {
@@ -368,6 +378,7 @@
                 condition="$('barcode').value.split(':')[0].match(/MICROSCOPY/i)"
                 helpText="Select Microscopy Results Below" id="microscopy" name="microscopy_result"
                 tt_onLoad="changeSubmitButton();"
+                tt_onUnLoad="resetFinsishButton();"
                 tt_pageStyleClass="NoKeyboard">
             <option value=''></option>
             <option value="Thick Smear Positive">Thick Smear Positive</option>
@@ -379,6 +390,7 @@
                 accession_number="" allowFreeText="false" condition="$('barcode').value.split(':')[0].match(/MRDT/i)"
                 helpText="Select mRDT Results Below" id="mRDT" name="mrdt_result"
                 tt_onLoad="changeSubmitButton();"
+                tt_onUnLoad="resetFinsishButton();"
                 tt_pageStyleClass="NoKeyboard">
             <option value=''></option>
             <option value="Malaria RDT Positive">Malaria RDT Positive</option>
