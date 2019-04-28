@@ -3,9 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-
-    <script type="text/javascript" language="javascript" src="/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
-            defer="true"></script>
     <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
             defer="true"></script>
     <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
@@ -814,6 +811,95 @@
             document.getElementById("my-popup-div").style.display = 'inline';
             document.getElementById("cover").style.display = 'inline';
         }
+
+        function initializeVariables() {
+            jQuery(".loader").show();
+            jQuery('#keyboard').hide();
+            jQuery("#buttons").hide();
+            jQuery("#inputFrame" + tstCurrentPage).hide();
+
+            var malaria_test_result_concept_id = 9227;
+            var malaria_concept_id = 123;
+
+            var malaria_test_result_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+            malaria_test_result_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
+            malaria_test_result_url += "&concept_id=" + malaria_test_result_concept_id;
+            malaria_test_result_url += "&obs_datetime=" + sessionStorage.sessionDate;
+
+            var malaria_diagnosis_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+            malaria_diagnosis_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
+            malaria_diagnosis_url += "&value_coded=" + malaria_concept_id;
+            malaria_diagnosis_url += "&obs_datetime=" + sessionStorage.sessionDate;
+
+
+            var xhttp1 = new XMLHttpRequest();
+            xhttp1.onreadystatechange = function () {
+                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                    var malaria_test_result_observations = JSON.parse(this.responseText);
+                    if (malaria_test_result_observations.length > 0) {
+
+                        var value_coded = malaria_test_result_observations[0].value_coded;
+                        if (value_coded) {
+                            var concept_name_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+                            concept_name_url += "/api/v1/concepts/" + value_coded;
+
+                            var xhttp3 = new XMLHttpRequest();
+                            xhttp3.onreadystatechange = function () {
+                                if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                                    var concept = JSON.parse(this.responseText);
+                                    if (concept) {
+                                        var concept_names = concept["concept_names"];
+                                        for (var key in concept_names) {
+                                            if (concept_names[key]["concept_name_type"].match(/FULLY_SPECIFIED/i)) {
+                                                malariaTestResult = concept_names[key]["name"];
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    gotoNextPage();
+                                }
+                            };
+                            xhttp3.open("GET", concept_name_url, true);
+                            xhttp3.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                            xhttp3.setRequestHeader('Content-type', "application/json");
+                            xhttp3.send();
+                        } else {
+                            malariaTestResult = malaria_test_result_observations[0].value_text;
+                            gotoNextPage();
+                        }
+
+                    } else {
+                        var xhttp2 = new XMLHttpRequest();
+                        xhttp2.onreadystatechange = function () {
+                            if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                                var malaria_diagnosis_observations = JSON.parse(this.responseText);
+                                if (malaria_diagnosis_observations.length > 0) {
+                                    malariaTestResult = 'Positive';
+                                }
+                                gotoNextPage();
+                            }
+                        };
+                        xhttp2.open("GET", malaria_diagnosis_url, true);
+                        xhttp2.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                        xhttp2.setRequestHeader('Content-type', "application/json");
+                        xhttp2.send();
+                    }
+                }
+            };
+            xhttp1.open("GET", malaria_test_result_url, true);
+            xhttp1.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+            xhttp1.setRequestHeader('Content-type', "application/json");
+            xhttp1.send();
+        }
+
+        function resetPage() {
+            jQuery('#keyboard').show();
+            jQuery("#buttons").show();
+            jQuery("#innerPop").show()
+            jQuery("#inputFrame" + tstCurrentPage).show();
+            jQuery(".loader").hide();
+        }
+
     </script>
 
     <script type="text/javascript" src="/apps/OPD/assets/js/multiColumnTreatment.js"></script>
@@ -1256,6 +1342,30 @@
         }
 
         /*popup*/
+
+        .loader {
+            position: absolute;
+            display: none;
+            top: 30%;
+            left: 40%;
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            z-index: 9999999999999;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
     </style>
 
 </head>
@@ -1268,13 +1378,18 @@
 
     <form id='prescription' method='post'>
 
+        <input type="text" name="initialize"
+               tt_onLoad="initializeVariables();"
+               tt_onUnLoad="resetPage();"
+               tt_pageStyleClass="NoControls" optional="true"/>
+
         <input
                 type='text' name='drugs' tt_onLoad='generateGenerics(24);addAntiMalarialDrugsButton();'
                 tt_onUnLoad='removeGenerics()' tt_pageStyleClass='NoControls'
                 optional/>
     </form>
 
-
+    <div class="loader"></div>
     <div id="my-popup-div">
         <div id="my-popup-header">
             <center>Confirm</center>
