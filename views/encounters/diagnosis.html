@@ -17,10 +17,7 @@
 
 <script>
     var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + sessionStorage.patientID;
-
-
-    var malaria_test_result_concept_id = 9227;
-    var malaria_observations = [];
+    var malariaTestResult;
 
     function initializeVariables() {
         jQuery(".loader").show();
@@ -28,34 +25,64 @@
         jQuery("#buttons").hide();
         jQuery("#inputFrame" + tstCurrentPage).hide();
 
-        var blood_concept_id = 8612;
+        var malaria_test_result_concept_id = 9227;
 
-        var malaria_tests_ordered_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-        malaria_tests_ordered_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
-        malaria_tests_ordered_url += "&concept_id=" + blood_concept_id;
+        var malaria_test_result_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+        malaria_test_result_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
+        malaria_test_result_url += "&concept_id=" + malaria_test_result_concept_id;
+        malaria_test_result_url += "&obs_datetime=" + sessionStorage.sessionDate;
 
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
+        var xhttp1 = new XMLHttpRequest();
+        xhttp1.onreadystatechange = function () {
             if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                var malaria_tests_ordered_observations = JSON.parse(this.responseText);
-                if (malaria_tests_ordered_observations.length > 0) {
-                    for (var i = 0; i <= malaria_tests_ordered_observations.length - 1; i++) {
-                        var accession_number = malaria_tests_ordered_observations[i]["accession_number"];
-                        if (accession_number) {
-                            accession_numbers.push(accession_number)
-                            malaria_observations.push(malaria_tests_ordered_observations[i])
-                        }
+                var malaria_test_result_observations = JSON.parse(this.responseText);
+                if (malaria_test_result_observations.length > 0) {
+                    var value_coded = malaria_test_result_observations[0].value_coded;
+                    if (value_coded) {
+                        var concept_name_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+                        concept_name_url += "/api/v1/concepts/" + value_coded;
+
+                        var xhttp2 = new XMLHttpRequest();
+                        xhttp2.onreadystatechange = function () {
+                            if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                                var concept = JSON.parse(this.responseText);
+                                if (concept) {
+                                    var concept_names = concept["concept_names"];
+                                    for (var key in concept_names) {
+                                        if (concept_names[key]["concept_name_type"].match(/FULLY_SPECIFIED/i)) {
+                                            malariaTestResult = concept_names[key]["name"];
+                                            break;
+                                        }
+                                    }
+                                }
+                                gotoNextPage();
+                            }
+                        };
+                        xhttp2.open("GET", concept_name_url, true);
+                        xhttp2.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+                        xhttp2.setRequestHeader('Content-type', "application/json");
+                        xhttp2.send();
+                    } else {
+                        malariaTestResult = malaria_test_result_observations[0].value_text;
+                        gotoNextPage();
                     }
-                    //getMalariaTestOrdersWithoutResults(accession_numbers)
+                } else {
+                    gotoNextPage();
                 }
             }
         };
+        xhttp1.open("GET", malaria_test_result_url, true);
+        xhttp1.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+        xhttp1.setRequestHeader('Content-type', "application/json");
+        xhttp1.send();
+    }
 
-        xhttp.open("GET", malaria_tests_ordered_url, true);
-        xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-        xhttp.setRequestHeader('Content-type', "application/json");
-        xhttp.send();
+    function resetPage() {
+        jQuery('#keyboard').show();
+        jQuery("#buttons").show();
+        jQuery("#innerPop").show()
+        jQuery("#inputFrame" + tstCurrentPage).show();
+        jQuery(".loader").hide();
     }
 
     function changeNextButton() {
@@ -64,7 +91,6 @@
     }
 
 </script>
-
 
 
 <style type="text/css">
