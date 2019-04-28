@@ -22,25 +22,24 @@ var search_path = (typeof(search_path) != "undefined" ? search_path : "/prescrip
 
 // This function exists in the TouchScreenToolkit but repeated here in case it's
 // not referenced
-function $(id){
+function $(id) {
     return document.getElementById(id);
 }
 
 // Supporting function to allow a humanized Concept Name display
-String.prototype.toProperCase = function()
-{
+String.prototype.toProperCase = function () {
     return this.toLowerCase().replace(/^(.)|\s(.)/g,
-        function($1) {
+        function ($1) {
             return $1.toUpperCase();
         });
 }
 
 // Create the interface
-function generateGenerics(){
-    if($("parent_container")){
+function generateGenerics() {
+    if ($("parent_container")) {
         $("content").removeChild($("parent_container"));
     }
-   
+
     var parent_container = document.createElement("div");
     parent_container.id = "parent_container";
     parent_container.style.position = "absolute";
@@ -93,10 +92,10 @@ function generateGenerics(){
 
     topBannerDiv.appendChild(diagnoses);
 
-    for(var g = 0; g < diagnosisList.length; g++){
+    for (var g = 0; g < diagnosisList.length; g++) {
         var optio = document.createElement("option");
         optio.innerHTML = diagnosisList[g].toProperCase();
-        optio.onclick = function(){
+        optio.onclick = function () {
             current_diagnosis = this.innerHTML.toUpperCase();
             selectedGenerics[current_diagnosis] = {};
             $('inputTxt').value = '';
@@ -105,11 +104,11 @@ function generateGenerics(){
 
         diagnoses.appendChild(optio);
 
-        if(g == 0){
+        if (g == 0) {
             current_diagnosis = diagnosisList[g].toUpperCase();
         }
     }
-    
+
     var inputTxt = document.createElement("input");
     inputTxt.type = "text";
     inputTxt.id = "inputTxt";
@@ -323,36 +322,36 @@ function generateGenerics(){
     tblContent.style.fontSize = "0.7em";
 
     periodListDiv.appendChild(tblContent);
-    
-    for(var i = 0; i < 10; i++){
+
+    for (var i = 0; i < 10; i++) {
         var tr = document.createElement("tr");
         tblContent.appendChild(tr);
-        
+
         // SET 1:
         var td1 = document.createElement("td");
         td1.vAlign = "middle";
-        td1.id = "group1_" + (((i*10)+1) + "-" + ((i+1)*10));
+        td1.id = "group1_" + (((i * 10) + 1) + "-" + ((i + 1) * 10));
         td1.height = "40px";
         td1.width = "19%";
         td1.bgColor = "#DDDDDD";
 
-        td1.onclick = function(){
+        td1.onclick = function () {
             var rdo = this.getElementsByTagName("input");
 
-            if(rdo[0]){
-                if(rdo[0].type=="radio") rdo[0].click();
+            if (rdo[0]) {
+                if (rdo[0].type == "radio") rdo[0].click();
             }
         }
 
         var rdo1 = document.createElement("input");
         rdo1.type = "radio";
-        rdo1.value = (((i*10)+1) + "-" + ((i+1)*10));
+        rdo1.value = (((i * 10) + 1) + "-" + ((i + 1) * 10));
         rdo1.name = "group1";
 
-        rdo1.onclick = function(){
+        rdo1.onclick = function () {
             var tds = document.getElementsByName("group1");
 
-            for(var k = 0; k < tds.length; k++){
+            for (var k = 0; k < tds.length; k++) {
                 $("group1_" + tds[k].value).bgColor = "#DDDDDD";
             }
 
@@ -365,18 +364,18 @@ function generateGenerics(){
 
             var val = start;
 
-            for(var k = 0; k < targets.length; k++){
-                var td = $("group2_" + (k+1));
+            for (var k = 0; k < targets.length; k++) {
+                var td = $("group2_" + (k + 1));
 
                 var irdo = td.getElementsByTagName("input");
 
-                if(irdo){
+                if (irdo) {
                     irdo[0].value = val;
                 }
 
                 var ilbl = td.getElementsByTagName("label");
 
-                if(ilbl){
+                if (ilbl) {
                     ilbl[0].innerHTML = val;
                 }
 
@@ -389,7 +388,7 @@ function generateGenerics(){
 
         var lbl1 = document.createElement("label");
         lbl1.style.width = "100%";
-        lbl1.innerHTML = (((i*10)+1) + "-" + ((i+1)*10));
+        lbl1.innerHTML = (((i * 10) + 1) + "-" + ((i + 1) * 10));
 
         td1.appendChild(lbl1);
 
@@ -399,14 +398,14 @@ function generateGenerics(){
 
         var td2 = document.createElement("td");
         td2.vAlign = "middle";
-        td2.id = "group2_" + (i+1);
+        td2.id = "group2_" + (i + 1);
         td2.width = "14%";
 
-        td2.onclick = function(){
+        td2.onclick = function () {
             var rdo = this.getElementsByTagName("input");
 
-            if(rdo[0]){
-                if(rdo[0].type=="radio") rdo[0].click();
+            if (rdo[0]) {
+                if (rdo[0].type == "radio") rdo[0].click();
             }
         }
 
@@ -414,37 +413,37 @@ function generateGenerics(){
         rdo2.type = "radio";
         rdo2.name = "group2";
 
-        rdo2.onclick = function(){
+        rdo2.onclick = function () {
             var tds = document.getElementsByName("group2");
 
-            for(var k = 0; k < tds.length; k++){
+            for (var k = 0; k < tds.length; k++) {
                 var p = String(tds[k].value).match(/\d$/);
 
-                if(p){
-                    $("group2_" + (p==0?10:p)).bgColor = "";
+                if (p) {
+                    $("group2_" + (p == 0 ? 10 : p)).bgColor = "";
                 }
 
             }
 
-            if(selectedGenerics[current_diagnosis]){
-                if(selectedGenerics[current_diagnosis][current_generic]) {
+            if (selectedGenerics[current_diagnosis]) {
+                if (selectedGenerics[current_diagnosis][current_generic]) {
                     selectedGenerics[current_diagnosis][current_generic]["duration"] = this.value;
                 } else {
                     selectedGenerics[current_diagnosis][current_generic] = {
-                        "dosage":[],
-                        "frequency":null,
-                        "duration":this.value
+                        "dosage": [],
+                        "frequency": null,
+                        "duration": this.value
                     };
                 }
-            }else {
+            } else {
                 selectedGenerics[current_diagnosis] = {};
                 selectedGenerics[current_diagnosis][current_generic] = {
-                    "dosage":[],
-                    "frequency":null,
-                    "duration":this.value
+                    "dosage": [],
+                    "frequency": null,
+                    "duration": this.value
                 };
-            }            
-            
+            }
+
             this.offsetParent.bgColor = "#add8e6";
         }
 
@@ -460,64 +459,65 @@ function generateGenerics(){
     }
 
     // Create Generic Drugs list
-    for(var d = 0; d < generics.length; d++){
+    for (var d = 0; d < generics.length; d++) {
         var li = document.createElement("li");
         li.id = "option" + generics[d][0];
         li.innerHTML = generics[d][0].toProperCase();
         li.style.padding = "15px";
 
-        if(d%2>0){
+        if (d % 2 > 0) {
             li.style.backgroundColor = "#eee";
         }
 
         li.setAttribute("concept_id", generics[d][1])
-        li.onclick = function(){
+        li.onclick = function () {
+            console.log(this.getAttribute("concept_id"))
             loadDosageFrequency(this.getAttribute("concept_id"));
 
             current_generic = this.innerHTML.toUpperCase();
-            
-            if(this.style.backgroundColor == "lightblue"){
-                if(selectedGenerics[current_diagnosis]){
+
+            if (this.style.backgroundColor == "lightblue") {
+                if (selectedGenerics[current_diagnosis]) {
                     delete selectedGenerics[current_diagnosis][current_generic];
                 }
-            } 
+            }
 
             var tds = document.getElementsByName("group2");
 
-            for(var k = 0; k < tds.length; k++){
+            for (var k = 0; k < tds.length; k++) {
                 var p = String(tds[k].value).match(/\d$/);
 
-                if(p){
-                    $("group2_" + (p==0?10:p)).bgColor = "";
-                    var rdos = $("group2_" + (p==0?10:p)).getElementsByTagName("input");
-                    if(rdos[0])
+                if (p) {
+                    $("group2_" + (p == 0 ? 10 : p)).bgColor = "";
+                    var rdos = $("group2_" + (p == 0 ? 10 : p)).getElementsByTagName("input");
+                    if (rdos[0])
                         rdos[0].checked = false;
 
-                    if($("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" + ((((p==0?10:p)-1)+1)*10)))){
-                        $("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" + ((((p==0?10:p)-1)+1)*10))).bgColor = "#DDDDDD";
+                    if ($("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" + ((((p == 0 ? 10 : p) - 1) + 1) * 10)))) {
+                        $("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" + ((((p == 0 ? 10 : p) - 1) + 1) * 10))).bgColor = "#DDDDDD";
 
-                        var rdos2 = $("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" +
-                            ((((p==0?10:p)-1)+1)*10))).getElementsByTagName("input");
-                        
-                        if(rdos2[0])
+                        var rdos2 = $("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" +
+                            ((((p == 0 ? 10 : p) - 1) + 1) * 10))).getElementsByTagName("input");
+
+                        if (rdos2[0])
                             rdos2[0].checked = false;
-                    }                     
+                    }
                 }
 
             }
-            
+
             // Clear Frequencies
-            for(var j = 0; j < $('ulFreqs').childNodes.length; j++){
+            for (var j = 0; j < $('ulFreqs').childNodes.length; j++) {
                 $('ulFreqs').childNodes[j].style.backgroundColor = "";
-                if(j%2>0){
+                if (j % 2 > 0) {
                     $('ulFreqs').childNodes[j].style.backgroundColor = "#eee";
                 }
                 $('ulFreqs').childNodes[j].style.color = "#000";
 
-                if(selectedGenerics[current_diagnosis]){
-                    if(selectedGenerics[current_diagnosis][current_generic]){
-                        if(selectedGenerics[current_diagnosis][current_generic]["frequency"] ==
-                            $('ulFreqs').childNodes[j].innerHTML.toUpperCase()){
+                if (selectedGenerics[current_diagnosis]) {
+                    if (selectedGenerics[current_diagnosis][current_generic]) {
+                        if (selectedGenerics[current_diagnosis][current_generic]["frequency"] ==
+                            $('ulFreqs').childNodes[j].innerHTML.toUpperCase()) {
 
                             $('ulFreqs').childNodes[j].style.backgroundColor = "yellowgreen";
                             $('ulFreqs').childNodes[j].style.color = "#fff";
@@ -525,14 +525,14 @@ function generateGenerics(){
                     }
                 }
             }
-            
-            for(var j = 0; j < $('ulDrugs').childNodes.length; j++){
-                if(selectedGenerics[current_diagnosis]){
-                    if(selectedGenerics[current_diagnosis][$('ulDrugs').childNodes[j].innerHTML.toUpperCase()]){
+
+            for (var j = 0; j < $('ulDrugs').childNodes.length; j++) {
+                if (selectedGenerics[current_diagnosis]) {
+                    if (selectedGenerics[current_diagnosis][$('ulDrugs').childNodes[j].innerHTML.toUpperCase()]) {
                         $('ulDrugs').childNodes[j].style.backgroundColor = "yellowgreen";
                         $('ulDrugs').childNodes[j].style.color = "white";
                     } else {
-                        if(j%2>0){
+                        if (j % 2 > 0) {
                             $('ulDrugs').childNodes[j].style.backgroundColor = "#eee";
                         } else {
                             $('ulDrugs').childNodes[j].style.backgroundColor = "";
@@ -540,7 +540,7 @@ function generateGenerics(){
                         $('ulDrugs').childNodes[j].style.color = "black";
                     }
                 } else {
-                    if(j%2>0){
+                    if (j % 2 > 0) {
                         $('ulDrugs').childNodes[j].style.backgroundColor = "#eee";
                     } else {
                         $('ulDrugs').childNodes[j].style.backgroundColor = "";
@@ -557,50 +557,50 @@ function generateGenerics(){
     }
 
     // Create frequencies list
-    for(var d = 0; d < frequencies.length; d++){
+    for (var d = 0; d < frequencies.length; d++) {
         var li = document.createElement("li");
         li.id = frequencies[d][0];
         li.innerHTML = frequencies[d][1];
         li.style.padding = "15px";
 
-        if(d%2>0){
+        if (d % 2 > 0) {
             li.style.backgroundColor = "#eee";
         }
         li.style.color = "#000";
 
-        if(selectedGenerics[current_diagnosis]){
-            if(selectedGenerics[current_diagnosis][current_generic]){
-                if(selectedGenerics[current_diagnosis][current_generic]["frequency"] == frequencies[i].toUpperCase()){
+        if (selectedGenerics[current_diagnosis]) {
+            if (selectedGenerics[current_diagnosis][current_generic]) {
+                if (selectedGenerics[current_diagnosis][current_generic]["frequency"] == frequencies[i].toUpperCase()) {
                     li.style.backgroundColor = "yellowgreen";
                     li.style.color = "#fff";
                 }
             }
         }
 
-        li.onclick = function(){            
-            for(var j = 0; j < $('ulFreqs').childNodes.length; j++){
+        li.onclick = function () {
+            for (var j = 0; j < $('ulFreqs').childNodes.length; j++) {
                 $('ulFreqs').childNodes[j].style.backgroundColor = "";
-                if(j%2>0){
+                if (j % 2 > 0) {
                     $('ulFreqs').childNodes[j].style.backgroundColor = "#eee";
                 }
                 $('ulFreqs').childNodes[j].style.color = "black";
 
-                if(selectedGenerics[current_diagnosis]){
-                    if(selectedGenerics[current_diagnosis][current_generic]) {
+                if (selectedGenerics[current_diagnosis]) {
+                    if (selectedGenerics[current_diagnosis][current_generic]) {
                         selectedGenerics[current_diagnosis][current_generic]["frequency"] = this.id.toUpperCase();
                     } else {
                         selectedGenerics[current_diagnosis][current_generic] = {
-                            "dosage":[],
-                            "frequency":this.id.toUpperCase(),
-                            "duration":null
+                            "dosage": [],
+                            "frequency": this.id.toUpperCase(),
+                            "duration": null
                         };
                     }
                 } else {
                     selectedGenerics[current_diagnosis] = {};
                     selectedGenerics[current_diagnosis][current_generic] = {
-                        "dosage":[],
-                        "frequency":this.id.toUpperCase(),
-                        "duration":null
+                        "dosage": [],
+                        "frequency": this.id.toUpperCase(),
+                        "duration": null
                     };
                 }
             }
@@ -617,39 +617,39 @@ function generateGenerics(){
  * to the typed text
  * 
  */
-function searchDrug(){
+function searchDrug() {
     $('ulDrugs').innerHTML = "";
     current_generic = null;
 
     var k = 0;
-    
-    for(var d = 0; d < generics.length; d++){
-        if(generics[d][0].toLowerCase().match($("inputTxt").value.toLowerCase())){
+
+    for (var d = 0; d < generics.length; d++) {
+        if (generics[d][0].toLowerCase().match($("inputTxt").value.toLowerCase())) {
             var li = document.createElement("li");
             li.id = "option" + generics[d][0];
             li.innerHTML = generics[d][0].toProperCase();
             li.style.padding = "15px";
 
-            if(k%2>0){
+            if (k % 2 > 0) {
                 li.style.backgroundColor = "#eee";
             }
             li.style.color = "#000";
 
-            if(selectedGenerics[current_diagnosis]){
-                if(selectedGenerics[current_diagnosis][generics[d][0].toUpperCase()]){
+            if (selectedGenerics[current_diagnosis]) {
+                if (selectedGenerics[current_diagnosis][generics[d][0].toUpperCase()]) {
                     li.style.backgroundColor = "yellowgreen";
                     li.style.color = "#fff";
                 }
             }
 
             li.setAttribute("concept_id", generics[d][1])
-            li.onclick = function(){
+            li.onclick = function () {
                 loadDosageFrequency(this.getAttribute("concept_id"));
 
                 current_generic = this.innerHTML.toUpperCase();
 
-                if(this.style.backgroundColor == "lightblue"){
-                    if(selectedGenerics[current_diagnosis]){
+                if (this.style.backgroundColor == "lightblue") {
+                    if (selectedGenerics[current_diagnosis]) {
                         delete selectedGenerics[current_diagnosis][current_generic];
                     }
                 }
@@ -657,22 +657,22 @@ function searchDrug(){
 
                 var tds = document.getElementsByName("group2");
 
-                for(var k = 0; k < tds.length; k++){
+                for (var k = 0; k < tds.length; k++) {
                     var p = String(tds[k].value).match(/\d$/);
 
-                    if(p){
-                        $("group2_" + (p==0?10:p)).bgColor = "";
-                        var rdos = $("group2_" + (p==0?10:p)).getElementsByTagName("input");
-                        if(rdos[0])
+                    if (p) {
+                        $("group2_" + (p == 0 ? 10 : p)).bgColor = "";
+                        var rdos = $("group2_" + (p == 0 ? 10 : p)).getElementsByTagName("input");
+                        if (rdos[0])
                             rdos[0].checked = false;
 
-                        if($("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" + ((((p==0?10:p)-1)+1)*10)))){
-                            $("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" + ((((p==0?10:p)-1)+1)*10))).bgColor = "#DDDDDD";
+                        if ($("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" + ((((p == 0 ? 10 : p) - 1) + 1) * 10)))) {
+                            $("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" + ((((p == 0 ? 10 : p) - 1) + 1) * 10))).bgColor = "#DDDDDD";
 
-                            var rdos2 = $("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" +
-                                ((((p==0?10:p)-1)+1)*10))).getElementsByTagName("input");
+                            var rdos2 = $("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" +
+                                ((((p == 0 ? 10 : p) - 1) + 1) * 10))).getElementsByTagName("input");
 
-                            if(rdos2[0])
+                            if (rdos2[0])
                                 rdos2[0].checked = false;
                         }
                     }
@@ -680,17 +680,17 @@ function searchDrug(){
                 }
 
                 // Clear Frequencies
-                for(var j = 0; j < $('ulFreqs').childNodes.length; j++){
+                for (var j = 0; j < $('ulFreqs').childNodes.length; j++) {
                     $('ulFreqs').childNodes[j].style.backgroundColor = "";
-                    if(j%2>0){
+                    if (j % 2 > 0) {
                         $('ulFreqs').childNodes[j].style.backgroundColor = "#eee";
                     }
                     $('ulFreqs').childNodes[j].style.color = "#000";
 
-                    if(selectedGenerics[current_diagnosis]){
-                        if(selectedGenerics[current_diagnosis][current_generic]){
-                            if(selectedGenerics[current_diagnosis][current_generic]["frequency"] ==
-                                $('ulFreqs').childNodes[j].id.toUpperCase()){
+                    if (selectedGenerics[current_diagnosis]) {
+                        if (selectedGenerics[current_diagnosis][current_generic]) {
+                            if (selectedGenerics[current_diagnosis][current_generic]["frequency"] ==
+                                $('ulFreqs').childNodes[j].id.toUpperCase()) {
 
                                 $('ulFreqs').childNodes[j].style.backgroundColor = "yellowgreen";
                                 $('ulFreqs').childNodes[j].style.color = "#fff";
@@ -699,13 +699,13 @@ function searchDrug(){
                     }
                 }
 
-                for(var j = 0; j < $('ulDrugs').childNodes.length; j++){
-                    if(selectedGenerics[current_diagnosis]){
-                        if(selectedGenerics[current_diagnosis][$('ulDrugs').childNodes[j].innerHTML.toUpperCase()]){
+                for (var j = 0; j < $('ulDrugs').childNodes.length; j++) {
+                    if (selectedGenerics[current_diagnosis]) {
+                        if (selectedGenerics[current_diagnosis][$('ulDrugs').childNodes[j].innerHTML.toUpperCase()]) {
                             $('ulDrugs').childNodes[j].style.backgroundColor = "yellowgreen";
                             $('ulDrugs').childNodes[j].style.color = "white";
                         } else {
-                            if(j%2>0){
+                            if (j % 2 > 0) {
                                 $('ulDrugs').childNodes[j].style.backgroundColor = "#eee";
                             } else {
                                 $('ulDrugs').childNodes[j].style.backgroundColor = "";
@@ -713,7 +713,7 @@ function searchDrug(){
                             $('ulDrugs').childNodes[j].style.color = "black";
                         }
                     } else {
-                        if(j%2>0){
+                        if (j % 2 > 0) {
                             $('ulDrugs').childNodes[j].style.backgroundColor = "#eee";
                         } else {
                             $('ulDrugs').childNodes[j].style.backgroundColor = "";
@@ -737,9 +737,80 @@ function searchDrug(){
 /*
  *This method calls the ajax method for loading dosages and frequencies
  */
-function loadDosageFrequency(concept_id){
+function loadDosageFrequency(concept_id) {
     $('ulDoses').innerHTML = "";
-    ajaxDFRequest(search_path + "?concept_id=" + concept_id);
+    var drug_doses = drugslist[concept_id];
+    var existingDoses = {};
+    var i = 0;
+    for (var dosage in drug_doses) {
+        var existingDoses = {};
+        var li = document.createElement("li");
+        df = [dosage, drug_doses[dosage][0], drug_doses[dosage][1]];
+        console.log(df)
+        li.id = "option" + df[0];
+        li.innerHTML = df[0];
+        li.setAttribute("strength", df[1]);
+        li.setAttribute("units", df[2]);
+        li.style.padding = "15px";
+
+        if (i % 2 > 0) {
+            li.style.backgroundColor = "#eee";
+        }
+
+        li.style.color = "#000";
+
+        if (selectedGenerics[current_diagnosis]) {
+            if (selectedGenerics[current_diagnosis][current_generic]) {
+                if (selectedGenerics[current_diagnosis][current_generic]["dosage"] == [df[0].toUpperCase(),
+                    df[1].toString().toUpperCase(),
+                    df[2].toUpperCase()]) {
+                    li.style.backgroundColor = "yellowgreen";
+                    li.style.color = "#fff";
+                }
+            }
+        }
+
+        li.onclick = function () {
+            for (var j = 0; j < $('ulDoses').childNodes.length; j++) {
+                $('ulDoses').childNodes[j].style.backgroundColor = "";
+                if (j % 2 > 0) {
+                    $('ulDoses').childNodes[j].style.backgroundColor = "#eee";
+                }
+                $('ulDoses').childNodes[j].style.color = "#000";
+            }
+            if (selectedGenerics[current_diagnosis]) {
+                if (selectedGenerics[current_diagnosis][current_generic]) {
+                    selectedGenerics[current_diagnosis][current_generic]["dosage"] = [this.innerHTML.toUpperCase(),
+                        this.getAttribute("strength"),
+                        this.getAttribute("units")];
+                } else {
+                    selectedGenerics[current_diagnosis][current_generic] = {
+                        "dosage": [this.innerHTML.toUpperCase(), this.getAttribute("strength"),
+                            this.getAttribute("units")],
+                        "frequency": null,
+                        "duration": null
+                    };
+                }
+            } else {
+                selectedGenerics[current_diagnosis] = {};
+                selectedGenerics[current_diagnosis][current_generic] = {
+                    "dosage": [this.innerHTML.toUpperCase(), this.getAttribute("strength"),
+                        this.getAttribute("units")],
+                    "frequency": null,
+                    "duration": null
+                };
+            }
+            this.style.backgroundColor = "lightblue";
+        };
+
+        if (!existingDoses[df[0].toUpperCase()]) {
+            $('ulDoses').appendChild(li);
+            existingDoses[df[0].toUpperCase()] = true;
+        }
+        i = i + 1;
+
+    }
+    //ajaxDFRequest(search_path + "?concept_id=" + concept_id);
 }
 
 /*
@@ -750,13 +821,13 @@ function loadDosageFrequency(concept_id){
  */
 function ajaxDFRequest(aUrl) {
     var httpRequest = new XMLHttpRequest();
-    httpRequest.onreadystatechange = function() {
+    httpRequest.onreadystatechange = function () {
         handleDFResult(httpRequest);
     };
     try {
         httpRequest.open('GET', aUrl, true);
         httpRequest.send(null);
-    } catch(e){
+    } catch (e) {
     }
 }
 
@@ -767,7 +838,7 @@ function handleDFResult(aXMLHttpRequest) {
         var dosesFreqs = aXMLHttpRequest.responseText.split(";")
         var existingDoses = {};
 
-        for(var i = 0; i < dosesFreqs.length - 1; i++){
+        for (var i = 0; i < dosesFreqs.length - 1; i++) {
             var li = document.createElement("li");
             df = dosesFreqs[i].split(":")
             li.id = "option" + df[0];
@@ -776,56 +847,56 @@ function handleDFResult(aXMLHttpRequest) {
             li.setAttribute("units", df[2]);
             li.style.padding = "15px";
 
-            if(i%2>0){
+            if (i % 2 > 0) {
                 li.style.backgroundColor = "#eee";
             }
             li.style.color = "#000";
 
-            if(selectedGenerics[current_diagnosis]){
-                if(selectedGenerics[current_diagnosis][current_generic]){
-                    if(selectedGenerics[current_diagnosis][current_generic]["dosage"] == [df[0].toUpperCase(),
+            if (selectedGenerics[current_diagnosis]) {
+                if (selectedGenerics[current_diagnosis][current_generic]) {
+                    if (selectedGenerics[current_diagnosis][current_generic]["dosage"] == [df[0].toUpperCase(),
                         df[1].toUpperCase(),
-                        df[2].toUpperCase()]){
+                        df[2].toUpperCase()]) {
                         li.style.backgroundColor = "yellowgreen";
                         li.style.color = "#fff";
                     }
                 }
             }
-            
-            li.onclick = function(){
-                for(var j = 0; j < $('ulDoses').childNodes.length; j++){
+
+            li.onclick = function () {
+                for (var j = 0; j < $('ulDoses').childNodes.length; j++) {
                     $('ulDoses').childNodes[j].style.backgroundColor = "";
-                    if(j%2>0){
+                    if (j % 2 > 0) {
                         $('ulDoses').childNodes[j].style.backgroundColor = "#eee";
                     }
                     $('ulDoses').childNodes[j].style.color = "#000";
                 }
-                if(selectedGenerics[current_diagnosis]){
-                    if(selectedGenerics[current_diagnosis][current_generic]) {
+                if (selectedGenerics[current_diagnosis]) {
+                    if (selectedGenerics[current_diagnosis][current_generic]) {
                         selectedGenerics[current_diagnosis][current_generic]["dosage"] = [this.innerHTML.toUpperCase(),
-                        this.getAttribute("strength"),
-                        this.getAttribute("units")];
+                            this.getAttribute("strength"),
+                            this.getAttribute("units")];
                     } else {
                         selectedGenerics[current_diagnosis][current_generic] = {
-                            "dosage":[this.innerHTML.toUpperCase(), this.getAttribute("strength"),
-                            this.getAttribute("units")],
-                            "frequency":null,
-                            "duration":null
+                            "dosage": [this.innerHTML.toUpperCase(), this.getAttribute("strength"),
+                                this.getAttribute("units")],
+                            "frequency": null,
+                            "duration": null
                         };
                     }
                 } else {
                     selectedGenerics[current_diagnosis] = {};
                     selectedGenerics[current_diagnosis][current_generic] = {
-                        "dosage":[this.innerHTML.toUpperCase(), this.getAttribute("strength"),
-                        this.getAttribute("units")],
-                        "frequency":null,
-                        "duration":null
+                        "dosage": [this.innerHTML.toUpperCase(), this.getAttribute("strength"),
+                            this.getAttribute("units")],
+                        "frequency": null,
+                        "duration": null
                     };
                 }
                 this.style.backgroundColor = "lightblue";
             }
 
-            if(!existingDoses[df[0].toUpperCase()]){
+            if (!existingDoses[df[0].toUpperCase()]) {
                 $('ulDoses').appendChild(li);
                 existingDoses[df[0].toUpperCase()] = true;
             }
@@ -834,10 +905,10 @@ function handleDFResult(aXMLHttpRequest) {
 }
 
 // Remove the created interface and create corresponding controls ready for storage
-function removeGenerics(){
+function removeGenerics() {
 
-    for(var diagnosis in selectedGenerics){
-        for(var generic in selectedGenerics[diagnosis]){
+    for (var diagnosis in selectedGenerics) {
+        for (var generic in selectedGenerics[diagnosis]) {
 
             var parent_diagnosis = document.createElement("input");
             parent_diagnosis.type = "hidden";
@@ -867,7 +938,7 @@ function removeGenerics(){
 
             document.forms[0].appendChild(patientid);
 
-            if(selectedGenerics[diagnosis][generic]["dosage"]){
+            if (selectedGenerics[diagnosis][generic]["dosage"]) {
                 var dosage = document.createElement("input");
                 dosage.type = "hidden";
                 dosage.name = "prescriptions[][dosage]";
@@ -881,7 +952,7 @@ function removeGenerics(){
                 strength.value = selectedGenerics[diagnosis][generic]["dosage"][1];
 
                 document.forms[0].appendChild(strength);
-                
+
                 var units = document.createElement("input");
                 units.type = "hidden";
                 units.name = "prescriptions[][units]";
@@ -890,7 +961,7 @@ function removeGenerics(){
                 document.forms[0].appendChild(units);
             }
 
-            if(selectedGenerics[diagnosis][generic]["frequency"]){
+            if (selectedGenerics[diagnosis][generic]["frequency"]) {
                 var frequency = document.createElement("input");
                 frequency.type = "hidden";
                 frequency.name = "prescriptions[][frequency]";
@@ -899,7 +970,7 @@ function removeGenerics(){
                 document.forms[0].appendChild(frequency);
             }
 
-            if(selectedGenerics[diagnosis][generic]["duration"]){
+            if (selectedGenerics[diagnosis][generic]["duration"]) {
                 var duration = document.createElement("input");
                 duration.type = "hidden";
                 duration.name = "prescriptions[][duration]";
@@ -910,7 +981,7 @@ function removeGenerics(){
         }
     }
 
-    if($("parent_container")){
+    if ($("parent_container")) {
         $("content").removeChild($("parent_container"));
     }
 }
@@ -918,16 +989,16 @@ function removeGenerics(){
 /*
  * We create a custom keyboard for the interface to fit on the available space
  */
-function showFixedKeyboard(ctrl, global_control){
+function showFixedKeyboard(ctrl, global_control) {
 
-    $("clearButton").onclick = function(){
+    $("clearButton").onclick = function () {
         $(global_control).value = "";
         searchDrug();
     }
 
 
     var full_keyboard = "full";
-    
+
     var div = document.createElement("div");
     div.id = "divMenu";
     div.style.backgroundColor = "#EEEEEE";
@@ -935,10 +1006,10 @@ function showFixedKeyboard(ctrl, global_control){
     div.style.left = "0px";
     div.style.margin = "5px";
 
-    var row1 = ["Q","W","E","R","T","Y","U","I","O","P"];
-    var row2 = ["", "A","S","D","F","G","H","J","K","L"];
-    var row3 = ["del", "Z","X","C","V","B","N","M","stat<br />dose"];
-    var row5 = ["1","2","3","4","5","6","7","8","9","0"];
+    var row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
+    var row2 = ["", "A", "S", "D", "F", "G", "H", "J", "K", "L"];
+    var row3 = ["del", "Z", "X", "C", "V", "B", "N", "M", "stat<br />dose"];
+    var row5 = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
     var tbl = document.createElement("table");
     tbl.bgColor = "#fff";
@@ -949,7 +1020,7 @@ function showFixedKeyboard(ctrl, global_control){
 
     var tr5 = document.createElement("tr");
 
-    for(var i = 0; i < row5.length; i++){
+    for (var i = 0; i < row5.length; i++) {
         var td5 = document.createElement("td");
         td5.innerHTML = row5[i];
         td5.align = "center";
@@ -960,8 +1031,8 @@ function showFixedKeyboard(ctrl, global_control){
         td5.width = "30px";
         td5.className = "btn";
 
-        td5.onclick = function(){
-            if(!this.innerHTML.match(/^$/)){
+        td5.onclick = function () {
+            if (!this.innerHTML.match(/^$/)) {
                 $(global_control).value += this.innerHTML.toProperCase();
                 $(global_control).value = $(global_control).value.toProperCase();
                 searchDrug();
@@ -971,13 +1042,13 @@ function showFixedKeyboard(ctrl, global_control){
         tr5.appendChild(td5);
     }
 
-    if(full_keyboard){
+    if (full_keyboard) {
         tbl.appendChild(tr5);
     }
 
     var tr1 = document.createElement("tr");
 
-    for(var i = 0; i < row1.length; i++){
+    for (var i = 0; i < row1.length; i++) {
         var td1 = document.createElement("td");
         td1.innerHTML = row1[i];
         td1.align = "center";
@@ -988,8 +1059,8 @@ function showFixedKeyboard(ctrl, global_control){
         td1.width = "30px";
         td1.className = "btn";
 
-        td1.onclick = function(){
-            if(!this.innerHTML.match(/^$/)){
+        td1.onclick = function () {
+            if (!this.innerHTML.match(/^$/)) {
                 $(global_control).value += this.innerHTML.toProperCase();
                 $(global_control).value = $(global_control).value.toProperCase();
                 searchDrug();
@@ -1003,7 +1074,7 @@ function showFixedKeyboard(ctrl, global_control){
 
     var tr2 = document.createElement("tr");
 
-    for(var i = 0; i < row2.length; i++){
+    for (var i = 0; i < row2.length; i++) {
         var td2 = document.createElement("td");
         td2.innerHTML = row2[i];
         td2.align = "center";
@@ -1013,12 +1084,12 @@ function showFixedKeyboard(ctrl, global_control){
         td2.bgColor = "#EEEEEE"
         td2.width = "30px";
 
-        if(!row2[i].trim().match(/^$/)){
+        if (!row2[i].trim().match(/^$/)) {
             td2.className = "btn";
         }
 
-        td2.onclick = function(){
-            if(!this.innerHTML.match(/^$/)){
+        td2.onclick = function () {
+            if (!this.innerHTML.match(/^$/)) {
                 $(global_control).value += this.innerHTML.toProperCase();
                 $(global_control).value = $(global_control).value.toProperCase();
                 searchDrug();
@@ -1032,7 +1103,7 @@ function showFixedKeyboard(ctrl, global_control){
 
     var tr3 = document.createElement("tr");
 
-    for(var i = 0; i < row3.length; i++){
+    for (var i = 0; i < row3.length; i++) {
         var td3 = document.createElement("td");
         td3.innerHTML = row3[i];
         td3.align = "center";
@@ -1042,24 +1113,24 @@ function showFixedKeyboard(ctrl, global_control){
         td3.bgColor = "#EEEEEE"
         td3.width = "30px";
 
-        if(!row3[i].trim().match(/^$/)){
+        if (!row3[i].trim().match(/^$/)) {
             td3.className = "btn";
         }
 
-        if(row3[i] == "del"){
+        if (row3[i] == "del") {
             td3.colSpan = 2;
 
-            td3.onclick = function(){
-                $(global_control).value = $(global_control).value.substring(0,$(global_control).value.length - 1);
+            td3.onclick = function () {
+                $(global_control).value = $(global_control).value.substring(0, $(global_control).value.length - 1);
                 searchDrug();
             }
-            
-        } else if(row3[i].trim() == "stat<br />dose"){            
-            td3.style.fontSize = "0.9em";            
-            td3.style.padding = "0px";           
+
+        } else if (row3[i].trim() == "stat<br />dose") {
+            td3.style.fontSize = "0.9em";
+            td3.style.padding = "0px";
             td3.style.fontWeight = "bold";
-            
-            td3.onclick = function(){
+
+            td3.onclick = function () {
                 if ($("optionOD"))
                     $("optionOD").click();
                 if ($("group1_1-10"))
@@ -1067,10 +1138,10 @@ function showFixedKeyboard(ctrl, global_control){
                 if ($("group2_1"))
                     $("group2_1").click();
             }
-        } else {            
+        } else {
 
-            td3.onclick = function(){
-                if(!this.innerHTML.match(/^$/)){
+            td3.onclick = function () {
+                if (!this.innerHTML.match(/^$/)) {
                     $(global_control).value += this.innerHTML.toProperCase();
                     $(global_control).value = $(global_control).value.toProperCase();
                     searchDrug();
@@ -1093,63 +1164,63 @@ function showFixedKeyboard(ctrl, global_control){
  * Sometimes it may be necessary only to view the drugs that have been selected 
  * so far. This is where this function comes into play
  */
-function showSelectedDrugsOnly(){
+function showSelectedDrugsOnly() {
     $('ulDrugs').innerHTML = "";
     current_generic = null;
 
     var k = 0;
 
-    for(var d = 0; d < generics.length; d++){
-        for(var drug in selectedGenerics[current_diagnosis]){
-            if(generics[d][0].toLowerCase().match("^" + drug.toLowerCase() + "$")){
+    for (var d = 0; d < generics.length; d++) {
+        for (var drug in selectedGenerics[current_diagnosis]) {
+            if (generics[d][0].toLowerCase().match("^" + drug.toLowerCase() + "$")) {
                 var li = document.createElement("li");
                 li.id = "option" + generics[d][0];
                 li.innerHTML = generics[d][0].toProperCase();
                 li.style.padding = "15px";
 
-                if(k%2>0){
+                if (k % 2 > 0) {
                     li.style.backgroundColor = "#eee";
                 }
                 li.style.color = "#000";
 
-                if(selectedGenerics[current_diagnosis]){
-                    if(selectedGenerics[current_diagnosis][generics[d][0].toUpperCase()]){
+                if (selectedGenerics[current_diagnosis]) {
+                    if (selectedGenerics[current_diagnosis][generics[d][0].toUpperCase()]) {
                         li.style.backgroundColor = "yellowgreen";
                         li.style.color = "#fff";
                     }
                 }
 
                 li.setAttribute("concept_id", generics[d][1])
-                li.onclick = function(){
+                li.onclick = function () {
                     loadDosageFrequency(this.getAttribute("concept_id"));
 
                     current_generic = this.innerHTML.toUpperCase();
 
-                    if(this.style.backgroundColor == "lightblue"){
-                        if(selectedGenerics[current_diagnosis]){
+                    if (this.style.backgroundColor == "lightblue") {
+                        if (selectedGenerics[current_diagnosis]) {
                             delete selectedGenerics[current_diagnosis][current_generic];
                         }
                     }
 
-                    
+
                     var tds = document.getElementsByName("group2");
 
-                    for(var k = 0; k < tds.length; k++){
+                    for (var k = 0; k < tds.length; k++) {
                         var p = String(tds[k].value).match(/\d$/);
 
-                        if(p){
-                            $("group2_" + (p==0?10:p)).bgColor = "";
-                            var rdos = $("group2_" + (p==0?10:p)).getElementsByTagName("input");
-                            if(rdos[0])
+                        if (p) {
+                            $("group2_" + (p == 0 ? 10 : p)).bgColor = "";
+                            var rdos = $("group2_" + (p == 0 ? 10 : p)).getElementsByTagName("input");
+                            if (rdos[0])
                                 rdos[0].checked = false;
 
-                            if($("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" + ((((p==0?10:p)-1)+1)*10)))){
-                                $("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" + ((((p==0?10:p)-1)+1)*10))).bgColor = "#DDDDDD";
+                            if ($("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" + ((((p == 0 ? 10 : p) - 1) + 1) * 10)))) {
+                                $("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" + ((((p == 0 ? 10 : p) - 1) + 1) * 10))).bgColor = "#DDDDDD";
 
-                                var rdos2 = $("group1_" + (((((p==0?10:p)-1)*10)+1) + "-" +
-                                    ((((p==0?10:p)-1)+1)*10))).getElementsByTagName("input");
+                                var rdos2 = $("group1_" + (((((p == 0 ? 10 : p) - 1) * 10) + 1) + "-" +
+                                    ((((p == 0 ? 10 : p) - 1) + 1) * 10))).getElementsByTagName("input");
 
-                                if(rdos2[0])
+                                if (rdos2[0])
                                     rdos2[0].checked = false;
                             }
                         }
@@ -1157,17 +1228,17 @@ function showSelectedDrugsOnly(){
                     }
 
                     // Clear Frequencies
-                    for(var j = 0; j < $('ulFreqs').childNodes.length; j++){
+                    for (var j = 0; j < $('ulFreqs').childNodes.length; j++) {
                         $('ulFreqs').childNodes[j].style.backgroundColor = "";
-                        if(j%2>0){
+                        if (j % 2 > 0) {
                             $('ulFreqs').childNodes[j].style.backgroundColor = "#eee";
                         }
                         $('ulFreqs').childNodes[j].style.color = "#000";
 
-                        if(selectedGenerics[current_diagnosis]){
-                            if(selectedGenerics[current_diagnosis][current_generic]){
-                                if(selectedGenerics[current_diagnosis][current_generic]["frequency"] ==
-                                    $('ulFreqs').childNodes[j].innerHTML.toUpperCase()){
+                        if (selectedGenerics[current_diagnosis]) {
+                            if (selectedGenerics[current_diagnosis][current_generic]) {
+                                if (selectedGenerics[current_diagnosis][current_generic]["frequency"] ==
+                                    $('ulFreqs').childNodes[j].innerHTML.toUpperCase()) {
 
                                     $('ulFreqs').childNodes[j].style.backgroundColor = "yellowgreen";
                                     $('ulFreqs').childNodes[j].style.color = "#fff";
@@ -1176,13 +1247,13 @@ function showSelectedDrugsOnly(){
                         }
                     }
 
-                    for(var j = 0; j < $('ulDrugs').childNodes.length; j++){
-                        if(selectedGenerics[current_diagnosis]){
-                            if(selectedGenerics[current_diagnosis][$('ulDrugs').childNodes[j].innerHTML.toUpperCase()]){
+                    for (var j = 0; j < $('ulDrugs').childNodes.length; j++) {
+                        if (selectedGenerics[current_diagnosis]) {
+                            if (selectedGenerics[current_diagnosis][$('ulDrugs').childNodes[j].innerHTML.toUpperCase()]) {
                                 $('ulDrugs').childNodes[j].style.backgroundColor = "yellowgreen";
                                 $('ulDrugs').childNodes[j].style.color = "white";
                             } else {
-                                if(j%2>0){
+                                if (j % 2 > 0) {
                                     $('ulDrugs').childNodes[j].style.backgroundColor = "#eee";
                                 } else {
                                     $('ulDrugs').childNodes[j].style.backgroundColor = "";
@@ -1190,7 +1261,7 @@ function showSelectedDrugsOnly(){
                                 $('ulDrugs').childNodes[j].style.color = "black";
                             }
                         } else {
-                            if(j%2>0){
+                            if (j % 2 > 0) {
                                 $('ulDrugs').childNodes[j].style.backgroundColor = "#eee";
                             } else {
                                 $('ulDrugs').childNodes[j].style.backgroundColor = "";
