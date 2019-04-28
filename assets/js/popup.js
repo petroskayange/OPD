@@ -11,8 +11,8 @@ drugsData += "<th style='border-bottom: 1px solid black; padding:8px;'>Duration<
 drugsData += "<th style='border-bottom: 1px solid black; padding:8px;'>Tabs</th>"
 drugsData += "<th style='border-bottom: 1px solid black; padding:8px;'>Action</th></tr>";
 
-uncheckedImg = '/touchscreentoolkit/lib/images/unchecked.png';
-checkedImg = '/touchscreentoolkit/lib/images/checked.png';
+uncheckedImg = '/public/touchscreentoolkit/lib/images/unchecked.png';
+checkedImg = '/public/touchscreentoolkit/lib/images/checked.png';
 
 count = 1
 for (var drugID in antiMalariaDrugsHash){
