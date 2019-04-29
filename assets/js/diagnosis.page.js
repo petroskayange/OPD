@@ -293,6 +293,8 @@ function selectDignosis() {
                         addSelectedDignosis(selected, side);
                     }
                 }
+            } else {
+                addSelectedDignosis(selected, side);
             }
         } else {
             addSelectedDignosis(selected, side);
