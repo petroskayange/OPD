@@ -156,7 +156,7 @@
                             value_text: key,
                             child: {
                                 concept_id: concept_map[key],
-                                accession_number: new_accession_number(),
+                                accession_number: last_accession_number,
                                 value_text: order
                             }
 
@@ -186,18 +186,7 @@
         }
 
         var tests_ordered_concept_id = 1271;
-        var last_accession_number = "00";
-
-        function new_accession_number(){
-            var last_accn_number = last_accession_number;
-            var last_accn_number_with_no_chk_dgt = parseInt(last_accn_number);
-            var new_accn_number_with_no_chk_dgt = last_accn_number_with_no_chk_dgt + 1;
-            var chk_dgt = calculate_checkdigit(new_accn_number_with_no_chk_dgt);
-            var new_accn_number = new_accn_number_with_no_chk_dgt + "" + chk_dgt;
-            last_accession_number = new_accn_number; // This is deliberate. Do not remove it
-            return new_accn_number
-        }
-
+        var last_accession_number;
 
         function initializeVariables() {
             jQuery(".loader").show();
@@ -205,32 +194,18 @@
             jQuery("#buttons").hide();
             jQuery("#inputFrame" + tstCurrentPage).hide();
 
-            /*
-            * NOTES
-            * This solution is bad. Simply because we can't query observations from back end where column IS NOT NULL
-            * The problem was to get latest observation where accession_number is not null.
-            * Fix this later
-            * mangochiman on 2019-Apr-10 @14:54 hours
-            * */
-            var blood_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-            blood_url += "/api/v1/observations";
-            blood_url += "?concept_id=" + concept_map["Blood"] + "&page_size=1"; //malaria tests are saved under this concept
+            var accession_number_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+            accession_number_url += "/api/v1/sequences/next_accession_number";
 
             var xhttp1 = new XMLHttpRequest();
             xhttp1.onreadystatechange = function () {
                 if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                    var tests_ordered_observations = JSON.parse(this.responseText);
-                    var latest_test_ordered = tests_ordered_observations[0];
-                    if (latest_test_ordered) {
-                        var accession_number = latest_test_ordered["accession_number"];
-                        if (accession_number){
-                            last_accession_number = accession_number
-                        }
-                    }
+                    var new_accn_number = JSON.parse(this.responseText)["accession_number"];
+                    last_accession_number = new_accn_number;
                     gotoNextPage();
                 }
             };
-            xhttp1.open("GET", blood_url, true);
+            xhttp1.open("GET", accession_number_url, false);
             xhttp1.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
             xhttp1.setRequestHeader('Content-type', "application/json");
             xhttp1.send();
