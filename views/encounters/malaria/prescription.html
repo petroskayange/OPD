@@ -927,7 +927,7 @@
                     var duration = selectedGenerics[diagnosis][generic]["duration"];
 
                     var drug_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-                    drug_url += "/api/v1/drugs?name=" + drug_name;
+                    drug_url += "/api/v1/drugs?name=" + encodeURIComponent(drug_name);
 
                     var xhttp1 = new XMLHttpRequest();
                     xhttp1.onreadystatechange = function () {
