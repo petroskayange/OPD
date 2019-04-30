@@ -20,22 +20,22 @@
       "activitiesIcon": "/assets/images/clinical-notes.png",
       "url": "/apps/OPD/views/encounters/clinical_notes.html"
     },
-    "malaria_lab_orders": {
+    "lab orders": {
           "available": true,
           "activitiesIcon": "/assets/images/clinical-notes.png",
           "url": "/apps/OPD/views/encounters/malaria/lab_orders.html"
     },
-    "malaria_lab_results": {
+    "lab results": {
           "available": true,
           "activitiesIcon": "/assets/images/clinical-notes.png",
           "url": "/apps/OPD/views/encounters/malaria/lab_results.html"
     },
-    "malaria_prescription": {
+    "prescription": {
           "available": true,
           "activitiesIcon": "/assets/images/clinical-notes.png",
           "url": "/apps/OPD/views/encounters/malaria/prescription.html"
     },
-    "malaria_dispensation": {
+    "dispensation": {
           "available": true,
           "activitiesIcon": "/assets/images/dispensing.png",
           "url": "/views/patient/dispensing.html"
