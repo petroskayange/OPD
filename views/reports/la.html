@@ -267,18 +267,51 @@
     document.getElementById('end-date').innerHTML = moment(end_date).format('DD/MMM/YYYY');
 
 
+    var total_la_one_prescribed_drugs;
+    var total_la_one_dispensed_drugs;
+
+    var total_la_two_prescribed_drugs;
+    var total_la_two_dispensed_drugs;
+
+    var total_la_three_prescribed_drugs;
+    var total_la_three_dispensed_drugs;
+
+    var total_la_four_prescribed_drugs;
+    var total_la_four_dispensed_drugs;
+
     function loadData() {
         jQuery(".loader").html("<img src='/assets/images/ajax-loader.gif'/>");
         var la_report_url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
-        la_report_url += '/drugs_given_without_prescription';
-        la_report_url += "?date=" + sessionStorage.sessionDate;
-        la_report_url += "&start_date=" + start_date + "&end_date=" + end_date;
-        la_report_url += '&program_id=' + sessionStorage.programID;
+        la_report_url += '/programs/' + sessionStorage.programID + "/reports/la_prescriptions";
+        la_report_url += "?start_date=" + start_date + "&end_date=" + end_date;
 
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                //var obj = JSON.parse(this.responseText);
+                var la_prescriptions_data = JSON.parse(this.responseText);
+                 total_la_one_prescribed_drugs = la_prescriptions_data["total_la_one_prescribed_drugs"];
+                 total_la_one_dispensed_drugs = la_prescriptions_data["total_la_one_dispensed_drugs"];
+
+                 total_la_two_prescribed_drugs = la_prescriptions_data["total_la_two_prescribed_drugs"];
+                 total_la_two_dispensed_drugs = la_prescriptions_data["total_la_two_dispensed_drugs"];
+
+                 total_la_three_prescribed_drugs = la_prescriptions_data["total_la_three_prescribed_drugs"];
+                 total_la_three_dispensed_drugs = la_prescriptions_data["total_la_three_dispensed_drugs"];
+
+                 total_la_four_prescribed_drugs = la_prescriptions_data["total_la_four_prescribed_drugs"];
+                 total_la_four_dispensed_drugs = la_prescriptions_data["total_la_four_dispensed_drugs"];
+
+                jQuery("#la_1_prescribed").html(total_la_one_prescribed_drugs); //
+                jQuery("#la_1_dispensed").html(total_la_one_dispensed_drugs);
+
+                jQuery("#la_2_prescribed").html(total_la_two_prescribed_drugs);
+                jQuery("#la_2_dispensed").html(total_la_two_dispensed_drugs);
+
+                jQuery("#la_3_prescribed").html(total_la_three_prescribed_drugs);
+                jQuery("#la_3_dispensed").html(total_la_three_dispensed_drugs);
+
+                jQuery("#la_4_prescribed").html(total_la_four_prescribed_drugs);
+                jQuery("#la_4_dispensed").html(total_la_four_dispensed_drugs);
 
             }
         };
@@ -289,7 +322,24 @@
     }
 
     function printLabel(){
+        var apiURL = sessionStorage.getItem("apiURL");
+        var apiPort = sessionStorage.getItem("apiPort");
+        var apiProtocol = sessionStorage.getItem("apiProtocol");
 
+        var la_url = "1[prescription]=" + total_la_one_prescribed_drugs + "&1[dispensed]=" + total_la_one_dispensed_drugs +
+            "&2[prescription]=" + total_la_two_prescribed_drugs + "&2[dispensed]=" + total_la_two_dispensed_drugs +
+            "&3[prescription]=" + total_la_three_prescribed_drugs + "&3[dispensed]=" + total_la_three_dispensed_drugs +
+            "&4[prescription]=" + total_la_four_prescribed_drugs + "&4[dispensed]=" + total_la_four_dispensed_drugs +
+            "&date[start]=" + moment(start_date).format('DD/MMM/YYYY') + "&date[end]=" + moment(end_date).format('DD/MMM/YYYY');
+
+        var print_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/labels?" + la_url;
+
+        jQuery("#print").remove();
+        var iframe = document.createElement("iframe");
+        iframe.id = "print";
+        iframe.src = print_url;
+        iframe.style.display = "none";
+        document.getElementById("content").appendChild(iframe);
     }
 
     loadData();
