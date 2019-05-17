@@ -332,7 +332,7 @@
             "&4[prescription]=" + total_la_four_prescribed_drugs + "&4[dispensed]=" + total_la_four_dispensed_drugs +
             "&date[start]=" + moment(start_date).format('DD/MMM/YYYY') + "&date[end]=" + moment(end_date).format('DD/MMM/YYYY');
 
-        var print_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/labels?" + la_url;
+        var print_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/programs/14/barcodes/la_report?" + la_url;
 
         jQuery("#print").remove();
         var iframe = document.createElement("iframe");
