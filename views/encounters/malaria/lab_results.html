@@ -115,11 +115,10 @@
             }
         }
 
-
-        var accession_numbers = [];
-
         var malaria_test_result_concept_id = 9227;
-        var malaria_observations = [];
+        var liElements = "";
+        var optionElements = "<option></option>";
+        var className = "even";
 
         function initializeVariables() {
             jQuery(".loader").show();
@@ -127,122 +126,36 @@
             jQuery("#buttons").hide();
             jQuery("#inputFrame" + tstCurrentPage).hide();
 
-            var blood_concept_id = 8612;
-
-            var malaria_tests_ordered_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-            malaria_tests_ordered_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
-            malaria_tests_ordered_url += "&concept_id=" + blood_concept_id;
-
+            var malaria_tests_ordered_without_results_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+            malaria_tests_ordered_without_results_url += "/api/v1/programs/" + sessionStorage.programID + "/labs/malaria_orders?patient_id=" + sessionStorage.patientID;
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
                     var malaria_tests_ordered_observations = JSON.parse(this.responseText);
-                    if (malaria_tests_ordered_observations.length > 0) {
-                        for (var i = 0; i <= malaria_tests_ordered_observations.length - 1; i++) {
-                            var accession_number = malaria_tests_ordered_observations[i]["accession_number"];
-                            if (accession_number) {
-                                accession_numbers.push(accession_number)
-                                malaria_observations.push(malaria_tests_ordered_observations[i])
-                            }
-                        }
-                        getMalariaTestOrdersWithoutResults(accession_numbers)
-                    } else{
-                        gotoNextPage();
-                    }
-                }
-            };
-
-            xhttp.open("GET", malaria_tests_ordered_url, true);
-            xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-            xhttp.setRequestHeader('Content-type', "application/json");
-            xhttp.send();
-        }
-
-
-        var liElements = "";
-        var optionElements = "";
-        var counter = 0;
-        var className = "even";
-
-        function getMalariaTestOrdersWithoutResults(acc_numbers) {
-            var accession_numbers_without_results = [];
-            for (var i = 0; i <= acc_numbers.length - 1; i++) {
-                var malaria_test_result_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-                malaria_test_result_url += "/api/v1/observations?person_id=" + sessionStorage.patientID;
-                malaria_test_result_url += "&concept_id=" + malaria_test_result_concept_id;
-                malaria_test_result_url += "&accession_number=" + acc_numbers[i];
-
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                        var malaria_test_result_observations = JSON.parse(this.responseText);
-                        if (malaria_test_result_observations.length == 0) {
-                            accession_numbers_without_results.push(acc_numbers[i])
-                        }
-                    }
-                };
-                xhttp.open("GET", malaria_test_result_url, false);
-                xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-                xhttp.setRequestHeader('Content-type', "application/json");
-                xhttp.send();
-            }
-
-            for (var i = 0; i <= accession_numbers_without_results.length - 1; i++) {
-                var accession_number = accession_numbers_without_results[i];
-                for (var j = 0; j <= malaria_observations.length - 1; j++) {
-                    var malaria_observation = malaria_observations[j];
-                    if (accession_number == malaria_observation["accession_number"]) {
-                        var test_name = malaria_observation["value_text"];
-                        var obs_datetime = malaria_observation["obs_datetime"];
-                        obs_datetime = moment(obs_datetime).format('YYYY-MM-DD');
-                        if (!test_name) {
-                            var value_coded = malaria_observation["value_coded"];
-                            if (value_coded) {
-                                var concept_name_url = apiProtocol + "://" + apiURL + ":" + apiPort;
-                                concept_name_url += "/api/v1/concepts/" + value_coded;
-
-                                var xhttp1 = new XMLHttpRequest();
-                                xhttp1.onreadystatechange = function () {
-                                    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-                                        var concept = JSON.parse(this.responseText);
-                                        if (concept) {
-                                            var concept_names = concept["concept_names"];
-                                            for (var key in concept_names) {
-                                                if (concept_names[key]["concept_name_type"].match(/FULLY_SPECIFIED/i)) {
-                                                    test_name = concept_names[key]["name"];
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                };
-                                xhttp1.open("GET", concept_name_url, false);
-                                xhttp1.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-                                xhttp1.setRequestHeader('Content-type', "application/json");
-                                xhttp1.send();
-                            }
-                        }
-                        var html = "Accession #:" + accession_number + " Test: " + test_name + " Date: " + obs_datetime;
-                        var test_value = test_name + ":" + accession_number;
+                    for (var i = 0; i <= malaria_tests_ordered_observations.length - 1; i++) {
+                        var html = malaria_tests_ordered_observations[i][0].trim().replace(/\s+/g, ' ');
+                        var test_value = malaria_tests_ordered_observations[i][1].trim().replace(/\s+/g, ' ');
                         optionElements += "<option value='" + test_value + "'>" + html + "</option>";
-
-                        if (!test_name.match(/Microscopy|MRDT/i)){
+                        if (!html.match(/Microscopy|MRDT/i)) {
                             continue;
                         }
-                        liElements += '<li id="' + counter + '" tstvalue="' + test_value + '" class="' + className + '" tag="' + className + '" onclick="null; updateTouchscreenInputForSelect(this); " style="display: block;">' + html + '</li>';
+                        liElements += '<li id="' + i + '" tstvalue="' + test_value + '" class="' + className + '" tag="' + className + '" onclick="null; updateTouchscreenInputForSelect(this); ">' + html + '</li>';
                         if (className == "even") {
                             className = "odd"
                         } else {
                             className = "even"
                         }
-                        counter = counter + 1;
-                        break
                     }
+                    __$("barcode").innerHTML = optionElements;
+                    gotoNextPage();
                 }
-            }
-            __$("barcode").innerHTML = optionElements;
-            gotoNextPage()
+            };
+
+            xhttp.open("GET", malaria_tests_ordered_without_results_url, true);
+            xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+            xhttp.setRequestHeader('Content-type', "application/json");
+            xhttp.send();
         }
 
         function resetPage() {
@@ -253,9 +166,9 @@
             jQuery(".loader").hide();
         }
 
-        function resetFinsishButton(){
+        function resetFinsishButton() {
             __$('nextButton').onmousedown = function () {
-                    gotoNextPage();
+                gotoNextPage();
             }
         }
 
