@@ -1,0 +1,349 @@
+<link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+
+
+<link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/jquery.dataTables.min.css"/>
+<script type="text/javascript" src="/apps/OPD/assets/js/DataTables/datatables.min.js"></script>
+
+
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/core.js"></script>
+
+<script type="text/javascript" src="/assets/js/virtual.keyboard.js"></script>
+
+<style>
+
+    body {
+        font-family: "Nimbus Sans L", "Arial Narrow", sans-serif;
+        margin: 0;
+        -moz-user-select: none;
+        background-color: black;
+    }
+
+    #mateme {
+        background-color: #000000;
+    }
+
+    .title-table {
+        display: table;
+        width: 100%;
+    }
+
+    .title-row {
+        display: table-row;
+    }
+
+    .title-cell {
+        display: table-cell;
+        height: 30px;
+        vertical-align: top;
+        border-style: solid;
+        border-width: 0px 0px 1px 0px;
+    }
+
+    #title-cell-left {
+        vertical-align: middle;
+        width: 100px;
+    }
+
+    #title-cell-left img {
+        height: 95px;
+        width: 95px;
+        margin: 5px;
+    }
+
+    #title-cell-right {
+        margin-left: 5px;
+    }
+
+    #container {
+        background-color: #000000;
+        display: block;
+        height: 1px;
+        left: 0;
+        overflow: visible;
+        position: absolute;
+        top: 50%;
+        visibility: visible;
+        width: 100%;
+    }
+
+    #content {
+        background: #FFFFFF;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 1000px;
+        height: 750px;
+        margin-left: -500px;
+        margin-top: -380px;
+
+    }
+
+    #footer {
+        background-color: rgb(51, 51, 51);
+        color: #CADCEA;
+        height: 80px;
+        width: 100%;
+        bottom: 0px;
+        position: absolute;
+        overflow: hidden;
+    }
+
+    button {
+        font-weight: bold;
+        font-size: 1.2em;
+        margin: 0 4px;
+        -moz-user-select: none;
+    }
+
+    #container {
+        background-color: #000000;
+        display: block;
+        height: 1px;
+        left: 0;
+        overflow: visible;
+        position: absolute;
+        top: 50%;
+        visibility: visible;
+        width: 100%;
+
+    }
+</style>
+<div id="container">
+    <div id="content" style="position : relative; width : 96%; margin-left : -48%">
+        <div class="title-table">
+            <div class='title-row'>
+                <div class='title-cell' id='title-cell-left'>
+                    <img src="/assets/images/login-logos/Malawi-Coat_of_arms_of_arms.png"/>
+                </div>
+                <div class='title-cell' id='title-cell-right'>
+                    <table style="width: 100%; text-align: left; margin-left: 10px; font-weight: bold;">
+                        <tr>
+                            <th>Title:</th>
+                            <td colspan="2" id="report-title">Lumefantrine + Arthemether Report
+                            <td>
+                        </tr>
+                        <tr>
+                            <th>Period:</th>
+                            <td>
+                                <span id="start-date"></span> - <span id="end-date"></span>
+                            <td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <table id="table_id">
+            <thead>
+            <tr style="background-color: gray; height: 0px; color: white;">
+                <th style="height: 2em;"></th>
+                <th>Prescribed</th>
+                <th>Dispensed</th>
+            </tr>
+            </thead>
+
+
+            <tbody>
+            <tr style="background-color: #FFEBCD;">
+                <td style="width: 612px;">AL 1</td>
+                <td style="width: 612px;" class="loader" id="la_1_prescribed">&nbsp;</td>
+                <td style="width: 612px;" class="loader" id="la_1_dispensed">&nbsp;</td>
+            </tr>
+
+            <tr style="background-color: #FFEBCD;">
+                <td>AL 2</td>
+                <td class="loader" id="la_2_prescribed">&nbsp;</td>
+                <td class="loader" id="la_2_dispensed">&nbsp;</td>
+            </tr>
+
+            <tr style="background-color: #FFEBCD;">
+                <td>AL 3</td>
+                <td class="loader" id="la_3_prescribed">&nbsp;</td>
+                <td class="loader" id="la_3_dispensed">&nbsp;</td>
+            </tr>
+
+            <tr style="background-color: #FFEBCD;">
+                <td>AL 4</td>
+                <td class="loader" id="la_4_prescribed">&nbsp;</td>
+                <td class="loader" id="la_4_dispensed">&nbsp;</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div id="footer" class="">
+            <button id="print_label" style="position:relative; float:left" onmousedown="printLabel();">
+                <span>Print Label</span></button>
+            <button class="button green navButton" onmousedown="javascript:location='/';"><span>Finish</span></button>
+        </div>
+    </div>
+</div>
+
+<style>
+    div {
+        -moz-user-select: none;
+    }
+
+    .basic_span {
+        position: relative;
+        width: 50%;
+        display: block;
+        float: left;
+    }
+
+    .logo {
+        float: left
+    }
+
+    #table_id {
+        width: 100%;
+    }
+
+    #table_id_filter {
+        display: none;
+        position: absolute;
+        top: 0px;
+        right: 1%;
+        margin-top: -40px;
+    }
+
+    #table_id_filter input {
+        padding: 0.5em;
+    }
+
+    .dataTables_length select {
+        font-size: 25px;
+    }
+
+    .horizontal_line hr {
+        position: absolute;
+        bottom: 104px;
+    }
+
+    #table_id_info {
+        left: 10px;
+        position: absolute;
+        top: 488px;
+        font-weight: bold;
+    }
+
+    #table_id_length {
+        display: none;
+    }
+
+    #table_id_paginate {
+        display: none;
+    }
+
+    #num {
+        display: none;
+    }
+
+    #char {
+        display: none;
+    }
+
+    #table_id th, #table_id td {
+        width: 30%;
+        text-align: center;
+    }
+
+    #table_id th:first-child, #table_id td:first-child {
+        text-align: left;
+    }
+
+</style>
+
+<script>
+
+    var url = window.location.href;
+    url = new URL(url);
+    var report_type = url.searchParams.get("type");
+    var start_date = url.searchParams.get("start_date");
+    var end_date = url.searchParams.get("end_date");
+
+    document.getElementById('start-date').innerHTML = moment(start_date).format('DD/MMM/YYYY');
+    document.getElementById('end-date').innerHTML = moment(end_date).format('DD/MMM/YYYY');
+
+
+    var total_la_one_prescribed_drugs;
+    var total_la_one_dispensed_drugs;
+
+    var total_la_two_prescribed_drugs;
+    var total_la_two_dispensed_drugs;
+
+    var total_la_three_prescribed_drugs;
+    var total_la_three_dispensed_drugs;
+
+    var total_la_four_prescribed_drugs;
+    var total_la_four_dispensed_drugs;
+
+    function loadData() {
+        jQuery(".loader").html("<img src='/assets/images/ajax-loader.gif'/>");
+        var la_report_url = sessionStorage.apiProtocol + "://" + sessionStorage.apiURL + ":" + sessionStorage.apiPort + "/api/v1";
+        la_report_url += '/programs/' + sessionStorage.programID + "/reports/la_prescriptions";
+        la_report_url += "?start_date=" + start_date + "&end_date=" + end_date;
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+                var la_prescriptions_data = JSON.parse(this.responseText);
+                total_la_one_prescribed_drugs = la_prescriptions_data["total_la_one_prescribed_drugs"];
+                total_la_one_dispensed_drugs = la_prescriptions_data["total_la_one_dispensed_drugs"];
+
+                total_la_two_prescribed_drugs = la_prescriptions_data["total_la_two_prescribed_drugs"];
+                total_la_two_dispensed_drugs = la_prescriptions_data["total_la_two_dispensed_drugs"];
+
+                total_la_three_prescribed_drugs = la_prescriptions_data["total_la_three_prescribed_drugs"];
+                total_la_three_dispensed_drugs = la_prescriptions_data["total_la_three_dispensed_drugs"];
+
+                total_la_four_prescribed_drugs = la_prescriptions_data["total_la_four_prescribed_drugs"];
+                total_la_four_dispensed_drugs = la_prescriptions_data["total_la_four_dispensed_drugs"];
+
+                jQuery("#la_1_prescribed").html(total_la_one_prescribed_drugs); //
+                jQuery("#la_1_dispensed").html(total_la_one_dispensed_drugs);
+
+                jQuery("#la_2_prescribed").html(total_la_two_prescribed_drugs);
+                jQuery("#la_2_dispensed").html(total_la_two_dispensed_drugs);
+
+                jQuery("#la_3_prescribed").html(total_la_three_prescribed_drugs);
+                jQuery("#la_3_dispensed").html(total_la_three_dispensed_drugs);
+
+                jQuery("#la_4_prescribed").html(total_la_four_prescribed_drugs);
+                jQuery("#la_4_dispensed").html(total_la_four_dispensed_drugs);
+
+            }
+        };
+        xhttp.open("GET", la_report_url, true);
+        xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+        xhttp.setRequestHeader('Content-type', "application/json");
+        xhttp.send();
+    }
+
+    function printLabel() {
+        var apiURL = sessionStorage.getItem("apiURL");
+        var apiPort = sessionStorage.getItem("apiPort");
+        var apiProtocol = sessionStorage.getItem("apiProtocol");
+
+        var la_url = "1[prescription]=" + total_la_one_prescribed_drugs + "&1[dispensed]=" + total_la_one_dispensed_drugs +
+            "&2[prescription]=" + total_la_two_prescribed_drugs + "&2[dispensed]=" + total_la_two_dispensed_drugs +
+            "&3[prescription]=" + total_la_three_prescribed_drugs + "&3[dispensed]=" + total_la_three_dispensed_drugs +
+            "&4[prescription]=" + total_la_four_prescribed_drugs + "&4[dispensed]=" + total_la_four_dispensed_drugs +
+            "&date[start]=" + moment(start_date).format('DD/MMM/YYYY') + "&date[end]=" + moment(end_date).format('DD/MMM/YYYY');
+
+        var print_url = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/programs/14/barcodes/la_report?" + la_url;
+
+        jQuery("#print").remove();
+        var iframe = document.createElement("iframe");
+        iframe.id = "print";
+        iframe.src = print_url;
+        iframe.style.display = "none";
+        document.getElementById("content").appendChild(iframe);
+    }
+
+    loadData();
+
+</script>
+
