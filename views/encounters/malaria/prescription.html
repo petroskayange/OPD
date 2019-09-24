@@ -482,7 +482,7 @@
             },
             "4041": {"Ascorbic Acid (250mg tablet)": [1.0, "tab(s)"]},
             "8195": {"Promethazine hydrochloride (25mg tablet)": [1.0, "tab(s)"]},
-            "323": {},
+            "323": {"Gentian violet (Tropical)": [1.0, "Solution"]},
             "792": {
                 "d4T/3TC/NVP (30/150/200mg tablet)": [1.0, "tab(s)"],
                 "Triomune junior (d4T/3TC/NVP 12/60/100mg tablet)": [1.0, "tab(s)"],
@@ -976,7 +976,14 @@
                 var strength = medication_orders[key]["strength"];
                 var duration = medication_orders[key]["duration"];
 
-                var drug_order = {drug_name: drug_name, drug_id: drug_id, duration: duration, units: units, frequency: frequency, strength: strength};
+                var drug_order = {
+                    drug_name: drug_name,
+                    drug_id: drug_id,
+                    duration: duration,
+                    units: units,
+                    frequency: frequency,
+                    strength: strength
+                };
                 drug_orders.push(drug_order)
             }
 
@@ -989,7 +996,7 @@
                 var dose_strength = parseFloat(drug_orders[i]["strength"]);
                 var dose = dose_strength;
                 var instructions = drug_orders[i]["drug_name"] + ": " + dose + " " + frequency + " for " + duration + " days";
-                var equivalent_daily_dose = dose_per_day  * dose_strength;
+                var equivalent_daily_dose = dose_per_day * dose_strength;
 
                 drug_order = {
                     drug_inventory_id: drug_orders[i].drug_id,
@@ -1008,60 +1015,60 @@
             submitParameters(drug_orders_params, "/drug_orders", "gotoPatientDashboard");
         }
 
-        function doses_per_day(frequency){
+        function doses_per_day(frequency) {
             frequency = frequency.trim();
-            if (frequency.toUpperCase() == "ONCE A DAY" || frequency.toUpperCase() == "OD"){
+            if (frequency.toUpperCase() == "ONCE A DAY" || frequency.toUpperCase() == "OD") {
                 return 1
             }
-            if (frequency.toUpperCase() == "TWICE A DAY" || frequency.toUpperCase() == "BD"){
+            if (frequency.toUpperCase() == "TWICE A DAY" || frequency.toUpperCase() == "BD") {
                 return 2
             }
-            if (frequency.toUpperCase() == "THREE A DAY" || frequency.toUpperCase() == "TDS"){
+            if (frequency.toUpperCase() == "THREE A DAY" || frequency.toUpperCase() == "TDS") {
                 return 3
             }
-            if (frequency.toUpperCase() == "FOUR TIMES A DAY" || frequency.toUpperCase() == "QID"){
+            if (frequency.toUpperCase() == "FOUR TIMES A DAY" || frequency.toUpperCase() == "QID") {
                 return 4
             }
-            if (frequency.toUpperCase() == "FIVE TIMES A DAY" || frequency.toUpperCase() == "5X/D" || frequency.toUpperCase() == "5XD"){
+            if (frequency.toUpperCase() == "FIVE TIMES A DAY" || frequency.toUpperCase() == "5X/D" || frequency.toUpperCase() == "5XD") {
                 return 5
             }
-            if (frequency.toUpperCase() == "SIX TIMES A DAY" || frequency.toUpperCase() == "Q4HRS"){
+            if (frequency.toUpperCase() == "SIX TIMES A DAY" || frequency.toUpperCase() == "Q4HRS") {
                 return 6
             }
-            if (frequency.toUpperCase() == "IN THE MORNING" || frequency.toUpperCase() == "QAM"){
+            if (frequency.toUpperCase() == "IN THE MORNING" || frequency.toUpperCase() == "QAM") {
                 return 1
             }
-            if (frequency.toUpperCase() == "ONCE A DAY AT NOON" || frequency.toUpperCase() == "QNOON"){
+            if (frequency.toUpperCase() == "ONCE A DAY AT NOON" || frequency.toUpperCase() == "QNOON") {
                 return 1
             }
-            if (frequency.toUpperCase() == "IN THE EVENING" || frequency.toUpperCase() == "QPM"){
+            if (frequency.toUpperCase() == "IN THE EVENING" || frequency.toUpperCase() == "QPM") {
                 return 1
             }
-            if (frequency.toUpperCase() == "ONCE A DAY AT NIGHT" || frequency.toUpperCase() == "NOCTE" || frequency.toUpperCase() == "QHS"){
+            if (frequency.toUpperCase() == "ONCE A DAY AT NIGHT" || frequency.toUpperCase() == "NOCTE" || frequency.toUpperCase() == "QHS") {
                 return 1
             }
-            if (frequency.toUpperCase() == "EVERY OTHER DAY" || frequency.toUpperCase() == "NOCTE" || frequency.toUpperCase() == "QOD"){
+            if (frequency.toUpperCase() == "EVERY OTHER DAY" || frequency.toUpperCase() == "NOCTE" || frequency.toUpperCase() == "QOD") {
                 return 0.5
             }
-            if (frequency.toUpperCase() == "ONCE A WEEK" || frequency.toUpperCase() == "QWK"){
-                return (1.0/7.0)
+            if (frequency.toUpperCase() == "ONCE A WEEK" || frequency.toUpperCase() == "QWK") {
+                return (1.0 / 7.0)
             }
-            if (frequency.toUpperCase() == "ONCE A MONTH"){
-                return (1.0/28.0)
+            if (frequency.toUpperCase() == "ONCE A MONTH") {
+                return (1.0 / 28.0)
             }
-            if (frequency.toUpperCase() == "TWICE A MONTH"){
-                return (1.0/14.0)
+            if (frequency.toUpperCase() == "TWICE A MONTH") {
+                return (1.0 / 14.0)
             }
         }
 
 
         function getFormattedDate(set_date) {
             var month = (set_date.getMonth() + 1);
-            if(month < 10)
+            if (month < 10)
                 month = "0" + month;
 
             var day = (set_date.getDate());
-            if(day < 10)
+            if (day < 10)
                 day = "0" + day;
 
             var year = (set_date.getFullYear());
