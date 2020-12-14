@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <style>
+        #patient {
+          font-family: Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+          padding-top: 10%;
+          width: 80%;
+          
+          margin-left: 6%;
+        }
+
+        .tb-btn {
+            color: #333;
+            background-color: #3498db;
+        
+            font-weight: bold;
+            
+        }
+        
+        #patient td, #patient th {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+        
+        #patient tr:nth-child(even){background-color: #f2f2f2;}
+        
+        #patient tr:hover {background-color: #ddd;}
+        
+        #patient th {
+          padding-top: 12px;
+          padding-bottom: 12px;
+          text-align: left;
+          background-color: #333;
+          color: white;
+        }
+        </style>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+
+    <script type="text/javascript" language="javascript" src="/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+            defer="true"></script>
+    <script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+            defer="true"></script>
+    <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+    <link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
+    <script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+    <script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+    <script type="text/javascript" src="images/spotlight.bundle.js"></script>
+    <script type="text/javascript" src="/assets/js/moment.js"></script>
+    <script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+    <script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+    <link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+  <link rel="stylesheet" href="images/bootstrap.min.css">
+  <script src="images/jquery.min.js"></script>
+  <script src="images/bootstrap.min.js"></script>
+
+
+    
+
+    <style type="text/css">
+
+        .loader {
+            position: absolute;
+            display: none;
+            top: 30%;
+            left: 40%;
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            z-index: 9999999999999;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
+    <script>
+        function load_details() {
+            window.location = "view_image.html";
+        }
+        </script>
+</head>
+
+<body id="container">
+<div id="content">
+    <h1 style="padding-left: 8%;">Radiology Results</h1>
+    <table id="patient">
+        <tr>
+          <th>Sessision Id</th>
+          <th>Type</th>
+          <th>Deatils</th>
+        </tr>
+        <tr>
+          <td>1234</td>
+          <td>Chest</td>
+          <td> <button type="button" class="btn btn-primary tb-btn" data-toggle="modal" data-target="#detail_modal">View</button></td>
+        </tr>
+        <tr>
+          <td>3367</td>
+          <td>Shoulder</td>
+          <td><button type="button" class="btn btn-primary tb-btn" data-toggle="modal" data-target="#detail_modal2">View</button></td>
+        </tr>
+        <tr>
+          <td>7823</td>
+          <td>Knee</td>
+          <td><button type="button" class="btn btn-primary tb-btn" data-toggle="modal" data-target="#detail_modal3">View</button></td>
+        </tr>
+      </table>
+
+      <div class="container">
+      
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+          <div class="modal-dialog">
+          
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+              </div>
+              <div class="modal-body">
+                <p>Some text in the modal.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="detail_modal" role="dialog">
+            <div class="modal-dialog">
+            
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h2 class="modal-title">X-Ray Details</h2>
+                </div>
+                <div class="modal-body">
+                    <table>
+                        <tr>
+                            <td>Session ID: 1234</td>   
+                        </tr>    
+                        <tr>
+                            <td>Date: 12 Novmber 2015</td>   
+                        </tr>
+                        <tr>
+                            <td>Type: Chest</td>
+                        </tr>
+                        <tr>
+                            <td>Description: This a chest x-rails</td>
+                        </tr>
+                        <td>
+                            <a class="spotlight" href="images/x-ray/VRv8ab66tAfezxvXdXVpfe-1200-80.jpg">
+                                <img src="images/x-ray/VRv8ab66tAfezxvXdXVpfe-1200-80.jpg" style="height: 80%; width: 80%;">
+                            </a>
+                        </td>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+          <!-- Modal -->
+        <div class="modal fade" id="detail_modal2" role="dialog">
+          <div class="modal-dialog">
+          
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">X-Ray Details</h2>
+              </div>
+              <div class="modal-body">
+                  <table>
+                      <tr>
+                          <td>Session ID: 3367</td>   
+                      </tr>    
+                      <tr>
+                          <td>Date: 4 June 2019</td>   
+                      </tr>
+                      <tr>
+                          <td>Type: Shoulder</td>
+                      </tr>
+                      <tr>
+                          <td>Description: This a shoulder x-ray</td>
+                      </tr>
+                      <td>
+                          <a class="spotlight" href="images/x-ray/gettyimages-482726023-612x612.jpg">
+                              <img src="images/x-ray/gettyimages-482726023-612x612.jpg" style="height: 80%; width: 80%;">
+                          </a>
+                      </td>
+                  </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="detail_modal3" role="dialog">
+          <div class="modal-dialog">
+          
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">X-Ray Details</h2>
+              </div>
+              <div class="modal-body">
+                  <table>
+                      <tr>
+                          <td>Session ID: 7823</td>   
+                      </tr>    
+                      <tr>
+                          <td>Date: 15 May 2020</td>   
+                      </tr>
+                      <tr>
+                          <td>Type: Knee</td>
+                      </tr>
+                      <tr>
+                          <td>Description: This a knee x-ray</td>
+                      </tr>
+                      <td>
+                          <a class="spotlight" href="images/x-ray/gettyimages-183864562-612x612.jpg">
+                              <img src="images/x-ray/gettyimages-183864562-612x612.jpg" style="height: 80%; width: 80%;">
+                          </a>
+                      </td>
+                  </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+      </div>
+ 
+    
+
+    <div class="loader"></div>
+</div>
+
+</body>
+</html>
