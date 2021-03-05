@@ -6,11 +6,22 @@
 <link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/jquery.dataTables.min.css"/>
 <script type="text/javascript" src="/apps/OPD/assets/js/DataTables/datatables.min.js"></script>
 
+<script type="text/javascript" src="/assets/js/datatables/dataTables.buttons.min.js"></script>
+<script type='text/javascript' src='/assets/js/datatables/jszip.min.js'></script>
+<script type='text/javascript' src='/assets/js/datatables/pdfmake.min.js'></script>
+<script type='text/javascript' src='/assets/js/datatables/vfs_fonts.js'></script>
+<script type='text/javascript' src='/assets/js/datatables/buttons.html5.min.js'></script>
+<script type='text/javascript' src='/assets/js/datatables/buttons.print.min.js'></script>
+
 <script type="text/javascript" src="/assets/js/moment.js"></script>
 
 <script type="text/javascript" src="/assets/js/virtual.keyboard.js"></script>
 
 <style>
+    div {
+    -moz-user-select: unset;
+    cursor: pointer;
+}
     #spinner {
         position: absolute;
         top: 15%;
@@ -73,6 +84,10 @@
     #report {
         width: 100%;
     }
+    .buttonsDiv 
+    {
+    top: 770px;
+    }
 
 </style>
 
@@ -109,59 +124,66 @@
                     <th>Diagnosis</th>
                     <th>
                         <table class='min-tables'>
-                            <tr>
-                                <td colspan=2>&#60;6 months</td>
-                            </tr>
-                            <tr>
-                                <td>F</td>
-                                <td>M</td>
-                            </tr>
+                            <tr><td colspan=1>&#60;6 months</td></tr><tr><td>    F</td></tr>
                         </table>
                     </th>
+                      
+                     <th>
+                        <table class='min-tables'>
+                            <tr><td colspan=1>&#60;6 months</td></tr><tr><td>    M</td></tr>
+                        </table>
+                     </th>
+
                     <th>
                         <table class='min-tables'>
-                            <tr>
-                                <td colspan=2>6 months &#60; 5 yrs</td>
-                            </tr>
-                            <tr>
-                                <td>F</td>
-                                <td>M</td>
-                            </tr>
+                            <tr><td colspan=1>6 months &#60; 5 yrs</td></tr><tr><td>   F</td></tr>
                         </table>
                     </th>
+
                     <th>
                         <table class='min-tables'>
-                            <tr>
-                                <td colspan=2>5 months to 14 yrs</td>
-                            </tr>
-                            <tr>
-                                <td>F</td>
-                                <td>M</td>
-                            </tr>
+                            <tr><td colspan=1>6 months &#60; 5 yrs</td></tr><tr><td>   M</td></tr>
                         </table>
                     </th>
+
                     <th>
                         <table class='min-tables'>
-                            <tr>
-                                <td colspan=2>&#62; 14 yrs</td>
-                            </tr>
-                            <tr>
-                                <td>F</td>
-                                <td>M</td>
-                            </tr>
+                            <tr><td colspan=1>5 months to 14 yrs</td></tr><tr><td>   F</td></tr>
                         </table>
                     </th>
+
                     <th>
                         <table class='min-tables'>
-                            <tr>
-                                <td colspan=2>Unknown</td>
-                            </tr>
-                            <tr>
-                                <td>F</td>
-                                <td>M</td>
-                            </tr>
+                            <tr><td colspan=1>5 months to 14 yrs</td></tr><tr><td>   M</td></tr>
                         </table>
                     </th>
+
+
+                    <th>
+                        <table class='min-tables'>
+                            <tr><td colspan=1>&#62; 14 yrs</td></tr><tr><td>   F</td></tr>
+                        </table>
+                    </th>
+
+                    <th>
+                        <table class='min-tables'>
+                            <tr><td colspan=1>&#62; 14 yrs</td></tr><tr><td>   M</td></tr>
+                        </table>
+                    </th>
+
+                    <th>
+                        <table class='min-tables'>
+                            <tr><td colspan=1>Unknown</td></tr><tr><td>   F</td></tr>
+                        </table>
+                    </th>
+
+                    <th>
+                        <table class='min-tables'>
+                            <tr><td colspan=1>Unknown</td></tr><tr><td>   M</td></tr>
+                        </table>
+                    </th>
+
+
                     <th>
                         Total
                     </th>
@@ -182,6 +204,172 @@
 <img src="/apps/OPD/assets/images/formloader.gif" id="spinner"/>
 <div id="report-cover"></div>
 
+<style>
+.modal
+{
+    position: fixed;
+    width: 70%;
+    background-color: #fff;
+    margin-left: 15%;
+    top: 15%;
+    border: solid 1px;
+    z-index: 1000;
+}
+
+button.red 
+{
+    border: solid #842020; 
+    border-radius: 3px;
+    padding: 10px;
+    background-size: 100%;
+    float:left;
+    margin: 10px;
+}
+button.red:hover 
+{
+    background-size: 225%;
+}
+.even_patientD
+{ 
+    background-color: none;
+}
+.odd_patientD
+{
+    background-color: #f1f1f1;
+}
+
+.row
+{
+    display: unset;
+}
+.sorting_patient 
+{
+    background-color: #b9b9b9;
+}
+
+._title
+{
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+    padding:3px;
+}
+
+.time_flame
+{
+    padding-bottom: 15px;
+}
+
+
+
+.table-container {
+    max-height: 30em;
+}
+#patient_details_table {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+}
+#patient_details_table thead {
+    /* head takes the height it requires, 
+    and it's not scaled when table is resized */
+    flex: 0 0 auto;
+    width: calc(100% - 0.9em);
+}
+#patient_details_table tbody {
+    /* body takes all the remaining available space */
+    flex: 1 1 auto;
+    display: block;
+    overflow-y: scroll;
+}
+#patient_details_table tbody tr 
+{
+    width: calc(100% - 0.4em);
+margin-left: 2px;
+}
+#patient_details_table thead,
+#patient_details_table tbody tr {
+    display: table;
+    table-layout: fixed;
+}
+/* decorations */
+.table-container {
+    padding: 0.3em;
+}
+
+#patient_details_table td, #patient_details_table th {
+    padding: 0.8em;
+    text-align: center;
+}
+button.blue 
+{
+    border: solid #3e68a6; 
+    border-radius: 3px;
+    padding: 10px;
+    background-size: 100%;
+    float:right;
+    margin: 10px;
+}
+.bottom_buttons
+{
+    background-color: black;
+    position: fixed;
+    width: 70%;
+}
+button.blue:hover 
+{
+    background-size: 225%;
+}
+.modal-header{
+    padding: 10px;
+}
+.even_patientD:hover {
+    background-color: #b6bbb6;
+}
+</style>
+<!-- Modal -->
+<div class="modal " id="modal" style="display: none;" > 
+    <div class="modal-content" style="margin-left:0px; border-bottom: solid 1px;">
+        <div class="modal-header">
+            <div class="modal-title _title" ></div>
+            <div class="period _title" ></div>
+        </div>
+        <div class="modal-body">
+            <div class="container">
+                <div class="row" id="modal-div">
+                    <div id="patient_details_card" style="margin-bottom: 10px; border-bottom: 1px solid;" >
+                        <table id="patient_details_table" class="display table-container" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th class="sorting_patient">Patient ID</th>
+                                <th class="sorting_patient">Firstname</th>
+                                <th class="sorting_patient">Surname</th>
+                                <th class="sorting_patient">Gender</th>
+                                <th class="sorting_patient">Address</th>
+                            </tr>
+                            </thead>
+                            <tbody id="patient_details_body">
+                            </tbody>
+                        </table>
+                       
+                    </div>
+                    <span id='pagination_details' style="padding-left: 10px;"></span>
+                </div>
+            </div>
+        </div>
+        <div class="bottom_buttons">
+            <div class="pagination_button">
+               <button class="blue" onclick="Last()">Last</button>
+               <button class="blue" onclick="Next()">Next</button> 
+               <button class="blue" onclick="Previous()">Previous</button>
+               <button class="blue" onclick="First()">First</button>
+            </div>
+            <button class="red"  onclick="close_modal()">Cancle</button>
+        </div>
+    </div> 
+</div>
+<!-- Modal -->
 <script>
 
     var url = window.location.href;
@@ -212,7 +400,11 @@
             ServerSide: true,
             scroller: {
                 loadingIndicator: true
-            }
+            },
+            dom: 'Bfrtip',
+            buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
         });
 
         lookForTag();
@@ -245,20 +437,41 @@
         xhttp.send();
     }
 
-    function loadData(data) {
+    function loadData(data) 
+    {
         var count = 0;
-
-        for (var diagnosis in data) {
+        var patientsD_counter = 0;
+        for (var diagnosis in data) 
+        {
             col_one_female = data[diagnosis].female_less_than_six_months;
+            sessionStorage.setItem("patientD_col_one_female"+patientsD_counter, data[diagnosis].patientD_F_LessSixMonths); 
+
             col_one_male = data[diagnosis].male_less_than_six_months;
+            sessionStorage.setItem("patientD_col_one_male"+patientsD_counter, data[diagnosis].patientD_M_LessSixMonths); 
+
             col_two_female = data[diagnosis].female_six_months_to_less_than_five_yrs;
+            sessionStorage.setItem("patientD_col_two_female"+patientsD_counter, data[diagnosis].patientD_F_LessFiveYrs); 
+
             col_two_male = data[diagnosis].male_six_months_to_less_than_five_yrs;
+            sessionStorage.setItem("patientD_col_two_male"+patientsD_counter, data[diagnosis].patientD_M_LessFiveYrs); 
+
             col_three_female = data[diagnosis].female_five_yrs_to_fourteen_years;
+            sessionStorage.setItem("patientD_col_three_female"+patientsD_counter, data[diagnosis].patientD_F_5yrsTo14yrs); 
+
             col_three_male = data[diagnosis].male_five_yrs_to_fourteen_years;
+            sessionStorage.setItem("patientD_col_three_male"+patientsD_counter, data[diagnosis].patientD_M_5yrsTo14yrs); 
+
             col_four_female = data[diagnosis].female_over_fourteen_years;
+            sessionStorage.setItem("patientD_col_four_female"+patientsD_counter, data[diagnosis].patientD_F_Over14Yrs); 
+
             col_four_male = data[diagnosis].male_over_fourteen_years;
+            sessionStorage.setItem("patientD_col_four_male"+patientsD_counter, data[diagnosis].patientD_M_Over14Yrs);
+
             col_five_female = data[diagnosis].female_unknowns;
+            sessionStorage.setItem("patientD_col_five_female"+patientsD_counter, data[diagnosis].patientD_F_unknowns); 
+
             col_five_male = data[diagnosis].male_unknowns;
+            sessionStorage.setItem("patientD_col_five_male"+patientsD_counter, data[diagnosis].patientD_M_unknowns); 
 
             var total_diagnosis = 0;
             total_diagnosis = col_five_male + col_five_female;
@@ -267,44 +480,186 @@
             total_diagnosis += col_two_male + col_two_female;
             total_diagnosis += col_one_male + col_one_female;
 
-            data_table.row.add([diagnosis, buildMinStat(col_one_female, col_one_male),
-                buildMinStat(col_two_female, col_two_male),
-                buildMinStat(col_three_female, col_three_male),
-                buildMinStat(col_four_female, col_four_male),
-                buildMinStat(col_five_female, col_five_male),
-                buildTotal(total_diagnosis)]);
+            var total_patients = "";
+            total_patients = data[diagnosis].patientD_F_LessSixMonths + data[diagnosis].patientD_M_LessSixMonths +  data[diagnosis].patientD_F_LessFiveYrs;
+            total_patients += data[diagnosis].patientD_M_LessFiveYrs + data[diagnosis].patientD_F_5yrsTo14yrs;
+            total_patients += data[diagnosis].patientD_M_5yrsTo14yrs + data[diagnosis].patientD_F_Over14Yrs;
+            total_patients += data[diagnosis].patientD_M_Over14Yrs + data[diagnosis].patientD_F_unknowns;
+            total_patients += data[diagnosis].patientD_M_unknowns;
+
+            sessionStorage.setItem("total_patients"+patientsD_counter, total_patients); 
+            total_patients = "total_patients"+patientsD_counter;
+            data_table.row.add([diagnosis, 
+                buildMinStatFemale(col_one_female, 'patientD_col_one_female'+patientsD_counter,diagnosis,' less than six months'),
+
+                buildMinStatMale( col_one_male, 'patientD_col_one_male'+patientsD_counter,diagnosis,' less than six months'),
+
+                buildMinStatFemale(col_two_female, 'patientD_col_two_female'+patientsD_counter,diagnosis,' six months to less than five yrs'),
+
+                buildMinStatMale(col_two_male, 'patientD_col_two_male'+patientsD_counter,diagnosis,' six months to less than five yrs'),
+
+                buildMinStatFemale(col_three_female, 'patientD_col_three_female'+patientsD_counter,' five yrs to fourteen years'),
+
+                buildMinStatMale( col_three_male, 'patientD_col_three_male'+patientsD_counter,diagnosis,' five yrs to fourteen years'),
+
+                buildMinStatFemale(col_four_female,'patientD_col_four_female'+patientsD_counter, diagnosis,' over fourteen years'),
+
+                buildMinStatMale(col_four_male,'patientD_col_four_female'+patientsD_counter,diagnosis,' over fourteen years'),
+
+                buildMinStatFemale(col_five_female, 'patientD_col_five_female'+patientsD_counter,diagnosis,' unknowns'), 
+
+                buildMinStatMale( col_five_male, 'patientD_col_five_male'+patientsD_counter,diagnosis,' unknowns'),
+                
+                buildTotal(total_diagnosis,total_patients,diagnosis)]);
             data_table.draw();
 
             count++;
-
+            patientsD_counter++;
             if (count == 99) {
                 count = 0;
                 sleep(3000);
             }
-
         }
     }
 
-    function buildMinStat(male, female) {
+    function buildMinStat(gender,patientD, diagnosis,period) 
+    {
         var sp = document.createElement('span');
         var table = document.createElement('table');
         table.setAttribute('class', 'min-tables');
         var tr = document.createElement('tr');
         table.appendChild(tr);
+        var session_data = 'false';
 
         var td = document.createElement('td');
-        td.innerHTML = female;
-        tr.appendChild(td);
-
-        td = document.createElement('td');
-        td.innerHTML = male;
+        td.setAttribute('onclick', "view_patientD('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"')");
+        td.innerHTML = gender;
         tr.appendChild(td);
 
         sp.appendChild(table);
         return sp.innerHTML;
     }
 
-    function buildTotal(total) {
+    function buildMinStatFemale(female, patientD_F, diagnosis,period)
+    {
+       return buildMinStat(female, patientD_F, diagnosis,period);
+    } 
+    function buildMinStatMale(male, patientD_M,diagnosis,period)
+    {
+        return buildMinStat(male, patientD_M,diagnosis,period);
+    }
+
+    var currentPage = 1;
+    var pageSize = 30;
+    var skip = 0;
+    var totalCount = 0;
+    var totalPage = 0;
+    var session_patientD = "";
+    var session_diagnosis = "";
+    var session_period = "";
+    var session_data2 = 'true';
+
+    function First() {
+        currentPage = 1;
+        skip = 0;
+        view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
+    }
+
+    function Next() {
+        if (currentPage < totalPage) currentPage++;
+        skip = pageSize * (currentPage - 1);
+        view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
+    }
+
+    function Previous() {
+        if (currentPage > 1) currentPage--;
+        skip = pageSize * (currentPage - 1);
+        view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
+    }
+
+    function Last() {
+        currentPage = totalPage;
+        skip = pageSize * (currentPage - 1);
+        view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
+    }
+    function view_patientD(patientD,diagnosis,period,session_data)
+    {
+        if(session_data == 'false')
+        {
+            currentPage = 1;
+            skip = 0;
+            sessionStorage.setItem("session_patientD", patientD);
+            sessionStorage.setItem("session_diagnosis", diagnosis);
+            sessionStorage.setItem("session_period", period);
+        }
+        else{
+            patientD =sessionStorage.getItem('session_patientD');
+            diagnosis =sessionStorage.getItem('session_diagnosis');
+            period = sessionStorage.getItem('session_period');
+        }
+        
+        patientD = sessionStorage.getItem(patientD);
+        $('.modal-title').html('<b>Diagnosis:</b> &nbsp;&nbsp; ' + diagnosis);
+        $('.period').html('  &nbsp;&nbsp;' + period);
+        if(period == "")
+        $('.period').attr('style','display:none')
+        document.getElementById('modal').setAttribute('style','display:block');
+        patientD = patientD.substring(2);
+        patientD = patientD.split('|');
+        // patientD = patientD
+        patientD = patientD.sort();
+        totalCount = patientD.length;
+        totalPage = Math.ceil(totalCount / pageSize);
+        patientD = patientD.slice(skip, skip + pageSize);
+        
+        $('#patient_details_body').html('');
+        patientD.forEach(value1 => 
+        {
+            var value = value1.split(',');
+                
+            var tr = document.createElement('tr');
+            document.getElementById('patient_details_body').appendChild(tr);
+
+            var td = document.createElement('td');
+            td.innerHTML = value[1];
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.innerHTML = value[0];
+            tr.appendChild(td);
+
+            var td = document.createElement('td');
+            td.innerHTML = value[2];
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.innerHTML = value[3];
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.innerHTML = value[4];
+            tr.appendChild(td);
+
+            $('#pagination_details').html("Showing: " + currentPage + " to " + totalPage + " of " + totalCount);
+            if(totalCount <= 30)
+            $('.pagination_button').attr('style','display:none');
+            else
+            $('.pagination_button').attr('style','display:block');
+
+            $('tr').toggleClass('odd_patientD');
+            $('tr').addClass('even_patientD')
+        });
+        $('#report-cover').attr('style','display:block');
+    }
+    function close_modal()
+    {
+        $('#report-cover').attr('style','display:none');
+        document.getElementById('patient_details_body').innerHTML = "";
+        document.getElementById('modal').setAttribute('style','display:none')
+    }
+    function buildTotal(total,total_patients,diagnosis) 
+    {
+        var session_data = 'false';
         var sp = document.createElement('span');
         var table = document.createElement('table');
         table.setAttribute('class', 'min-tables');
@@ -312,6 +667,7 @@
         table.appendChild(tr);
 
         var td = document.createElement('td');
+        td.setAttribute('onclick', "view_patientD('"+total_patients+"','"+diagnosis+"','','"+session_data+"')");
         td.innerHTML = total;
         tr.appendChild(td);
         sp.appendChild(table);
@@ -320,4 +676,5 @@
 
     buildReportingTable();
 </script>
+
 
