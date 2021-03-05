@@ -44,18 +44,6 @@
         text-align: right;
     }
 
-    .lessT {
-        
-        border-bottom: 1px solid #111;
-        padding: 0;
-        
-    }
-
-    .lessTT {
-      margin-bottom: 7%;
-      padding-right: 10%;
-    }
-
     .title-table {
         display: table;
         width: 100%;
@@ -124,7 +112,6 @@
                 </tr>
             </table>
         </div>
-       
     </div>
 </div>
 
@@ -138,7 +125,6 @@
                     <th>
                         <table class='min-tables'>
                             <tr><td colspan=1>&#60;6 months</td></tr><tr><td>    F</td></tr>
-<<<<<<< HEAD
                         </table>
                     </th>
                       
@@ -176,55 +162,6 @@
                     <th>
                         <table class='min-tables'>
                             <tr><td colspan=1>&#62; 14 yrs</td></tr><tr><td>   F</td></tr>
-=======
-                        </table>
-                    </th>
-                      
-                     <th>
-                        <table class='min-tables'>
-                            <tr><td colspan=1>&#60;6 months</td></tr><tr><td>    M</td></tr>
-                        </table>
-                     </th>
-
-                    <th>
-                        <table class='min-tables'>
-                            <tr><td colspan=1>6 months &#60; 5 yrs</td></tr><tr><td>   F</td></tr>
-                        </table>
-                    </th>
-
-                    <th>
-                        <table class='min-tables'>
-                            <tr><td colspan=1>6 months &#60; 5 yrs</td></tr><tr><td>   M</td></tr>
->>>>>>> 017d2efa29140300e0c5fcf54e6e4fdf1ebfb654
-                        </table>
-                    </th>
-
-                    <th>
-                        <table class='min-tables'>
-<<<<<<< HEAD
-                            <tr><td colspan=1>&#62; 14 yrs</td></tr><tr><td>   M</td></tr>
-=======
-                            <tr><td colspan=1>5 months to 14 yrs</td></tr><tr><td>   F</td></tr>
->>>>>>> 017d2efa29140300e0c5fcf54e6e4fdf1ebfb654
-                        </table>
-                    </th>
-
-                    <th>
-                        <table class='min-tables'>
-<<<<<<< HEAD
-                            <tr><td colspan=1>Unknown</td></tr><tr><td>   F</td></tr>
-                        </table>
-                    </th>
-
-=======
-                            <tr><td colspan=1>5 months to 14 yrs</td></tr><tr><td>   M</td></tr>
-                        </table>
-                    </th>
-
-
-                    <th>
-                        <table class='min-tables'>
-                            <tr><td colspan=1>&#62; 14 yrs</td></tr><tr><td>   F</td></tr>
                         </table>
                     </th>
 
@@ -240,7 +177,6 @@
                         </table>
                     </th>
 
->>>>>>> 017d2efa29140300e0c5fcf54e6e4fdf1ebfb654
                     <th>
                         <table class='min-tables'>
                             <tr><td colspan=1>Unknown</td></tr><tr><td>   M</td></tr>
@@ -492,7 +428,6 @@ button.blue:hover
                 document.getElementById('spinner').style = 'display: none;';
                 document.getElementById('report-cover').style = 'display: none;';
                 var obj = JSON.parse(this.responseText);
-                console.log(obj);
                 loadData(obj);
             }
         };
@@ -545,14 +480,6 @@ button.blue:hover
             total_diagnosis += col_two_male + col_two_female;
             total_diagnosis += col_one_male + col_one_female;
 
-<<<<<<< HEAD
-            data_table.row.add([diagnosis, buildMinStatFemale(col_one_female),buildMinStatMale(col_one_male),
-                buildMinStatFemale(col_two_female),buildMinStatMale(col_two_male),
-                buildMinStatFemale(col_three_female),buildMinStatMale(col_three_male),
-                buildMinStatFemale(col_four_female),buildMinStatMale(col_four_male),
-                buildMinStatFemale(col_five_female),buildMinStatMale(col_five_male),
-                buildTotal(total_diagnosis)]);
-=======
             var total_patients = "";
             total_patients = data[diagnosis].patientD_F_LessSixMonths + data[diagnosis].patientD_M_LessSixMonths +  data[diagnosis].patientD_F_LessFiveYrs;
             total_patients += data[diagnosis].patientD_M_LessFiveYrs + data[diagnosis].patientD_F_5yrsTo14yrs;
@@ -584,7 +511,6 @@ button.blue:hover
                 buildMinStatMale( col_five_male, 'patientD_col_five_male'+patientsD_counter,diagnosis,' unknowns'),
                 
                 buildTotal(total_diagnosis,total_patients,diagnosis)]);
->>>>>>> 017d2efa29140300e0c5fcf54e6e4fdf1ebfb654
             data_table.draw();
 
             count++;
@@ -614,39 +540,6 @@ button.blue:hover
         return sp.innerHTML;
     }
 
-<<<<<<< HEAD
-    function buildMinStatMale(male) {
-        var sp = document.createElement('span');
-        var table = document.createElement('table');
-        table.setAttribute('class', 'min-tables');
-        var tr = document.createElement('tr');
-        table.appendChild(tr);
-
-        td = document.createElement('td');
-        td.innerHTML = male;
-        tr.appendChild(td);
-
-        sp.appendChild(table);
-        return sp.innerHTML;
-    }
-
-    function buildMinStatFemale(female) {
-        var sp = document.createElement('span');
-        var table = document.createElement('table');
-        table.setAttribute('class', 'min-tables');
-        var tr = document.createElement('tr');
-        table.appendChild(tr);
-
-        var td = document.createElement('td');
-        td.innerHTML = female;
-        tr.appendChild(td);
-
-        sp.appendChild(table);
-        return sp.innerHTML;
-    }
-
-    function buildTotal(total) {
-=======
     function buildMinStatFemale(female, patientD_F, diagnosis,period)
     {
        return buildMinStat(female, patientD_F, diagnosis,period);
@@ -767,7 +660,6 @@ button.blue:hover
     function buildTotal(total,total_patients,diagnosis) 
     {
         var session_data = 'false';
->>>>>>> 017d2efa29140300e0c5fcf54e6e4fdf1ebfb654
         var sp = document.createElement('span');
         var table = document.createElement('table');
         table.setAttribute('class', 'min-tables');
