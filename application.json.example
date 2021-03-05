@@ -61,7 +61,7 @@
       "url": "/apps/OPD/views/encounters/medication_given.html"
     },
     "radiology orders": {
-      "available": true,
+      "available": false,
       "activitiesIcon": "/assets/images/radiology_types.png",
       "url": "/apps/OPD/views/encounters/radiology/radiology_orders.html"
     }
