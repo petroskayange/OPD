@@ -1,6 +1,6 @@
 {
   "encounters": {
-   "vitals": {
+    "vitals": {
       "available": true,
       "activitiesIcon": "/assets/images/vitals.png",
       "url": "/views/patient/vitals.html"
@@ -21,24 +21,24 @@
       "url": "/apps/OPD/views/encounters/clinical_notes.html"
     },
     "lab orders": {
-          "available": true,
-          "activitiesIcon": "/assets/images/clinical-notes.png",
-          "url": "/apps/OPD/views/encounters/malaria/lab_orders.html"
+      "available": true,
+      "activitiesIcon": "/assets/images/clinical-notes.png",
+      "url": "/apps/OPD/views/encounters/malaria/lab_orders.html"
     },
     "lab results": {
-          "available": true,
-          "activitiesIcon": "/assets/images/clinical-notes.png",
-          "url": "/apps/OPD/views/encounters/malaria/lab_results.html"
+      "available": true,
+      "activitiesIcon": "/assets/images/clinical-notes.png",
+      "url": "/apps/OPD/views/encounters/malaria/lab_results.html"
     },
     "prescription": {
-          "available": true,
-          "activitiesIcon": "/assets/images/clinical-notes.png",
-          "url": "/apps/OPD/views/encounters/malaria/prescription.html"
+      "available": true,
+      "activitiesIcon": "/assets/images/clinical-notes.png",
+      "url": "/apps/OPD/views/encounters/malaria/prescription.html"
     },
     "dispensation": {
-          "available": true,
-          "activitiesIcon": "/assets/images/dispensing.png",
-          "url": "/views/patient/dispensing.html"
+      "available": true,
+      "activitiesIcon": "/assets/images/dispensing.png",
+      "url": "/views/patient/dispensing.html"
     },
     "patient registration": {
       "available": true,
@@ -60,17 +60,25 @@
       "activitiesIcon": "/assets/images/drugs-given.png",
       "url": "/apps/OPD/views/encounters/medication_given.html"
     },
+<<<<<<< HEAD
     "view radiology results": {
       "available": true,
       "activitiesIcon": "/assets/images/radioG1.png",
       "url": "/apps/OPD/views/encounters/radiology/view_radiology_results.html"
+=======
+    "radiology orders": {
+      "available": false,
+      "activitiesIcon": "/assets/images/radiology_types.png",
+      "url": "/apps/OPD/views/encounters/radiology/radiology_orders.html"
+>>>>>>> 017d2efa29140300e0c5fcf54e6e4fdf1ebfb654
     }
   },
   "activities": {
     "url": "",
-    "tasks": []
+    "tasks": [
+
+    ]
   },
-    
   "others": [
     {
       "activitiesName": "National Health ID (Print)",
@@ -78,35 +86,40 @@
       "activitiesIcon": "/assets/images/barcode.png",
       "activitiesDescription": "Print Patient National Health ID",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
-    },{
+    },
+    {
       "activitiesName": "Lab activities",
       "available": false,
       "activitiesIcon": "/assets/images/lab.png",
       "url": "/views/patient/labs.html",
       "activitiesDescription": "Print Patient Visit Summary",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
-    },{
+    },
+    {
       "activitiesName": "Demographics (Edit)",
       "available": false,
       "activitiesIcon": "/assets/images/edit.png",
       "url": "/views/patient/edit_demographics.html",
       "activitiesDescription": "Print Patient Demographics",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
-    },{
+    },
+    {
       "activitiesName": "Change session date",
       "available": false,
       "activitiesIcon": "/assets/images/time.png",
       "url": "/views/change_session_date.html",
       "activitiesDescription": "Change session date (for retrospective entry)",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
-    },{
+    },
+    {
       "activitiesName": "Program(s)",
       "available": false,
       "activitiesIcon": "/assets/images/programs.png",
       "url": "/views/patient/programs.html",
       "activitiesDescription": "View / update patient's programs",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
-    },{
+    },
+    {
       "activitiesName": "Visit Summary (Print)",
       "available": false,
       "activitiesIcon": "/assets/images/folder.png",
