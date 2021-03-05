@@ -50,7 +50,7 @@ function getMalawiID() {
       var obj = JSON.parse(this.responseText);
       if(obj.length > 0) 
         document.getElementById('nid').innerHTML = obj[0].identifier;
-    
+        sessionStorage.setItem("national_id", obj[0].identifier);
     }
   };
   xhttp.open("GET", url, true);
