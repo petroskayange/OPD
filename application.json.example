@@ -65,6 +65,7 @@
       "available": true,
       "activitiesIcon": "/assets/images/radioG1.png",
       "url": "/apps/OPD/views/encounters/radiology/view_radiology_results.html"
+      },
 =======
     "radiology orders": {
       "available": false,
