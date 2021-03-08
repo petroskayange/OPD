@@ -60,17 +60,15 @@
       "activitiesIcon": "/assets/images/drugs-given.png",
       "url": "/apps/OPD/views/encounters/medication_given.html"
     },
-<<<<<<< HEAD
     "view radiology results": {
-      "available": true,
+      "available": flase,
       "activitiesIcon": "/assets/images/radioG1.png",
       "url": "/apps/OPD/views/encounters/radiology/view_radiology_results.html"
-=======
+      },
     "radiology orders": {
       "available": false,
       "activitiesIcon": "/assets/images/radiology_types.png",
       "url": "/apps/OPD/views/encounters/radiology/radiology_orders.html"
->>>>>>> 017d2efa29140300e0c5fcf54e6e4fdf1ebfb654
     }
   },
   "activities": {
