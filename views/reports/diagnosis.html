@@ -339,7 +339,7 @@ button.blue:hover
             <div class="container">
                 <div class="row" id="modal-div">
                     <div id="patient_details_card" style="margin-bottom: 10px; border-bottom: 1px solid;" >
-                        <table id="patient_details_table" class="display table-container" style="width:100%">
+                        <table id="patient_details_table" class="display" style="width:100%">
                             <thead>
                             <tr>
                                 <th class="sorting_patient">Patient ID</th>
@@ -354,7 +354,6 @@ button.blue:hover
                         </table>
                        
                     </div>
-                    <span id='pagination_details' style="padding-left: 10px;"></span>
                 </div>
             </div>
         </div>
@@ -365,7 +364,7 @@ button.blue:hover
                <button class="blue" onclick="Previous()">Previous</button>
                <button class="blue" onclick="First()">First</button>
             </div>
-            <button class="red"  onclick="close_modal()">Cancle</button>
+            <button class="red"  onclick="close_modal()">Close</button>
         </div>
     </div> 
 </div>
@@ -383,6 +382,7 @@ button.blue:hover
 
     function buildReportingTable() {
         initializeTable();
+        //initializeTable_Modal();
         getData();
     }
 
@@ -408,6 +408,24 @@ button.blue:hover
         });
 
         lookForTag();
+    }
+
+    function initializeTable_Modal(tablename) {
+        data_table = $(tablename).DataTable({
+            fixedHeader: true,
+            searching: true,
+            paging: true,
+            scrollY: 400,
+            Processing: true,
+            ServerSide: true,
+            scroller: {
+                loadingIndicator: true
+            },
+            dom: 'Bfrtip',
+            buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+        });
     }
 
     function getData() {
@@ -582,6 +600,8 @@ button.blue:hover
         skip = pageSize * (currentPage - 1);
         view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
     }
+    
+    var table_id ="";
     function view_patientD(patientD,diagnosis,period,session_data)
     {
         if(session_data == 'false')
@@ -608,15 +628,22 @@ button.blue:hover
         patientD = patientD.split('|');
         // patientD = patientD
         patientD = patientD.sort();
-        totalCount = patientD.length;
+       /* totalCount = patientD.length;
         totalPage = Math.ceil(totalCount / pageSize);
-        patientD = patientD.slice(skip, skip + pageSize);
+        patientD = patientD.slice(skip, skip + pageSize); */
+
+        table_id = diagnosis;
+        
         
         $('#patient_details_body').html('');
         patientD.forEach(value1 => 
         {
             var value = value1.split(',');
-                
+            
+            var table = document.getElementById('patient_details_table');
+            table.setAttribute('id', table_id);
+            //document.getElementById('patient_details_table').appendChild(table);
+            /////////////////////////
             var tr = document.createElement('tr');
             document.getElementById('patient_details_body').appendChild(tr);
 
@@ -650,12 +677,19 @@ button.blue:hover
             $('tr').addClass('even_patientD')
         });
         $('#report-cover').attr('style','display:block');
+
+        //add export buttons
+        
+        initializeTable_Modal(table_id);
     }
     function close_modal()
     {
         $('#report-cover').attr('style','display:none');
         document.getElementById('patient_details_body').innerHTML = "";
-        document.getElementById('modal').setAttribute('style','display:none')
+        document.getElementById('modal').setAttribute('style','display:none');
+        document.getElementById(table_id).setAttribute('id','patient_details_table');
+        
+        
     }
     function buildTotal(total,total_patients,diagnosis) 
     {

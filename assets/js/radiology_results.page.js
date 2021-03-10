@@ -27,11 +27,11 @@ function buildOPDdiagnosisPage() {
     table.appendChild(tr);
 
     var th = document.createElement('th');
-    th.innerHTML = "Sessiom Id";
+    th.innerHTML = "Accession Number";
     tr.appendChild(th);
 
     var th = document.createElement('th');
-     th.innerHTML = "Type";
+     th.innerHTML = "Order Type";
     tr.appendChild(th);
 
     var th = document.createElement('th');

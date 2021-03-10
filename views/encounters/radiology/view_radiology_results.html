@@ -113,7 +113,10 @@
         jQuery("#cover").hide();
         addSelectedDignosis(selected, side);
     }
-
+function get_observation_results()
+{
+    submitParameters(obs, "/observations", "buildOPDdiagnosisPage")
+}
 </script>
 
 <style>
@@ -266,7 +269,7 @@
 
 
             <input type="text" name="summary"
-                   tt_onLoad="__$('keyboard').style.display = 'none';buildOPDdiagnosisPage();"
+                   tt_onLoad="__$('keyboard').style.display = 'none';get_observation_results();"
                    tt_pageStyleClass="NoControls"  optional="true"/>
 
         </form>
