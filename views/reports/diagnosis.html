@@ -211,7 +211,7 @@
     width: 70%;
     background-color: #fff;
     margin-left: 15%;
-    top: 15%;
+    top: 0%;
     border: solid 1px;
     z-index: 1000;
 }
@@ -339,7 +339,7 @@ button.blue:hover
             <div class="container">
                 <div class="row" id="modal-div">
                     <div id="patient_details_card" style="margin-bottom: 10px; border-bottom: 1px solid;" >
-                        <table id="patient_details_table" class="display table-container" style="width:100%">
+                        <table id="patient_details_table" class="display" style="width:100%">
                             <thead>
                             <tr>
                                 <th class="sorting_patient">Patient ID</th>
@@ -355,17 +355,19 @@ button.blue:hover
                         </table>
                        
                     </div>
-                    <span id='pagination_details' style="padding-left: 10px;"></span>
                 </div>
             </div>
         </div>
         <div class="bottom_buttons">
+<<<<<<< HEAD
             <div class="pagination_button">
                <button class="blue" onclick="Last()">Last</button>
                <button class="blue" onclick="Next()">Next</button> 
                <button class="blue" onclick="Previous()">Previous</button>
                <button class="blue" onclick="First()">First</button>
             </div>
+=======
+>>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
             <button class="red"  onclick="close_modal()">Close</button>
         </div>
     </div> 
@@ -397,6 +399,26 @@ button.blue:hover
             searching: true,
             paging: false,
             scrollY: 400,
+            Processing: true,
+            ServerSide: true,
+            scroller: {
+                loadingIndicator: true
+            },
+            dom: 'Bfrtip',
+            buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+        });
+
+        lookForTag();
+    }
+
+    function initializeTable_Modal() {
+        table = $('#patient_details_table').DataTable({
+            fixedHeader: true,
+            searching: true,
+            paging: true,
+            scrollY: 520,
             Processing: true,
             ServerSide: true,
             scroller: {
@@ -533,7 +555,12 @@ button.blue:hover
         var session_data = 'false';
 
         var td = document.createElement('td');
+<<<<<<< HEAD
         td.setAttribute('onclick', "callLoader(view_patientD.bind('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"'))");
+=======
+        td.setAttribute('onclick', "view_patientD('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"')");
+        td.setAttribute('id',patientD);
+>>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
         td.innerHTML = gender;
         tr.appendChild(td);
 
@@ -560,32 +587,30 @@ button.blue:hover
     var session_period = "";
     var session_data2 = 'true';
 
-    function First() {
-        currentPage = 1;
-        skip = 0;
-        view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
-    }
+    
 
-    function Next() {
-        if (currentPage < totalPage) currentPage++;
-        skip = pageSize * (currentPage - 1);
-        view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
-    }
+    
 
-    function Previous() {
-        if (currentPage > 1) currentPage--;
-        skip = pageSize * (currentPage - 1);
-        view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
-    }
-
+<<<<<<< HEAD
     function Last() {
         currentPage = totalPage;
         skip = pageSize * (currentPage - 1);
         view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
     }
   
+=======
+>>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
     function view_patientD(patientD,diagnosis,period,session_data)
     {
+        $('#spinner').attr('style','display:block');
+        $('#report-cover').attr('style','display:block');
+        var y = $("#"+patientD).html();
+        var mil = y*40;
+        setTimeout(function(){ dataTableContentLoader(patientD,diagnosis,period,session_data); },mil);
+    }
+
+    function dataTableContentLoader(patientD,diagnosis,period,session_data){
+
         if(session_data == 'false')
         {
             currentPage = 1;
@@ -610,9 +635,9 @@ button.blue:hover
         patientD = patientD.split('|');
         // patientD = patientD
         patientD = patientD.sort();
-        totalCount = patientD.length;
+       /* totalCount = patientD.length;
         totalPage = Math.ceil(totalCount / pageSize);
-        patientD = patientD.slice(skip, skip + pageSize);
+        patientD = patientD.slice(skip, skip + pageSize); */
         
         $('#patient_details_body').html('');
         patientD.forEach(value1 => 
@@ -646,16 +671,16 @@ button.blue:hover
             td.innerHTML = value[5];
             tr.appendChild(td);
 
-            $('#pagination_details').html("Showing: " + currentPage + " to " + totalPage + " of " + totalCount);
-            if(totalCount <= 30)
-            $('.pagination_button').attr('style','display:none');
-            else
-            $('.pagination_button').attr('style','display:block');
-
             $('tr').toggleClass('odd_patientD');
             $('tr').addClass('even_patientD')
         });
-        $('#report-cover').attr('style','display:block');
+        
+
+        document.getElementById('spinner').style = 'display: none;';
+        // document.getElementById('report-cover').style = 'display: none;';
+
+        //add export data buttons
+        initializeTable_Modal();
     }
 
     function callLoader(callback)
@@ -666,7 +691,8 @@ button.blue:hover
     {
         $('#report-cover').attr('style','display:none');
         document.getElementById('patient_details_body').innerHTML = "";
-        document.getElementById('modal').setAttribute('style','display:none')
+        document.getElementById('modal').setAttribute('style','display:none');
+        table.destroy();
     }
     function buildTotal(total,total_patients,diagnosis) 
     {
@@ -679,6 +705,7 @@ button.blue:hover
 
         var td = document.createElement('td');
         td.setAttribute('onclick', "view_patientD('"+total_patients+"','"+diagnosis+"','','"+session_data+"')");
+        td.setAttribute('id',total_patients);
         td.innerHTML = total;
         tr.appendChild(td);
         sp.appendChild(table);
