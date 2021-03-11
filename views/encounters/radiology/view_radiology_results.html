@@ -142,10 +142,10 @@
     }
 
     td {
-        text-align: center;
+        text-align: left;
     }
     th {
-        text-align: center;
+        text-align: left;
     }
     
     #patient tr:nth-child(even){background-color: #f2f2f2;}
@@ -266,7 +266,7 @@
 
 
             <input type="text" name="summary"
-                   tt_onLoad="__$('keyboard').style.display = 'none';buildOPDdiagnosisPage();"
+                   tt_onLoad="__$('keyboard').style.display = 'none';getObservationData();"
                    tt_pageStyleClass="NoControls"  optional="true"/>
 
         </form>
@@ -334,4 +334,28 @@
     </div>
   </div>
 </body>
+
+<script>
+        function getObservationData() {
+      
+        var url = sessionStorage.apiProtocol + '://' + apiURL + ':' + apiPort + '/api/v1/observations?person_id=' + sessionStorage.patientID + '& concept_id=8426';
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = function () {
+
+            if (this.readyState == 4 && this.status == 200) {
+
+                var results = JSON.parse(this.responseText);
+                buildOPDdiagnosisPage(results);
+                // console.log(results);
+            }
+        };
+        try {
+            req.open('GET', url, true);
+            req.setRequestHeader('Authorization', sessionStorage.getItem('authorization'));
+            req.send(null);
+        } catch (e) {
+        }
+
+    }
+</script>
 

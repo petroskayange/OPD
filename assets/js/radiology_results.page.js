@@ -1,7 +1,7 @@
 var popipPosition;
 var selectedDignosis = {};
 
-function buildOPDdiagnosisPage() {
+function buildOPDdiagnosisPage(table_data) {
     var frame = document.getElementById('inputFrame' + tstCurrentPage);
     frame.style = 'width: 96%; height: 90%;';
 
@@ -22,43 +22,68 @@ function buildOPDdiagnosisPage() {
     table.setAttribute('id', 'patient');
     container.appendChild(table);
 
+
     var tr = document.createElement('tr');
     tr.setAttribute('id','');
     table.appendChild(tr);
 
     var th = document.createElement('th');
-    th.innerHTML = "Sessiom Id";
+    th.innerHTML = "Accession Number";
     tr.appendChild(th);
 
     var th = document.createElement('th');
-     th.innerHTML = "Type";
+     th.innerHTML = "Order Type";
     tr.appendChild(th);
 
     var th = document.createElement('th');
     th.innerHTML = "Details";
     tr.appendChild(th);
 
-    var tr = document.createElement('tr');
-    tr.setAttribute('id','table_elements');
-    table.appendChild(tr);
 
-    var td = document.createElement('td');
-    td.innerHTML = "1234";
-    tr.appendChild(td);
+    // for(var key in array_obj)
+    // {
+    //     var obj = array_obj[key];
+    //     patient_data.radiology_orders.push(
+    //     { 
+    //         "main_value_text": obj.value_text,
+    //         "obs_id": obj.obs_id,
+    //         "sub_value_text": obj.children[0].value_text,
+    //     });
+    // }
 
-    var td = document.createElement('td');
-    td.innerHTML = "Chest";
-    tr.appendChild(td);
 
-    var td = document.createElement('td');
-    tr.appendChild(td);
+    console.log(table_data);
+    for(var key in table_data)
+    {
 
-    var button = document.createElement('button');
-    button.setAttribute('class','btn btn-primary tb-btn');
-    button.setAttribute('data-toggle','modal');
-    button.setAttribute('data-target','#detail_modal');
-    button.innerHTML = "View";
-    td.appendChild(button);
+        if(table_data[key].children.length > 0)
+        {
+            var tr = document.createElement('tr');
+            tr.setAttribute('id','table_elements');
+            table.appendChild(tr);
+
+            var td = document.createElement('td');
+            td.innerHTML = table_data[key].children[0].accession_number;
+            tr.appendChild(td);
+
+            var td = document.createElement('td');
+            td.innerHTML = table_data[key].value_text;;
+            tr.appendChild(td);
+
+            var td = document.createElement('td');
+            tr.appendChild(td);
+
+            var button = document.createElement('button');
+            button.setAttribute('class','btn btn-primary tb-btn');
+            button.setAttribute('data-toggle','modal');
+            button.setAttribute('data-target','#detail_modal');
+            button.innerHTML = "View";
+            td.appendChild(button);
+        }
+     
+
+    }
+  
 
     var backButton = __$('backButton');
     backButton.style.display = 'none';

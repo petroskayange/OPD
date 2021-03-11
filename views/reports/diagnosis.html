@@ -300,7 +300,7 @@ margin-left: 2px;
 
 #patient_details_table td, #patient_details_table th {
     padding: 0.8em;
-    text-align: center;
+    text-align: left;
 }
 button.blue 
 {
@@ -346,6 +346,7 @@ button.blue:hover
                                 <th class="sorting_patient">Firstname</th>
                                 <th class="sorting_patient">Surname</th>
                                 <th class="sorting_patient">Gender</th>
+                                <th class="sorting_patient">Phone Number</th>
                                 <th class="sorting_patient">Address</th>
                             </tr>
                             </thead>
@@ -365,7 +366,7 @@ button.blue:hover
                <button class="blue" onclick="Previous()">Previous</button>
                <button class="blue" onclick="First()">First</button>
             </div>
-            <button class="red"  onclick="close_modal()">Cancle</button>
+            <button class="red"  onclick="close_modal()">Close</button>
         </div>
     </div> 
 </div>
@@ -532,7 +533,7 @@ button.blue:hover
         var session_data = 'false';
 
         var td = document.createElement('td');
-        td.setAttribute('onclick', "view_patientD('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"')");
+        td.setAttribute('onclick', "callLoader(view_patientD.bind('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"'))");
         td.innerHTML = gender;
         tr.appendChild(td);
 
@@ -582,6 +583,7 @@ button.blue:hover
         skip = pageSize * (currentPage - 1);
         view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
     }
+  
     function view_patientD(patientD,diagnosis,period,session_data)
     {
         if(session_data == 'false')
@@ -639,6 +641,10 @@ button.blue:hover
             td = document.createElement('td');
             td.innerHTML = value[4];
             tr.appendChild(td);
+            
+            td = document.createElement('td');
+            td.innerHTML = value[5];
+            tr.appendChild(td);
 
             $('#pagination_details').html("Showing: " + currentPage + " to " + totalPage + " of " + totalCount);
             if(totalCount <= 30)
@@ -650,6 +656,11 @@ button.blue:hover
             $('tr').addClass('even_patientD')
         });
         $('#report-cover').attr('style','display:block');
+    }
+
+    function callLoader(callback)
+    {
+        callback();
     }
     function close_modal()
     {
@@ -675,6 +686,7 @@ button.blue:hover
     }
 
     buildReportingTable();
+    
 </script>
 
 
