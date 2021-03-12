@@ -282,6 +282,7 @@ button.red:hover
     flex: 1 1 auto;
     display: block;
     overflow-y: scroll;
+    text-align: center;
 }
 #patient_details_table tbody tr 
 {
@@ -359,15 +360,7 @@ button.blue:hover
             </div>
         </div>
         <div class="bottom_buttons">
-<<<<<<< HEAD
-            <div class="pagination_button">
-               <button class="blue" onclick="Last()">Last</button>
-               <button class="blue" onclick="Next()">Next</button> 
-               <button class="blue" onclick="Previous()">Previous</button>
-               <button class="blue" onclick="First()">First</button>
-            </div>
-=======
->>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
+        
             <button class="red"  onclick="close_modal()">Close</button>
         </div>
     </div> 
@@ -555,12 +548,8 @@ button.blue:hover
         var session_data = 'false';
 
         var td = document.createElement('td');
-<<<<<<< HEAD
-        td.setAttribute('onclick', "callLoader(view_patientD.bind('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"'))");
-=======
         td.setAttribute('onclick', "view_patientD('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"')");
         td.setAttribute('id',patientD);
->>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
         td.innerHTML = gender;
         tr.appendChild(td);
 
@@ -591,15 +580,12 @@ button.blue:hover
 
     
 
-<<<<<<< HEAD
     function Last() {
         currentPage = totalPage;
         skip = pageSize * (currentPage - 1);
         view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
     }
   
-=======
->>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
     function view_patientD(patientD,diagnosis,period,session_data)
     {
         $('#spinner').attr('style','display:block');
