@@ -213,7 +213,7 @@
     margin-left: 15%;
     top: 0%;
     border: solid 1px;
-    z-index: 1000;
+    z-index: 990;
 }
 
 button.red 
@@ -327,6 +327,18 @@ button.blue:hover
 .even_patientD:hover {
     background-color: #b6bbb6;
 }
+.even_patientD {
+    text-align: left;
+}
+th
+{
+    width:204px !important;
+}
+table.dataTable thead th, table.dataTable thead td {
+  
+    padding-left: 3px;
+}
+
 </style>
 <!-- Modal -->
 <div class="modal " id="modal" style="display: none;" > 
@@ -339,10 +351,10 @@ button.blue:hover
             <div class="container">
                 <div class="row" id="modal-div">
                     <div id="patient_details_card" style="margin-bottom: 10px; border-bottom: 1px solid;" >
-                        <table id="patient_details_table" class="display" style="width:100%">
+                        <table id="patient_details_table" class="display " >
                             <thead>
                             <tr>
-                                <th class="sorting_patient">Patient ID</th>
+                                <th class="sorting_patient" >Patient ID</th>
                                 <th class="sorting_patient">Firstname</th>
                                 <th class="sorting_patient">Surname</th>
                                 <th class="sorting_patient">Gender</th>
@@ -359,15 +371,6 @@ button.blue:hover
             </div>
         </div>
         <div class="bottom_buttons">
-<<<<<<< HEAD
-            <div class="pagination_button">
-               <button class="blue" onclick="Last()">Last</button>
-               <button class="blue" onclick="Next()">Next</button> 
-               <button class="blue" onclick="Previous()">Previous</button>
-               <button class="blue" onclick="First()">First</button>
-            </div>
-=======
->>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
             <button class="red"  onclick="close_modal()">Close</button>
         </div>
     </div> 
@@ -555,12 +558,8 @@ button.blue:hover
         var session_data = 'false';
 
         var td = document.createElement('td');
-<<<<<<< HEAD
-        td.setAttribute('onclick', "callLoader(view_patientD.bind('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"'))");
-=======
         td.setAttribute('onclick', "view_patientD('"+patientD+"','"+diagnosis+"','"+"Female"+period+"','"+session_data+"')");
         td.setAttribute('id',patientD);
->>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
         td.innerHTML = gender;
         tr.appendChild(td);
 
@@ -587,21 +586,12 @@ button.blue:hover
     var session_period = "";
     var session_data2 = 'true';
 
-    
-
-    
-
-<<<<<<< HEAD
-    function Last() {
-        currentPage = totalPage;
-        skip = pageSize * (currentPage - 1);
-        view_patientD(session_patientD,session_diagnosis,session_period,session_data2);
-    }
-  
-=======
->>>>>>> 86045b8a9c8ea003f4661d51e8a929692a52097b
     function view_patientD(patientD,diagnosis,period,session_data)
     {
+        if($('#virtual-keyboard').length)
+            hide_keyboard();
+
+        $('.keyboard').attr('style','display:none');
         $('#spinner').attr('style','display:block');
         $('#report-cover').attr('style','display:block');
         var y = $("#"+patientD).html();
@@ -633,12 +623,8 @@ button.blue:hover
         document.getElementById('modal').setAttribute('style','display:block');
         patientD = patientD.substring(2);
         patientD = patientD.split('|');
-        // patientD = patientD
         patientD = patientD.sort();
-       /* totalCount = patientD.length;
-        totalPage = Math.ceil(totalCount / pageSize);
-        patientD = patientD.slice(skip, skip + pageSize); */
-        
+     
         $('#patient_details_body').html('');
         patientD.forEach(value1 => 
         {
@@ -677,22 +663,27 @@ button.blue:hover
         
 
         document.getElementById('spinner').style = 'display: none;';
-        // document.getElementById('report-cover').style = 'display: none;';
-
         //add export data buttons
         initializeTable_Modal();
+
+        $("label [aria-controls*='report']").attr('type','text');
     }
 
-    function callLoader(callback)
-    {
-        callback();
-    }
     function close_modal()
     {
+        $("label [aria-controls*='report']").attr('type','search');
         $('#report-cover').attr('style','display:none');
         document.getElementById('patient_details_body').innerHTML = "";
         document.getElementById('modal').setAttribute('style','display:none');
         table.destroy();
+        hide_keyboard();
+    }
+
+    function hide_keyboard()
+    {
+        var vl = document.getElementById('virtual-keyboard');
+        var w = document.getElementsByTagName('body')[0];
+        w.removeChild(vl);
     }
     function buildTotal(total,total_patients,diagnosis) 
     {
