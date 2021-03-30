@@ -1,8 +1,6 @@
 <link rel="stylesheet" href="/public/touchscreentoolkit/lib/stylesheets/touch-fancy.css" type="text/css">
 
 <script type="text/javascript" src="/apps/OPD/assets/js/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="/assets/js/core.js"></script>
-
 
 <!--link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/datatables.css"/-->
 <link rel="stylesheet" type="text/css" href="/apps/OPD/assets/css/DataTables/jquery.dataTables.min.css"/>
@@ -15,8 +13,8 @@
 <script type='text/javascript' src='/assets/js/datatables/buttons.html5.min.js'></script>
 <script type='text/javascript' src='/assets/js/datatables/buttons.print.min.js'></script>
 
-
 <script type="text/javascript" src="/assets/js/moment.js"></script>
+<script type="text/javascript" src="/assets/js/core.js"></script>
 
 <script type="text/javascript" src="/assets/js/virtual.keyboard.js"></script>
 
@@ -141,8 +139,7 @@
 
     function buildReportingTable() {
         buildHeaders();
-        getData();
-        //initializeTable();
+        // initializeTable();
     }
 
     var table_columns = [];
@@ -154,8 +151,8 @@
             table_columns.push({title: headers[i]});
         }
 
-        //initializeTable();
-        //getData();
+        initializeTable();
+        getData();
     }
 
     var data_table;
@@ -165,13 +162,15 @@
             columns: table_columns,
             fixedHeader: true,
             searching: true,
-            paging: false,
+            paging: true,
             scrollY: 430,
             scroller: {
                 loadingIndicator: true
             },
             dom: 'Bfrtip',
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print']   
+            buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
         });
 
         lookForTag();
@@ -233,6 +232,5 @@
     }
 
     buildReportingTable();
-    initializeTable();
 </script>
 
