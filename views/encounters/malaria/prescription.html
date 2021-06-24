@@ -31,7 +31,6 @@
         {
             if (this.readyState == 4 && (this.status == 201 || this.status == 200)) 
                 generics = JSON.parse(this.responseText);
-             
         };
         xhttp_generic_drugs.open("GET", generic_drugs_url, false);
         xhttp_generic_drugs.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
