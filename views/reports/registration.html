@@ -242,7 +242,6 @@ function getData() {
       document.getElementById('spinner').style = 'display: none;';
       document.getElementById('report-cover').style = 'display: none;';
       var obj = JSON.parse(this.responseText);
-      console.log(obj);
       loadData(obj);
     }
   };
@@ -277,12 +276,11 @@ function loadData(data) {
 
     high_level_stats[visit_type] += 1;
 
-    //data_table.row.add([visit_type, given_name, family_name, gender, birthdate, visit_date, address]); 
-    //data_table.draw();
+    data_table.row.add([visit_type, given_name, family_name, gender, birthdate, visit_date, address]); 
+    data_table.draw();
     table_data.push([visit_type, given_name, family_name, gender, birthdate, visit_date, address]);
   }
 
-  initializeTable();
 }
 
 buildReportingTable();

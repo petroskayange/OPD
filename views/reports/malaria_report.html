@@ -48,6 +48,25 @@
         text-align: right;
     }
 
+    .min-tables {
+        border-left: 1px solid #111;
+    }
+
+    .tbody-rows td{
+        border-bottom: 1px solid #111;
+    }
+
+    .tbody-rows :first-child {
+        border-right: 2px solid #111;
+        border-left: 2px solid #111;
+        padding-right: 1%;
+    }
+
+    .tbody-rows :last-child {
+        border-right: 2px solid #111;
+        border-left: 1px solid #111;
+    }
+
     .title-table {
         display: table;
         width: 100%;
@@ -128,22 +147,180 @@
         <div id='data-cell'>
             <table id="report" class="display" style="width:100%">
                 <thead>
-                <tr>
-                    <th></th>
-                    <th>
-                       
-                    </th>
-
-                     <th>
-                        
-                    </th>
-
-                    <th>
-                        
-                    </th>
-                </tr>
+                    <tr>
+                        <th>Out Patient Department</th>
+                        <th>
+                            <table class='min-tables'>
+                                <tr><td colspan=1>Out Patient Numbers</td></tr> <tr><td>    &#60;5 yrs</td></tr>
+                            </table>
+                        </th>
+    
+                        <th>
+                            <table class='min-tables'>
+                                <tr><td colspan=1>.</td></tr> <tr><td>    &#62;5 yrs</td></tr>
+                            </table>
+                        </th>
+                    </tr>
                 </thead>
-                <tbody>
+                <tbody class="tbody-rows">
+                    <tr>
+                        <td class="first-td">Confirmed (Co) Malaria Cases</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Presumed (Pr) Malaria Cases (Clinically Diagnosed)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Confirmed malaria in pregnant woman (c)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Presumed (clinically diagnosed) malaria in pregnant woman (d)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Confirmed (Co) Malaria Cases</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr class="tr-last">
+                        <td class="first-td">Total OPD Attendance: All causes (Including malaria cases)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+
+                    <tr class="tr-head">
+                        <td class="first-td thead-f">Treatment in OPD</td>
+                        <td class="td-f"></td>
+                        <td class="td-f"></td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Confirmed cases receiving first-line anti malarial medication (LA)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Presumed malaria cases receiving first-line anti malarial medication(LA)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Confirmed cases receiving second-line anti malarial medication (ASAQ)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Presumed malaria cases receiving second-line anti malarial medication(ASAQ)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+
+                    <tr class="tr-head">
+                        <td class="first-td thead-f">Lab/mRDT in OPD</td>
+                        <td class="td-f"></td>
+                        <td class="td-f"></td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Suspected malaria cases tested (mRDT)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Positive malaria cases (mRDT)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Suspected malaria cases tested (microscopy)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Positive malaria cases (microscopy)</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Total suspected malaria cases </td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+
+                    <tr class="tr-head">
+                        <td class="first-td thead-f">Commodities Used</td>
+                        <td class="td-f"></td>
+                        <td class="td-f"></td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">Item</td>
+                        <td>Unit of Issue</td>
+                        <td>Quantity Dispensed/Used</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">LA 1X6</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">LA 2X6</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">LA 3X6</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">LA 4X6</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">ITN Distributed to Pregnant women</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">ITN Distributed to Newborn babies</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">SP</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">RDTs</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">ASAQ 25mg/67.5mg (3 tablets)</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">ASAQ 50mg/135mg (3 tablets)</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">ASAQ 100mg/270mg (3 tablets)</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td class="first-td">ASAQ 100mg/270mg (6 tablets)</td>
+                        <td>tab</td>
+                        <td>0</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -204,15 +381,46 @@
         padding: 10px;
     }
     thead {
-    text-align: left;
+    text-align: center;
     }
     th
     {
-        width:204px !important;
+        width:248px !important;
     }
     table.dataTable thead th, table.dataTable thead td {
       
         padding-left: 3px;
+        padding: 0px 0px;
+        padding-left: 0px;
+        border-bottom: 0px none;
+    }
+    .dataTables_scrollHead {
+        border: 2px solid #111 !important;
+        width: inherit !important;
+    }
+
+    .thead-f {
+        text-align: center;
+        background-color: white;
+        font-weight: bold;
+        border-right: 0px none !important;
+    }
+
+    .tr-head {
+        border: 2px solid #111;
+    }
+
+    .tr-head td{
+        border-bottom: 2px solid #111;
+    }
+
+    .tr-last td{
+        border-bottom: 2px solid #111 !important;
+    }
+
+    .td-f {
+        background-color: white;
+        border-left: 0px none !important;
     }
 
     .nm {
@@ -296,7 +504,7 @@
             searching: true,
             paging: false,
             ordering: false,
-            scrollY: 400,
+            scrollY: 430,
             Processing: true,
             ServerSide: true,
             scroller: {
@@ -349,7 +557,7 @@
                 document.getElementById('spinner').style = 'display: none;';
                 document.getElementById('report-cover').style = 'display: none;';
                 var obj = JSON.parse(this.responseText);
-                loadData(obj);
+                //loadData(obj);
                 myFunction();
             }
         };
