@@ -115,26 +115,26 @@
         var concept_map = {
            
            "Chest":"2422",
-           "C-Spine":"",
-           "T-Spine":"",
-           "L-Spine":"",
-           "Wrist":"",
-           "Elbow":"",
+           "C-Spine":"10252",
+           "T-Spine":"10254",
+           "L-Spine":"10255",
+           "Wrist":"10256",
+           "Elbow":"10257",
            "Femur":"9285",
            "Foot":"7914",
-           "Forearm":"",
+           "Forearm":"10258",
            "Abdomen":"8400",
-           "Ankle":"",
+           "Ankle":"10259",
            "Hand":"7913",
-           "Heel":"",
+           "Heel":"10260",
            "Humerus":"9287",
-           "Knee":"",
+           "Knee":"10261",
            "KUB": "101",
-           "Leg":"",
+           "Leg":"10262",
            "Pelvis":"8131",
            "Shoulder":"7915",
            "Skull":"8128",
-           "Special":""
+           "Special":"10263"
        };
        function postRadiologyOrdersObs(encounter)
        {
@@ -288,6 +288,33 @@
             jQuery(".loader").hide();
         }
 
+        function gotoLabOrder()
+        {
+            jQuery("#void-confirm-message").hide();
+            jQuery("#page-cover").hide();
+            var nextButton = document.getElementById('nextButton');
+            nextButton.setAttribute('onmousedown', "redirectTo();");
+        }
+        function hideLabOrderPopup() 
+        {
+            jQuery("#void-confirm-message").hide();
+            jQuery("#page-cover").hide();
+            setOPDActivities();
+        }
+
+        
+        function setOPDActivities() 
+        { 
+        values = sessionStorage.OPD_activities.replace('radiology examination,','').replace('radiology examination','');
+        sessionStorage.OPD_activities   = values;
+        var parameters = {property: "OPD_activities", property_value: values}
+        submitParameters(parameters, "/user_properties", "redirectTo");
+        }
+        function redirectTo()
+        {
+            nextEncounter(sessionStorage.patientID, sessionStorage.programID);
+        }
+
     </script>
 
     <style type="text/css">
@@ -313,6 +340,52 @@
                 transform: rotate(360deg);
             }
         }
+        #page-cover {
+        display: block;
+        position: absolute;
+        background-color: black;
+        width: 100%;
+        height: 102%;
+        left: 0%;
+        top: 0%;
+        z-index: 990;
+        opacity: 0.65;
+    }
+
+    #void-confirm-message {
+    background: #ffffff;
+    border-radius: 0.5em;
+    box-shadow: 0 10px 20px rgba(black, 0.2);
+    left: 50%;
+    max-width: 90%;
+    position: absolute;
+    top: 40%;
+    transform: translate(-50%, -50%);
+    width: 30em;
+    text-align: left;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000000;
+    border: solid 1px;
+    display: block;
+  }
+  #void-confirm-message p {
+    font-size: 24px;
+    text-align: center;
+    padding: 50px;
+  }
+  .modal-title {
+    width: 100%;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    text-align: center;
+  }
+  
+  .modal-title h1 {
+    font-size: 20px;
+    color: #000;
+  }
     </style>
 </head>
 
@@ -328,8 +401,39 @@
         form {
             display: block !important;
         }
+     
     </style>
+    <div  id="page-cover"></div>
+    <div id="void-confirm-message">
+      <div class="modal-title">
+        <h1>Radiology Orders</h1>
+      </div>
+      <p>Do you want to take Radiology orders??</p>
+      <div style="width: 100%;margin: 5px;">
+        <div style="display: table; width: 97%;">
+          <div style="display: table-row;">
+            <div class="void-btns" style="display: table-cell;  
+              text-align: center; padding: 10%; border-top-left-radius: 9px;border-right: solid 10px white; 
+              border-bottom-left-radius: 9px; background-color: #337ab7;" onmousedown="hideLabOrderPopup();">
+              No
+            </div>
+            <div class="void-btns" style="display: table-cell; 
+              text-align: center; padding: 10%; border-top-right-radius: 9px;
+              border-bottom-right-radius: 9px; background-color: green;" onclick="gotoLabOrder();">
+             Yes
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <script>
+   if(sessionStorage.OPD_workflow_popup == 'false')
+    {
+        jQuery("#void-confirm-message").hide();
+        jQuery("#page-cover").hide();
+    }
+    </script>
     <form id='radiology_types'>
         <input type="text" name="initialize"
                tt_onLoad="initializeVariables();"

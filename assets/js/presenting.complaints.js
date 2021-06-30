@@ -21,6 +21,7 @@ function build_search_field()
 
   var search_input = document.createElement('input');
   search_input.setAttribute('id','search_filed');
+  search_input.setAttribute('style','height:40px;width:400px;');
   search_input.setAttribute('onkeyup','getPresentingComplaints("Presenting complaint")');
   search_content.appendChild(search_input);
   lookForTag();
