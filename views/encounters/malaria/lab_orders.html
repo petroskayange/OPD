@@ -10,11 +10,6 @@
 <script type="text/javascript" src="/assets/js/moment.js"></script>
 
 <link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
-        
-<!-- ........... VL files ....................... -->
-<link rel="stylesheet" href="/apps/ART/assets/css/vl.reminder.css" type="text/css">
-<script type="text/javascript" src="/apps/ART/assets/js/vl.reminder.js"></script> 
-<!-- ........... VL files end ....................... -->
 
 
 <script type="text/javascript" src="/assets/js/httpUtils.js"></script>
@@ -26,7 +21,6 @@
         
 <script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
-<script type="text/javascript" src="/apps/ART/assets/js/generic-keyboard.js"></script>
 <script type="text/javascript" src="/assets/js/virtual.keyboard.js"></script>
 
 
@@ -118,13 +112,18 @@
   var patient_id = sessionStorage.patientID;
   var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patient_id;
    
+  function changeNextBtn()
+  {
+    var nextButton = document.getElementById('nextButton');
+        nextButton.setAttribute('onmousedown', "setOPDActivities();");
+
+  }
   function gotoLabOrder()
         {
             jQuery("#void-confirm-message").hide();
             jQuery("#page-cover").hide();
-            var nextButton = document.getElementById('nextButton');
-            // var nextButtonAttribute = nextButton.getAttribute('onmousedown');
-            nextButton.setAttribute('onmousedown', "redirectTo();");
+            pressOrder();
+           
         }
         function hideLabOrderPopup() 
         {
@@ -181,7 +180,7 @@
     <form >
 
       <input type="text" name="summary"
-        tt_onLoad="__$('keyboard').style.display = 'none';buildLabOrderDisplay();" 
+        tt_onLoad="__$('keyboard').style.display = 'none';buildLabOrderDisplay();changeNextBtn();" 
         tt_pageStyleClass= "NoControls" helpText="Lab orders" optional = "true"/>
 
     
