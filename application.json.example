@@ -23,7 +23,7 @@
     "lab orders": {
       "available": true,
       "activitiesIcon": "/assets/images/clinical-notes.png",
-      "url": "/apps/OPD/views/encounters/malaria/lab_orders.html"
+      "url": "/views/patient/labs.html"
     },
     "lab results": {
       "available": true,
@@ -60,15 +60,15 @@
       "activitiesIcon": "/assets/images/drugs-given.png",
       "url": "/apps/OPD/views/encounters/medication_given.html"
     },
-    "view radiology results": {
-      "available": flase,
-      "activitiesIcon": "/assets/images/radioG1.png",
-      "url": "/apps/OPD/views/encounters/radiology/view_radiology_results.html"
-      },
-    "radiology orders": {
+      "radiology orders": {
       "available": false,
       "activitiesIcon": "/assets/images/radiology_types.png",
       "url": "/apps/OPD/views/encounters/radiology/radiology_orders.html"
+    },
+    "view radiology results": {
+      "available": false,
+      "activitiesIcon": "/assets/images/radioG1.png",
+      "url": "/apps/OPD/views/encounters/radiology/view_radiology_results.html"
     }
   },
   "activities": {

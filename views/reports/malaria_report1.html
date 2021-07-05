@@ -521,6 +521,7 @@
 
     function dataTableContentLoader(patientD,diagnosis,period)
     {
+        console.log("he2: "+patientD);
         patientD = sessionStorage.getItem(patientD);
         $('.modal-title').html('<b>Diagnosis:</b> &nbsp;&nbsp; ' + diagnosis);
         $('.period').html('  &nbsp;&nbsp;' + period);
