@@ -228,7 +228,7 @@
 <script type="text/javascript">
     var patientID = sessionStorage.getItem("patientID");
     var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patientID;
-    var vitalData = null;
+    var vitalData = 'nil';
 
     const HIV_PROGRAM_ID = 1
 
@@ -472,7 +472,7 @@
         var data = document.getElementById("vitals-input").value;
         var validation_result = false;
 
-        vitalData = data;
+        vitalData += data;
 
         if (activeInput.id.match(/weight/i)) {
             validation_result = validateWeight(data);
@@ -490,10 +490,15 @@
             validation_result = true;
         }
 
-        if(vitalData != "null")
-        return validation_result;
-        else if (vitalData == "null")
-        return null;
+console.log("viatDDD:  "+vitalData);
+
+if(vitalData == 'nil')
+           return 'nil';
+
+
+        if (validation_result == true)
+        return true;
+    
         else
         return false;
     }
@@ -820,10 +825,15 @@
 
     function validateEntries() {
 
+       
+
         var validationANS = validateUserInput();
+
+        console.log("Valida11: ....."+validationANS);
+
         if (validationANS == false)
              return;
-        if (validationANS == null)
+        if (validationANS == 'nil')
             setOPDActivities();
 
         if(show_bp_only == false) {
