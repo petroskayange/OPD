@@ -1,4 +1,5 @@
 {
+  "application_root_path": "/var/www/BHT-Core/",
   "encounters": {
     "patient registration": {
       "available": true,
@@ -31,19 +32,19 @@
       "url": "/apps/OPD/views/encounters/malaria/lab_results.html"
     },
     "radiology examination": {
-      "available": true,
+      "available": false,
       "activitiesIcon": "/assets/images/radiology_types.png",
       "url": "/apps/OPD/views/encounters/radiology/radiology_orders.html"
     },
     "view radiology results": {
-      "available": true,
+      "available": false,
       "activitiesIcon": "/assets/images/radioG1.png",
       "url": "/apps/OPD/views/encounters/radiology/view_radiology_results.html"
     },
     "prescription": {
       "available": true,
       "activitiesIcon": "/assets/images/clinical-notes.png",
-      "url": "/apps/OPD/views/encounters/malaria/prescription.html"
+      "url": "/apps/OPD/views/encounters/prescription.html"
     },
     "dispensing": {
       "available": true,
@@ -97,10 +98,6 @@
       [
         "Prescription",
         "prescription"
-      ],
-      [
-        "Dispensing",
-        "dispensing"
       ]
     ]
   },
