@@ -146,7 +146,7 @@ function showSelectedMeds() {
     /* .............................................Will clean up later */
     if (givenRegimens[selectedRegimens].length > 0) {
     var frame = document.getElementById("inputFrame" + tstCurrentPage);
-    frame.style = "height: 89%; width: 96%;";
+    frame.style = "height: 89%; width: 96%; overflow: scroll; ";
     document.getElementById("clearButton").style = "display: none;";
 
     var table = document.createElement("table");
@@ -238,7 +238,7 @@ function showSelectedMeds() {
     if(givenNoneRegimens[selectedRegimens].length > 0)
     {
         var frame = document.getElementById("inputFrame" + tstCurrentPage);
-        frame.style = "height: 89%; width: 96%; margin-bottom:50px;";
+        frame.style = "height: 89%; width: 96%; margin-bottom:50px; overflow: scroll;";
         document.getElementById("clearButton").style = "display: none;";
     
         var table = document.createElement("table");

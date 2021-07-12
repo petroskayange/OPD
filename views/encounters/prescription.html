@@ -208,13 +208,13 @@ function hide_keyboard()
     .modal
     {
         position: fixed;
-        width: 70%;
+        width: 100%;
         background-color: #fff;
-        margin-left: 15%;
+        /* margin-left: 15%; */
         top: 0%;
         border: solid 1px;
         z-index: 1000;
-    }
+            }
   
    
     .sorting_patient 
@@ -256,6 +256,10 @@ function hide_keyboard()
     top: 670px;
     padding-right: 20px;
     z-index: 10;
+    margin-top: -18px;
+}
+button.navButton {
+    margin-top: 10px;
 }
 .messageBar {
     z-index: 1001;
@@ -285,6 +289,11 @@ function hide_keyboard()
     text-align: center;
     border-style: solid;
     border-width: 1px 1px 1px 1px;
+}
+#inputFrame1
+{
+    height: 600px !important;
+    overflow: scroll;
 }
 </style>
 
