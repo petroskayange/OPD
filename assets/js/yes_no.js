@@ -27,14 +27,11 @@ function addYesNo() {
       }
     }
   
-   
-
-    alert(root_path);
-    var radiology_property = {
+      var radiology_property = {
       path: root_path+"apps/OPD/application.json", 
       property_value: (property_value.toUpperCase() == 'NO' ? 'false' : 'true')
     };
-    // alert("./magie")
+    
     submitParameters(radiology_property, url, "gpSet");
   }  
   
