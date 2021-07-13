@@ -55,6 +55,75 @@ font-size: 20px;
     z-index: 1100 !important;
 }
 </style>
+<style type="text/css">
+    .loader {
+        position: absolute;
+        display: none;
+        top: 30%;
+        left: 40%;
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        z-index: 9999999999999;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    #page-cover {
+    display: block;
+    position: absolute;
+    background-color: black;
+    width: 100%;
+    height: 102%;
+    left: 0%;
+    top: 0%;
+    z-index: 990;
+    opacity: 0.65;
+}
+
+#void-confirm-message {
+background: #ffffff;
+border-radius: 0.5em;
+box-shadow: 0 10px 20px rgba(black, 0.2);
+left: 50%;
+max-width: 90%;
+position: absolute;
+top: 40%;
+transform: translate(-50%, -50%);
+width: 30em;
+text-align: left;
+max-height: 90vh;
+flex-direction: column;
+z-index: 1000000;
+border: solid 1px;
+display: none;
+}
+#void-confirm-message p {
+font-size: 24px;
+text-align: center;
+padding: 50px;
+}
+.modal-title {
+width: 100%;
+border-bottom-style: solid;
+border-bottom-width: 1px;
+text-align: center;
+}
+
+.modal-title h1 {
+font-size: 20px;
+color: #000;
+}
+</style>
 <script type="text/javascript">
 
 
@@ -62,6 +131,7 @@ font-size: 20px;
     var patient_id = sessionStorage.patientID;
     var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patient_id;
 
+    getOpdPrescriptionInterfaceActivationStatus();
     function clearButton()
     {
         var clearButton = document.getElementById("clearButton");
@@ -93,6 +163,31 @@ font-size: 20px;
     nextButton.innerHTML = "<span>Finish</span>";
   }
   
+function getOpdPrescriptionInterfaceActivationStatus() 
+{
+    var opdPrescriptionInterface_property_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+    opdPrescriptionInterface_property_url += "/api/v1/global_properties?property=activate.customised.opd.prescription.interface";
+
+    var xhttp1 = new XMLHttpRequest();
+    xhttp1.onreadystatechange = function () {
+        if (this.readyState == 4 && (this.status == 201 || this.status == 200 || this.status == 404)) {
+            try {
+                var activate_opdPrescriptionInterface_property = JSON.parse(this.responseText);
+                if (activate_opdPrescriptionInterface_property["activate.customised.opd.prescription.interface"] == "false")
+                    window.location = "/apps/OPD/views/encounters/malaria/prescription.html";
+                
+            } catch (e) {
+
+            }
+
+        
+        }
+    };
+    xhttp1.open("GET", opdPrescriptionInterface_property_url, false);
+    xhttp1.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+    xhttp1.setRequestHeader('Content-type', "application/json");
+    xhttp1.send();
+}
 function addNoneDrugsButton() 
 {
     var buttonsDiv2 = document.getElementsByClassName("buttonsDiv")[0];
@@ -173,6 +268,53 @@ function hide_keyboard()
     }
     
 }
+
+var diagnosis = false;
+var url = `${apiProtocol}://${apiURL}:${apiPort}/api/v1/encounters?patient_id=${sessionStorage.patientID}&${sessionStorage.programID}&paginate=false`;
+var headers = {
+    'Authorization': sessionStorage.authorization,
+    'Content-Type': 'application/json'
+};
+fetch(url, {
+    'headers': headers
+}).then(function (response) {
+    response.json().then(function (encounters) {
+    encounters.forEach(function (encounter) {
+
+        if(encounter.date_created != null)
+        {
+            var enc_date = encounter.date_created.split('T');
+            var encounter_type = encounter.encounter_type;
+
+            if(sessionStorage.sessionDate == enc_date[0] && encounter_type == 8)
+            {
+                diagnosis = true;
+            }
+        }
+
+    });
+
+    if(diagnosis == false)
+    {
+        jQuery("#void-confirm-message").show();
+        jQuery("#page-cover").show();
+    }else
+    {
+        jQuery("#page-cover").hide();
+    }
+    });
+});
+
+function gotoLabOrder()
+{
+    jQuery("#void-confirm-message").hide();
+    jQuery("#page-cover").hide();
+}
+function hideLabOrderPopup() 
+{
+    gotoLabOrder();
+    window.location = tt_cancel_destination;
+}
 </script>
 
 <body id="mateme">
@@ -203,6 +345,34 @@ function hide_keyboard()
 
         <div class="loader"></div>
     </div>
+</div>
+
+
+<div  id="page-cover"></div>
+<div id="void-confirm-message">
+  <div class="modal-title">
+    <h1>Prescriptions</h1>
+  </div>
+  <p>
+      Diagnosis is not available <br /> 
+      Do you still want to Prescribe ??
+      </p>
+  <div style="width: 100%;margin: 5px;">
+    <div style="display: table; width: 97%;">
+      <div style="display: table-row;">
+        <div class="void-btns" style="display: table-cell;  
+          text-align: center; padding: 10%; border-top-left-radius: 9px;border-right: solid 10px white; 
+          border-bottom-left-radius: 9px; background-color: #337ab7;" onmousedown="hideLabOrderPopup();">
+          No
+        </div>
+        <div class="void-btns" style="display: table-cell; 
+          text-align: center; padding: 10%; border-top-right-radius: 9px;
+          border-bottom-right-radius: 9px; background-color: green;" onclick="gotoLabOrder();">
+         Yes
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <style>
     .modal
@@ -506,9 +676,6 @@ function updateNoneDrugList(e, element) {
             }
         }
     }
-
-    console.log(noneDrugPrescripins);
-    console.log(selected);
 
 }
 

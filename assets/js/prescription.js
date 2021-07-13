@@ -4,21 +4,12 @@ var sessionDate = new Date(moment(formattedDate).format('YYYY-MM-DD'));
 
 var givenRegimens = {};
 var givenNoneRegimens = {};
-var passedRegimens = {};
 
 var selectedRegimens
 var setSelectedInterval;
 
-// var show_custom_regimens = false;
-var prescribe_arv = false;
-var prescribe_cpt = false;
-var prescribe_ipt = false;
-var medication_orders = {};
-
-var starterPackSelected = false;
 var customRegimenIngredients = {};
 var noneDrugPrescripins = {};
-var patient_is_fast_track = false;
 
 var customListCSS = document.createElement('span');
 customListCSS.innerHTML = "<style>\
@@ -132,13 +123,13 @@ function selectRegimen(e) {
 }
 
 function showSelectedMeds() {
-    var htn_drugs = []
-    try {
-        htn_drugs = JSON.parse(sessionStorage.htn_drugs)
-    } catch (e) {
-
-    }
+  
     changeNextButtonToFinish();
+    try {
+        document.getElementById("nonedrugButton").remove();
+    } catch (error) {
+        
+    }
     /* .............................................Will clean up later */
     if (isHashEmpty(customRegimenIngredients) == false || isHashEmpty(noneDrugPrescripins) == false) {
         setCustomRegimen();
@@ -700,12 +691,6 @@ function getFormattedDate(set_date) {
     return year + "-" + month + "-" + day;
 }
 
-function nextPage() {
-    // htn_drugs = JSON.parse(sessionStorage.htn_drugs)
-    sessionStorage.removeItem("htn_drugs");
-    nextEncounter(sessionStorage.patientID, 1);
-
-}
 
 var appointment_type = '';
 
