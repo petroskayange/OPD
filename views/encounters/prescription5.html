@@ -1,0 +1,921 @@
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+
+<script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/touchScreenToolkit.js"
+
+        defer="true"></script>
+<!--script type="text/javascript" src="/public/touchscreentoolkit/lib/javascripts/standard.js" defer="true"></script-->
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<link rel="stylesheet" href="/assets/css/datatables/uikit.min.css" type="text/css">
+<link rel="stylesheet" href="/assets/css/datatables/dataTables.uikit.min.css" type="text/css">
+
+<link rel="stylesheet" href="/assets/css/datatables/fixedHeader.dataTables.min.css" type="text/css">
+<link rel="stylesheet" href="/assets/css/datatables/scroller.dataTables.min.css" type="text/css">
+
+<script type="text/javascript" src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/assets/js/datatables/dataTables.fixedHeader.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/yes_no_ctrls.js"></script>
+<link rel="stylesheet" href="/assets/css/yes_no_ctrls.css" type="text/css">
+<script type="text/javascript" src="/assets/js/post_parameters.js"></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+
+<script type="text/javascript" src="/assets/js/moment.js"></script>
+
+<link rel="stylesheet" href="/apps/OPD/assets/css/prescription.css" type="text/css">
+<script type="text/javascript" src="/apps/OPD/assets/js/prescription.js"></script>
+<script type="text/javascript" src="/assets/js/alertifyjs/alertify.js"></script>
+<script type="text/javascript" src="/assets/js/does_connection_exist.js"></script>
+<link rel="stylesheet" href="/assets/css/provider.css" type="text/css">
+<script type="text/javascript" src="/assets/js/provider.js  "></script>
+<script type="text/javascript" src="/assets/js/generic_ajaxrequest.js"></script>
+
+<link rel="stylesheet" href="/assets/css/alertifyjs/css/alertify.css" type="text/css">
+<script type="text/javascript" src="/assets/js/virtual.keyboard.js"></script>
+
+<style>
+  #search_content
+{
+  float:right;
+  margin: 8px;
+  margin-right: 35px;
+}
+ .search_content
+{
+  float:right;
+  margin-right: 33px;
+  margin-top: -35px;
+}
+#search_text
+{
+margin-right: 8px;
+font-size: 20px;
+}
+#virtual-keyboard {
+    z-index: 1100 !important;
+}
+</style>
+<style type="text/css">
+    .loader {
+        position: absolute;
+        display: none;
+        top: 30%;
+        left: 40%;
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        z-index: 9999999999999;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    #page-cover {
+    display: block;
+    position: absolute;
+    background-color: black;
+    width: 100%;
+    height: 102%;
+    left: 0%;
+    top: 0%;
+    z-index: 990;
+    opacity: 0.65;
+}
+
+#void-confirm-message {
+background: #ffffff;
+border-radius: 0.5em;
+box-shadow: 0 10px 20px rgba(black, 0.2);
+left: 50%;
+max-width: 90%;
+position: absolute;
+top: 40%;
+transform: translate(-50%, -50%);
+width: 30em;
+text-align: left;
+max-height: 90vh;
+flex-direction: column;
+z-index: 1000000;
+border: solid 1px;
+display: none;
+}
+#void-confirm-message p {
+font-size: 24px;
+text-align: center;
+padding: 50px;
+}
+.modal-title {
+width: 100%;
+border-bottom-style: solid;
+border-bottom-width: 1px;
+text-align: center;
+}
+
+.modal-title h1 {
+font-size: 20px;
+color: #000;
+}
+</style>
+<script type="text/javascript">
+
+
+    var popup = false;
+    var patient_id = sessionStorage.patientID;
+    var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patient_id;
+
+    getOpdPrescriptionInterfaceActivationStatus();
+    function clearButton()
+    {
+        var clearButton = document.getElementById("clearButton");
+        clearButton.style = "display: none;";
+}
+
+
+    function initializeVariables() {
+        jQuery(".loader").show();
+        jQuery('#keyboard').hide();
+        jQuery("#buttons").hide(); //inputFrame0
+        jQuery("#inputFrame" + tstCurrentPage).hide();
+
+    }
+
+    function resetPage() {
+        jQuery('#keyboard').show();
+        jQuery("#buttons").show();
+        jQuery("#innerPop").show()
+        jQuery("#inputFrame" + tstCurrentPage).show();
+        jQuery(".loader").hide();
+    }
+
+  
+  function changeNextButtonToFinish()
+  {
+    var nextButton = document.getElementById("nextButton");
+    nextButton.setAttribute("onmousedown", "submitTreatmentEncounter();");
+    nextButton.innerHTML = "<span>Finish</span>";
+  }
+  
+function getOpdPrescriptionInterfaceActivationStatus() 
+{
+    var opdPrescriptionInterface_property_url = apiProtocol + "://" + apiURL + ":" + apiPort;
+    opdPrescriptionInterface_property_url += "/api/v1/global_properties?property=activate.customised.opd.prescription.interface";
+
+    var xhttp1 = new XMLHttpRequest();
+    xhttp1.onreadystatechange = function () {
+        if (this.readyState == 4 && (this.status == 201 || this.status == 200 || this.status == 404)) {
+            try {
+                var activate_opdPrescriptionInterface_property = JSON.parse(this.responseText);
+                if (activate_opdPrescriptionInterface_property["activate.customised.opd.prescription.interface"] == "false")
+                    window.location = "/apps/OPD/views/encounters/malaria/prescription.html";
+                
+            } catch (e) {
+
+            }
+
+        
+        }
+    };
+    xhttp1.open("GET", opdPrescriptionInterface_property_url, false);
+    xhttp1.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+    xhttp1.setRequestHeader('Content-type', "application/json");
+    xhttp1.send();
+}
+function addNoneDrugsButton() 
+{
+    var buttonsDiv2 = document.getElementsByClassName("buttonsDiv")[0];
+    button = document.createElement("button");
+    button.className = "button blue navButton";
+    button.id = "nonedrugButton";
+    button.innerHTML = '<span>None Drug Prescriptions</span>';
+
+    button.onmousedown = function () {
+        popup = true;
+        var modal = document.getElementById("modal");
+        modal.style = "display: block;";
+        
+        var popBoxCover = document.getElementById("none-drug-cover");
+        popBoxCover.style = "display: inline;"
+
+        var modalBackButton = document.getElementById("modalBackButton");
+        modalBackButton.style = "display: none;";
+
+        var nextButton = document.getElementById("nextButton1");
+        nextButton.setAttribute('onmousedown', 'validateNoneDrugPrescription()');
+        nextButton.innerHTML = "<span>Next</span>";
+
+        hide_keyboard(); 
+        buildNonePrescriptionDrugs();
+    }
+    
+    
+    if(document.getElementById("nonedrugButton") == null)    
+    buttonsDiv2.appendChild(button);
+    
+   
+}
+function build_search_field()
+{
+
+  var helpText0 = document.getElementById('helpText0');
+  
+  var search_content = document.createElement('div');
+  search_content.setAttribute('id','search_content');
+  helpText0.appendChild(search_content);
+
+  var search_text = document.createElement('span');
+  search_text.setAttribute('id','search_text');
+  search_text.innerHTML='Search:';
+  search_content.appendChild(search_text);
+
+  var search_input = document.createElement('input');
+  search_input.setAttribute('id','search_filed');
+  search_input.setAttribute('style','height:35px;width:300px;');
+  search_input.setAttribute('onkeyup',"search_results('notpopup')");
+  search_content.appendChild(search_input);
+  lookForTag();
+}
+function cancelNoneDrugs()
+{
+    popup = false;
+    hide_keyboard();
+    noneDrugPrescripins = {};
+    document.getElementById("search_content2").style = '';
+    closeNoneDrugModal();
+}
+function closeNoneDrugModal()
+{
+    var modal = document.getElementById("modal");
+    modal.style = "display: none;";
+    var popBoxCover = document.getElementById("none-drug-cover");
+    popBoxCover.style = "display: none;"
+}
+
+function hide_keyboard()
+{
+
+    try {
+         document.getElementById('virtual-keyboard').remove();
+    } catch (error) {
+        
+    }
+    
+}
+
+var diagnosis = false;
+var url = `${apiProtocol}://${apiURL}:${apiPort}/api/v1/encounters?patient_id=${sessionStorage.patientID}&${sessionStorage.programID}&paginate=false`;
+var headers = {
+    'Authorization': sessionStorage.authorization,
+    'Content-Type': 'application/json'
+};
+fetch(url, {
+    'headers': headers
+}).then(function (response) {
+    response.json().then(function (encounters) {
+    encounters.forEach(function (encounter) {
+
+        if(encounter.date_created != null)
+        {
+            var enc_date = encounter.date_created.split('T');
+            var encounter_type = encounter.encounter_type;
+
+            if(sessionStorage.sessionDate == enc_date[0] && encounter_type == 8)
+            {
+                diagnosis = true;
+            }
+        }
+
+    });
+
+    if(diagnosis == false)
+    {
+        jQuery("#void-confirm-message").show();
+        jQuery("#page-cover").show();
+    }else
+    {
+        jQuery("#page-cover").hide();
+    }
+    });
+});
+
+function gotoLabOrder()
+{
+    jQuery("#void-confirm-message").hide();
+    jQuery("#page-cover").hide();
+}
+function hideLabOrderPopup() 
+{
+    gotoLabOrder();
+    window.location = tt_cancel_destination;
+}
+</script>
+
+<body id="mateme">
+<div id="container">
+    <div id="content">
+
+
+        <form action="post">
+
+
+            <input type="text" name="regimens"
+                   tt_onUnLoad="document.getElementById('nextButton').style='display: inline;' "
+                   tt_onLoad="__$('keyboard').style.display = 'none';buildCustomPrescriptionPage();addNoneDrugsButton();clearButton();build_search_field();"
+                   tt_pageStyleClass="NoControls" helpText="Drug prescription" optional="true"/>
+
+            <input type="text" name="custom-regimen-dose"
+                   condition="isHashEmpty(customRegimenIngredients)==false"
+                   tt_onUnLoad="document.getElementById('nextButton').style='display: inline;'"
+                   tt_onLoad="__$('keyboard').style.display = 'none';buildCustomDosagePage();clearButton"
+                   tt_pageStyleClass="NoControls" helpText="Drug dose" optional="true"/>
+
+
+            <input type="text" name="selected-medications"
+                   tt_onLoad="__$('keyboard').style.display = 'none'; showSelectedMeds(); initDataTable(); clearButton"
+                   tt_pageStyleClass="NoControls" helpText="Selected medication" optional="true"/>
+
+        </form>
+
+        <div class="loader"></div>
+    </div>
+</div>
+
+
+<div  id="page-cover"></div>
+<div id="void-confirm-message">
+  <div class="modal-title">
+    <h1>Prescriptions</h1>
+  </div>
+  <p>
+      Diagnosis is not available <br /> 
+      Do you still want to Prescribe ??
+      </p>
+  <div style="width: 100%;margin: 5px;">
+    <div style="display: table; width: 97%;">
+      <div style="display: table-row;">
+        <div class="void-btns" style="display: table-cell;  
+          text-align: center; padding: 10%; border-top-left-radius: 9px;border-right: solid 10px white; 
+          border-bottom-left-radius: 9px; background-color: #337ab7;" onmousedown="hideLabOrderPopup();">
+          No
+        </div>
+        <div class="void-btns" style="display: table-cell; 
+          text-align: center; padding: 10%; border-top-right-radius: 9px;
+          border-bottom-right-radius: 9px; background-color: green;" onclick="gotoLabOrder();">
+         Yes
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+    .modal
+    {
+        position: fixed;
+        width: 100%;
+        background-color: #fff;
+        /* margin-left: 15%; */
+        top: 0%;
+        border: solid 1px;
+        z-index: 1000;
+            }
+  
+   
+    .sorting_patient 
+    {
+        background-color: #b9b9b9;
+    }
+    
+    ._title
+    {
+        font-size: 2em;
+        padding-top: 5px;
+        padding-left: 25px;
+        width: 620px;
+        -moz-user-select: none;
+    }
+    
+
+    .modal-header{
+        padding: 10px;
+    }
+    thead {
+    text-align: left;
+}
+    th
+    {
+        width:204px !important;
+    }
+    table.dataTable thead th, table.dataTable thead td {
+      
+        padding-left: 3px;
+    }
+    .row {
+    display: unset;
+    }
+    .popUPButtonsDiv {
+    background-color: #333333;
+    display: block;
+    height: 82px;
+    top: 670px;
+    padding-right: 20px;
+    z-index: 10;
+    margin-top: -18px;
+}
+button.navButton {
+    margin-top: 10px;
+}
+.messageBar {
+    z-index: 1001;
+  
+}
+.modalFrameClass {
+    margin-bottom: 25px !important;
+    margin: 0 auto;
+}
+.buttonModal
+{
+    width: 150px;
+}
+#selected-none-medication {
+    width: 99%;
+    margin: 15px 5px 0px 5px;
+    border-collapse: collapse;
+    color: black;
+    font-size: 1.3em;
+    margin-top: 40px;
+}
+#selected-tbody td {
+    border-style: solid;
+    border-width: 1px;
+}
+#selected-none-medication th {
+    text-align: center;
+    border-style: solid;
+    border-width: 1px 1px 1px 1px;
+}
+#inputFrame1
+{
+    height: 600px !important;
+    overflow: scroll;
+}
+</style>
+
+<!-- Modal -->
+<div class="modal " id="modal" style="display: none;" > 
+    <div class="modal-content" style="margin-left:0px; ">
+        <div class="modal-header">
+            <div class="modal-title _title" > None Drug Prescriptions</div>
+            <div id="search_content2" class="search_content">
+                <span id="search_text">Search:</span>
+                <input id="search_filed2" style="height:35px;width:300px;" onkeyup="search_results('popup')">
+            
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="container">
+                <div class="row" id="modal-div">
+                    <div id="inputFrame1" class="inputFrameClass modalFrameClass    " style="width: 94%; height: 88%;">
+                        <div id="none_drug_card" style="margin-bottom: 10px; border-bottom: 1px solid;" >
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="buttons" class="popUPButtonsDiv">
+        
+            <button id="nextButton1" class="button buttonModal green navButton" onmousedown="validateNoneDrugPrescription()">
+                    <span>Next</span>
+            </button>
+            
+            <button id="modalBackButton" class="button buttonModal blue navButton" onmousedown="modalBackButton()" style="display: none;">
+                <span>Back</span>
+            </button>
+          
+            <button class="button buttonModal navButton red" id="cancelButton" onmousedown="cancelNoneDrugs();">
+                <span>Cancel</span>
+            </button>
+        
+        </div>
+    </div> 
+</div>
+<!-- Modal -->
+
+</body>
+
+<script>
+     
+function buildNonePrescriptionDrugs() 
+    {
+        var none_drug_card = document.getElementById("none_drug_card");
+        none_drug_card.innerHTML = "";
+
+        var none_drug_card = document.getElementById("none_drug_card");
+
+        var table = document.createElement('table');
+        table.style = 'width: 100%;';
+        none_drug_card.appendChild(table);
+
+        var tr = document.createElement('tr');
+        table.appendChild(tr);
+
+        var cells = ['none_drugs1', 'none_drugs2'];
+        for (var i = 0; i < cells.length; i++) {
+            var td = document.createElement('td');
+            td.setAttribute('id', cells[i] + '-meds');
+            tr.appendChild(td);
+        }
+
+        addNonDrugColumns();
+        autoSelectNonDrug();
+
+    }
+    
+function addNonDrugColumns() {
+    var adultDiv = document.createElement('div');
+    adultDivCSS = 'overflow-x: hidden; height: 580px;';
+    adultDivCSS += 'border: solid 1px;';
+    adultDiv.setAttribute('style', adultDivCSS);
+    adultDiv.setAttribute('class', 'scrollable');
+
+
+    var leftTD = document.getElementById('none_drugs1-meds');
+    leftTD.appendChild(adultDiv);
+
+    var ul = document.createElement('ul');
+    ul.setAttribute('class', 'scrollableList');
+    adultDiv.appendChild(ul);
+
+    try {
+        none_drug_prescripins = none_drug_prescripins.sort(function (a, b) {
+            var nameA = a.name.toLowerCase(), nameB = b.name.toLowerCase()
+            if (nameA < nameB) //sort string ascending
+                return -1
+            if (nameA > nameB)
+                return 1
+            return 0 //default return value (no sorting)
+        });
+    } catch (x) {
+    }
+    var counter = parseInt(none_drug_prescripins.length/2);
+    for (var i = 0; i < none_drug_prescripins.length; i++) {
+        var drug_id = none_drug_prescripins[i].drug_id
+        var ConceptID = "ConceptID_"+drug_id;
+        var innerHTML = '<div style="display: table; border-spacing: 0px;"><div style="display: table-row"><div style="display: table-cell;"><img id="img';
+        innerHTML += ConceptID + '" src="/public/touchscreentoolkit/lib/images/unticked.jpg" alt="[ ]"></div><div style="display: table-cell; vertical-align:      middle; text-align: left; padding-left: 15px;"';
+        innerHTML += ' id="optionValueND' + i + '">';
+        innerHTML += none_drug_prescripins[i].name + "</div></div></div>";
+        
+        var li = document.createElement("li");
+        li.setAttribute("id",ConceptID);
+        li.setAttribute("tstvalue", drug_id);
+        li.setAttribute("onmousedown", "null; updateNoneDrugList(__$('optionValue' + this.id), this); ");
+        li.setAttribute("style", "");
+        var class_name = (i % 2 === 0 ? 'even' : 'odd');
+        li.setAttribute("class", class_name + " none-drug-prescripins-list");
+        li.setAttribute("drug_name", none_drug_prescripins[i].name);
+        li.setAttribute("units", none_drug_prescripins[i].units);
+        li.innerHTML = innerHTML;
+        ul.appendChild(li);
+
+        if (i == counter)
+            break;
+
+    }
+
+    /* ............ */
+    var peadsDiv = document.createElement('div');
+    peadsDivCSS = 'overflow-x: hidden; height: 580px;';
+    peadsDivCSS += 'border: solid 1px;';
+    peadsDiv.setAttribute('style', adultDivCSS);
+    peadsDiv.setAttribute('class', 'scrollable');
+
+    var righTD = document.getElementById('none_drugs2-meds');
+    righTD.appendChild(peadsDiv);
+
+    var ul = document.createElement('ul');
+    ul.setAttribute('class', 'scrollableList');
+    peadsDiv.appendChild(ul);
+
+    for (var i = counter+1; i < none_drug_prescripins.length; i++) {
+        var class_name = (i % 2 === 0 ? 'even' : 'odd');
+
+        var drug_id = none_drug_prescripins[i].drug_id
+        var ConceptID = "ConceptID_"+drug_id;
+        var innerHTML = '<div style="display: table; border-spacing: 0px;"><div style="display: table-row"><div style="display: table-cell;"><img id="img';
+        innerHTML += ConceptID + '" src="/public/touchscreentoolkit/lib/images/unticked.jpg" alt="[ ]"></div><div style="display: table-cell; vertical-align:      middle; text-align: left; padding-left: 15px;"';
+        innerHTML += ' id="optionValuenoneDrug' + i + '">';
+        innerHTML += none_drug_prescripins[i].name + "</div></div></div>";
+
+        var drug_id = none_drug_prescripins[i].drug_id
+        var li = document.createElement("li");
+        li.setAttribute("id", ConceptID);
+        li.setAttribute("tstvalue", drug_id);
+        li.setAttribute("onmousedown", "null; updateNoneDrugList(__$('optionValue' + this.id), this); ");
+        li.setAttribute("style", "");
+        li.setAttribute("units", none_drug_prescripins[i].units);
+        li.setAttribute("drug_name", none_drug_prescripins[i].name);
+        li.setAttribute("class", class_name + " none-drug-prescripins-list");
+        li.innerHTML = innerHTML;
+        ul.appendChild(li);
+
+    }
+
+    /* ............ */
+} 
+
+function autoSelectNonDrug() {
+    var list = document.getElementsByClassName('none-drug-prescripins-list');
+    for (var drug_id in noneDrugPrescripins) {
+        for (var i = 0; i < list.length; i++) {
+            var liID = parseInt(list[i].getAttribute('tstvalue'));
+            if (liID == parseInt(drug_id)) {
+                updateNoneDrugList(__$('optionValue' + list[i].id), list[i]);
+            }
+        }
+    }
+} 
+   
+function updateNoneDrugList(e, element) {
+    var selected = element.getAttribute('style');
+    var img = document.getElementById('img' + element.id);
+
+    if (selected.match(/lightblue/i)) {
+        element.setAttribute("style", '');
+        img.setAttribute('src', "/public/touchscreentoolkit/lib/images/unticked.jpg");
+
+        var tempContainer = noneDrugPrescripins;
+        noneDrugPrescripins = {}
+
+
+        for (drug_id in tempContainer) {
+            if (element.getAttribute('drug_name') != tempContainer[drug_id].name) {
+                noneDrugPrescripins[parseInt(drug_id)] = {
+                    name: tempContainer[drug_id].name,
+                    units: tempContainer[drug_id].units,
+                    amount: tempContainer[drug_id].amount,
+                    drug_id: drug_id
+                }
+            }
+        }
+        
+    } else {
+        element.setAttribute("style", 'background-color: lightblue');
+        img.setAttribute('src', "/public/touchscreentoolkit/lib/images/ticked.jpg");
+
+        if (noneDrugPrescripins[parseInt(element.getAttribute('tstvalue'))] == undefined) {
+            noneDrugPrescripins[parseInt(element.getAttribute('tstvalue'))] = {
+                name: element.getAttribute('drug_name'), drug_id: null,amount: null, units: element.getAttribute('units')
+            }
+        }
+    }
+
+}
+
+function validateNoneDrugPrescription() {
+    if (isHashEmpty(noneDrugPrescripins)) {
+        showMessage('Select one or more none drugs to continue.');
+        return;
+    }
+    var modalBackButton = document.getElementById("modalBackButton");
+    modalBackButton.style = "display: block;";
+
+    var nextButton = document.getElementById("nextButton1");
+    nextButton.setAttribute('onmousedown', 'validateNoneDrugAmount()');
+    nextButton.innerHTML = "<span>Finish</span>";
+    
+    document.getElementById("search_content2").style = 'display:none';
+    hide_keyboard();
+    buildNonDrugAmountPage();
+}
+
+function modalBackButton()
+{
+    var nextButton = document.getElementById("nextButton1");
+    nextButton.setAttribute('onmousedown', 'validateNoneDrugPrescription()');
+    nextButton.innerHTML = "<span>Next</span>";
+
+    document.getElementById("search_content2").style = '';
+    var modalBackButton = document.getElementById("modalBackButton");
+        modalBackButton.style = "display: none;";
+    buildNonePrescriptionDrugs();
+}
+
+function buildNonDrugAmountPage() {
+  
+   var none_drug_card = document.getElementById("none_drug_card");
+   none_drug_card.innerHTML = "";
+
+
+    var table = document.createElement('table');
+    var tableCSS = 'width: 100%; font-size: 16px;';
+    tableCSS += 'border-collapse: collapse';
+    table.style = tableCSS;
+    none_drug_card.appendChild(table);
+    var tr = document.createElement('tr');
+    table.appendChild(tr);
+
+    var ths = [
+        ['None Medication', null],
+        ['Amount', '/assets/images/enter.png']
+    ];
+
+    for (var i = 0; i < ths.length; i++) {
+        var th = document.createElement('th');
+        th.setAttribute('class', 'custom-regimen-th');
+
+        if (ths[i][1] != null) {
+            var img = document.createElement('img');
+            img.setAttribute('src', ths[i][1]);
+            th.appendChild(img);
+        }
+
+        var span = document.createElement('span');
+        span.innerHTML = '<br />' + ths[i][0];
+        th.appendChild(span);
+
+        if (i == 0)
+            th.style = 'text-align: left; marging-left: 5px;'
+
+        tr.appendChild(th)
+    }
+
+    for (var drug_id in noneDrugPrescripins) {
+        var tr = document.createElement('tr');
+
+        var td = document.createElement('td');
+        td.setAttribute('class', 'custom-regimen-td');
+        td.innerHTML = noneDrugPrescripins[drug_id].name;
+        td.style = 'text-align: left; marging-left: 5px;'
+        tr.appendChild(td);
+
+        var td = document.createElement('td');
+        td.setAttribute('class', 'custom-regimen-td');
+        var input = document.createElement('input');
+        input.setAttribute('id', 'amount-' + drug_id);
+        input.setAttribute('type', 'text');
+        input.setAttribute('onmousedown', 'enterCustomDosage(this)');
+        input.setAttribute('class', 'none-drug-inputs');
+        td.appendChild(input);
+        tr.appendChild(td);
+
+        table.appendChild(tr);
+    }
+
+    autoInputNonDrug();
+}
+
+function validateNoneDrugAmount() {
+    var inputBoxes = document.getElementsByClassName('none-drug-inputs');
+    for (var i = 0; i < inputBoxes.length; i++) {
+       
+        if(!isNumeric(inputBoxes[i].value))
+        {
+            showMessage('Amount can not be empty') 
+            return;
+        }
+
+        var drug_id = parseInt(inputBoxes[i].id.split('-')[1]);
+        var period = inputBoxes[i].id.split('-')[0];
+        noneDrugPrescripins[drug_id][period] = parseFloat(inputBoxes[i].value);
+
+    }
+
+    popup = false;
+    selectedRegimens = null;
+    closeNoneDrugModal();
+}
+
+function search_results(check)
+{
+    if(popup)
+    {
+        var search_obs = none_drug_prescripins;
+        var search_filed ="search_filed2"
+    }
+    else
+    {
+     var search_obs = custom_regimen_ingredients;
+     var search_filed ="search_filed"
+
+    }
+
+    var search_value = document.getElementById(search_filed).value; 
+    for(let i = 0; i < search_obs.length; i++)
+    {
+        var element = document.getElementById('ConceptID_'+search_obs[i].drug_id)
+        var selected = element.getAttribute('style');
+
+        if(!search_obs[i].name.toLowerCase().match(search_value.toLowerCase())) 
+        {
+            if (selected.match(/lightblue/i))
+                element.style = 'display:none;background-color: lightblue;';
+            else
+                element.style = 'display:none';
+        }
+        else
+        if (selected.match(/lightblue/i))
+            element.style = 'display:;background-color: lightblue;';
+        else
+            element.style = 'display:';
+
+    }
+}
+</script>
+
+<style>
+
+    .loader {
+        position: absolute;
+        display: none;
+        top: 30%;
+        left: 40%;
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        z-index: 9999999999999;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    #confirmatory-test-popup-div {
+        display: none;
+        background-color: #F4F4F4;
+        border: 2px solid #E0E0E0;
+        border-radius: 15px;
+        height: 200px;
+        padding: 5px;
+        position: absolute;
+        margin-top: 100px;
+        width: 530px;
+        /*margin-left: 430px;*/
+        left: 20%;
+        z-index: 991;
+    }
+
+    #confirmatory-test-popup-header {
+        border-bottom: 2px solid #7D9EC0;
+        margin-left: -5px;
+        width: 101.5%;
+        background-color: #FFFFFF;
+        margin-top: -5px;
+        padding-top: 5px;
+        border-radius: 15px 15px 0 0;
+        font-size: 14pt;
+        font-weight: bolder;
+    }
+
+    #confirmatory-test-cover {
+        display: inline;
+        position: absolute;
+        background-color: black;
+        width: 100%;
+        height: 102%;
+        left: 0%;
+        top: 0%;
+        z-index: 1001;
+        opacity: 0.65;
+    }
+    #none-drug-cover {
+        display: none;
+        position: absolute;
+        background-color: black;
+        width: 100%;
+        height: 102%;
+        left: 0%;
+        top: 0%;
+        z-index: 990;
+        opacity: 0.65;
+    }
+
+    .custom-med-frequency {
+        width: 100px;
+        height: 70px;
+        font-size: 15px;
+    }
+</style>
+
+
+<div id="confirmatory-test-popup-div"></div>
+<div id="confirmatory-test-cover" style="display: none;"></div>
+<div id="none-drug-cover"></div>
+
+
+
