@@ -60,7 +60,6 @@
                     "Barium follow-throuh", "Barium enema", "Loopogram (Cologramm)", "Angiogram lower limb", "Angiogram upper limb", "Venogram"],
             
         }
-  
 
         function replaceImages() {
             var image_tags = document.getElementsByTagName("img");
@@ -219,10 +218,10 @@
             sessionStorage.setItem("radiology_orders", radiology_orders_string); 
             sessionStorage.setItem("radiology_accession_number", accession_number); 
             sessionStorage.setItem("date_created", date_created); 
-            // print_barcode();
+            print_barcode();
 
-            jQuery(".loader").show();
-            submitParameters(patient_data, "/radiology/radiology_orders", "print_barcode()")
+            //jQuery(".loader").show();
+            //submitParameters(patient_data, "/radiology/radiology_orders", "print_barcode()")
        }
 
  
@@ -231,9 +230,27 @@
             var radiology_barcode_url = "/views/print/radiology_barcode.html";
             window.location =radiology_barcode_url;
        }
-        function changeNextButtonToSubmitRadiologyOrders() {
 
-            var nextButton = document.getElementById('nextButton');
+       function previousPage() {
+        if (tstConfirmCancel) {
+		tstMessageBar.innerHTML = "Are you sure you want to Cancel?<br/>" +
+															"<button onmousedown='hideMessage(); history.go(-1);'><span>Yes</span></button><button onmousedown='hideMessage();'><span>No</span></button>";
+		tstMessageBar.style.display = "block";
+        } else {
+            history.go(-1);
+        }
+
+       }
+
+
+        function changeButtons() {
+
+            var cancelButton = document.getElementById('cancelButton');
+            cancelButton.setAttribute('onmousedown',' previousPage()');
+
+            document.getElementById('backButton').setAttribute('style','display: none');
+
+           var nextButton = document.getElementById('nextButton');
             nextButton.onmousedown = function () {
                 var value = __$('touchscreenInput' + tstCurrentPage).value;
                 if (!value) {
@@ -241,7 +258,7 @@
                     return
                 }
                 submitRadiologyOrders();
-            }
+            } 
         }
 
         function gotoPatientDashboard() {
@@ -442,7 +459,7 @@
                optional="true"/>
 
         <select id="multiple" class="multi" name="radiology_orders[]" helptext="Select Radiology orders" multiple="multiple"
-                nested="true" tt_onLoad="changeNextButtonToSubmitRadiologyOrders();">
+                nested="true" tt_onLoad="changeButtons();">
             <option></option>
 
             <optgroup id="chest" label="Chest">
@@ -693,5 +710,5 @@
 
     <div class="loader"></div>
 </div>
-</body>
+</body>    
 </html>
