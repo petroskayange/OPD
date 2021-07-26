@@ -1,17 +1,52 @@
 
 
 #complaints-container {
-  display: table;
-  width: 100%;
+  display: ;
   margin: 5px;
   border-spacing: 10px;
+  margin-left: calc(45vh);
+  border: 1px solid black;
+  width: 63%;
+}
+
+
+#side-bar-pre-grouped {
+  display: ;
+  margin: 5px;
+  border-spacing: 10px;
+  position: fixed;
+  border: px solid darkgray;
+  min-height: calc(63vh);
+  display: table-column-group;
+  width: calc(40vh);
+  background-color: white;
+}
+
+.complaints-list-show {
+  display: block;
+}
+
+.complaints-list-hide {
+  display: none;
+}
+
+.group-list-highlight-color {
+  background-color: #aaaaf4;
+}
+
+.group-list-color {
+  background-color: white;
+}
+
+.complaints-container-column {
+  display: table-row;
 }
 
 .complaints-container-row {
   display: table-row;
 }
 
-.complaints-container-cell {
+.complaints-container-box {
   display: table-cell;
   border-style: solid;
   border-width: 1px;
@@ -22,3 +57,27 @@
   width: 20%;
 }
 
+.complaints-container-cell {
+  display: table-cell;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 3px 3px 5px 6px #ccc; 
+  height: 50px;
+  vertical-align: middle;
+  text-align: center;
+  width: 1%;
+}
+
+.modal-content {
+  background-color: beige;
+  border: 1px solid black;
+  margin-left: 10%;
+}
+
+.modal-header {
+
+}
+
+.modal-body {
+  position: initial;
+}
