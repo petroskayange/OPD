@@ -193,7 +193,7 @@ function removeFromHash(key, concept_id) {
 function getPresentingComplaints(type_of_complaint) {
   var complaint_concept_set = {};
   complaint_concept_set['Specific presenting complaint'] = 8677;
-  complaint_concept_set['Presenting complaint'] = 8578;
+  complaint_concept_set['Presenting complaint'] = 10540;
 
   var concept_set = complaint_concept_set[type_of_complaint];
   var url = apiProtocol+'://'+apiURL+':'+apiPort+'/api/v1/concept_set';

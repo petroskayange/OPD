@@ -24,8 +24,6 @@ var programID = sessionStorage.programID;
 
 var authToken = sessionStorage.authorization;
 
-var fetchedPrescriptions = {};
-
 var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patientID;
 
 var drugs = [];
@@ -37,57 +35,27 @@ var units = [];
 var drug_ids = [];	
 var concept_ids = [];	
 
-var set_names = {} //<%= @set_names.to_json.html_safe %>
-
-var set_descriptions = {} //<%= @set_descriptions.to_json.html_safe %>
-
-var drug_set_name_display = [];
-
-var drug_set_name = [];
-
-var drug_set_dose = [];
-
-var drug_set_unit = [];
-
-var drug_set_frequency = [];
-
-var drug_set_duration = [];		
-
-var drug_quantity_hash = {};
-
 var tstTimerHandle = null;
 
 var tstTimerFunctionCall = "";
 
 getDrugs();
   
-getDrugSets();
-
 listAllDrugs();
 
 $(document).ready(function(){
 
   setTimeout(function(){
-    if (Object.keys(drug_sets).length > 0){
-      
-      loadDrugSets();
-      
-    }else{
-        
+   
       loadAllDrugs();
     
-    }
-  }, 1000);
+  }, 500);
   
-  resize();
   
 });
 
+
 function getDrugs(){
-
-  // var apiPath = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/drugs"
-
-  // apiPath += "?page_size=50";
 
   var apiPath = apiProtocol + "://" + apiURL + ":" + apiPort;
   apiPath += "/api/v1/OPD_drugslist?page_size=50";
@@ -129,43 +97,18 @@ function getDrugs(){
   
 }
 
-function getDrugSets(){
+function submitTreatmentEncounter() 
+{
 
-  var apiPath = apiProtocol + "://" + apiURL + ":" + apiPort + "/api/v1/drug_sets"
-
-  GET({
-
-    url: apiPath,
-
-    async: true,
-
-    headers: {
-
-        'Authorization': authToken
-
-    }
-
-  }, 
-  {}, 
-  function (data) {
-    
-    drug_sets = data['drug_sets'];
-    
-    set_names = data['set_names'];
-   
-    set_descriptions = data['set_descriptions'];
-    
-  }, 
-  function (error) {
-    
-    console.log(error);
-    
-  });
-    
-}
-
-
-function submitTreatmentEncounter() {
+  if(!checkParams())
+    return;
+  else
+  if (Object.keys(selectedDrugs).length <= 0 )
+  {
+    confirmAction("Please select one / more drugs or none drugs");
+    return;
+  }
+  
   var currentTime = moment().format(' HH:mm:ss');
   var encounter_datetime = moment(sessionStorage.sessionDate).format('YYYY-MM-DD');
   encounter_datetime += currentTime;
@@ -231,59 +174,15 @@ function postDrugOrders(encounter) {
       }
 
 
-  submitParameters(drug_orders_params, "/drug_orders", "gotoNextEncounter");
+  submitParameters(drug_orders_params, "/drug_orders", "printVisitSummary");
 }
 
 
-function gotoNextEncounter() {
+function printVisitSummary() {
+  window.location = "/views/print/visit.html";
 
-   nextEncounter(sessionStorage.patientID, sessionStorage.programID);
 }
 
-
-function postDispensationObs(encounter){
-
-  var obs = {
-
-    encounter_id: encounter.encounter_id,
-
-    observations: []
-
-  }
-  
-  for (var key in drug_quantity_hash) {
-  
-    obs.observations.push(drug_quantity_hash[key]);
-  
-  }
-  
-  submitParameters(obs, "/observations", "updateDrugOrder");
-  
-}
-
-function updateDrugOrder(){
-
-  var drug_order = {
-
-    dispensations: []
-
-  }
-  
-  for(var key in drug_quantity_hash){
-  
-    drug_order.dispensations.push({date: sessionStorage.sessionDate, 
-  
-      drug_order_id: drug_quantity_hash[key]['order_id'], 
-  
-      quantity: drug_quantity_hash[key]['value_numeric']}
-  
-      );
-  
-  }
-    
-  submitParameters(drug_order, "/dispensations", "nextPage");
-    
-}
 
 function getFormattedDate(set_date) {
 
@@ -369,38 +268,6 @@ function dosesPerDay(frequency){
   
 }
 
-function getPrescriptions() {
-
-  var url = apiProtocol + "://" + apiURL + ":" + apiPort;
-
-  url += "/api/v1/drug_orders?patient_id=" + patientID;
-  url += "&date=" + sessionStorage.sessionDate;
-
-  var xhttp = new XMLHttpRequest();
-
-  xhttp.onreadystatechange = function () {
-
-    if (this.readyState == 4 && this.status == 200) {
-
-      var obj = JSON.parse(this.responseText);
-
-      fetchedPrescriptions = {}
-
-    }
-
-  };
-
-  xhttp.open("GET", url, true);
- 
-  xhttp.setRequestHeader('Authorization', authToken);
- 
-  xhttp.setRequestHeader('Content-type', "application/json");
- 
-  xhttp.send();
- 
-}
-
-getPrescriptions();
 
 function nextPage(obs){
 
@@ -932,44 +799,10 @@ function showNumber(id, global_control, showDefault){
 
       }
       else
-       if(this.innerHTML.match(/OK/)){
-
-        var cells = __$("cummulative").getElementsByClassName("cell");
-        for(var i = 0; i < cells.length; i++)
-        {
-          if (i>0 && cells[i].innerHTML == "") 
-          {
-            if(cells[i].id.match(/duration/))
-            {
-              confirmAction("Enter Duration for drug: " );
-              return;
-            }
-            else
-            if(cells[i].id.match(/dosage/))
-            {
-              confirmAction("Enter Dosage for drug: " );
-              return;
-            }
-            else
-            if(cells[i].id.match(/frequency/) )
-            {
-              confirmAction("Enter Frequency for drug: " );
-              return;
-            }
-            else
-            if(cells[i].id.match(/quantity/) )
-            {
-              confirmAction("Enter Quantity for drug: " );
-              return;
-            }
-          }
-        }
-
-        document.getElementById('search').value = '';
-        loadAllDrugs();
-
-      }
-      else if(!this.innerHTML.match(/^$/)){
+      if(this.innerHTML.match(/OK/))
+        checkParams();
+      else 
+      if(!this.innerHTML.match(/^$/)){
   
         __$(global_control).value += this.innerHTML.match(/<span>(.+)<\/span>/)[1];
   
@@ -1638,18 +1471,40 @@ function loadNonDrugAmount(id)
 
 function checkParams(){
 
-      var cells = __$("cummulative").getElementsByClassName("cell");
-
-      if (cells.length >= 8 && cells.length % 4 == 0 && (cells[cells.length - 3].innerHTML == "")){
-
-        confirmAction("Enter frequency for drug: " + cells[cells.length - 4].innerHTML)
-        
-      }else if (cells.length >= 8 && cells.length % 4 == 0 && (cells[cells.length - 2].innerHTML == "")){
-          
-        confirmAction("Enter duration for drug: " + cells[cells.length - 4].innerHTML)
-        
+  var cells = __$("cummulative").getElementsByClassName("cell");
+  for(var i = 0; i < cells.length; i++)
+  {
+    if (i>0 && cells[i].innerHTML == "") 
+    {
+      if(cells[i].id.match(/duration/))
+      {
+        confirmAction("Enter Duration for drug: " );
+        return false;
       }
-  
+      else
+      if(cells[i].id.match(/dosage/))
+      {
+        confirmAction("Enter Dosage for drug: " );
+        return false;
+      }
+      else
+      if(cells[i].id.match(/frequency/) )
+      {
+        confirmAction("Enter Frequency for drug: " );
+        return false;
+      }
+      else
+      if(cells[i].id.match(/quantity/) )
+      {
+        confirmAction("Enter Quantity for drug: " );
+        return false;
+      }
+    }
+  }
+
+  document.getElementById('search').value = '';
+  loadAllDrugs();
+  return true;
 }
 
 function setAmounts() {
@@ -1756,65 +1611,6 @@ function setAmounts() {
     }
 }
 
-function loadDrugSets(){
-    clearTimeout(clicksChecker);
-  
-    __$("switcher").innerHTML = "";
-    __$("searchbox").value = "";
-    __$("searchbox").style.display = "none";
-  
-    var table = document.createElement("div");
-    table.className = "table";
-    table.style.width = "100%";
-    table.style.height = "100%";
-  
-    __$("switcher").appendChild(table);
-  
-    var cells = [
-    {
-        id: "selections",
-        styles: {
-            border: "1px solid #ccc",
-            overflow: "auto",
-            borderRadius: "10px",
-            backgroundColor: "#fff"
-        }
-    }
-    ];
-  
-    for(var i = 0; i < cells.length; i++){
-        var row = document.createElement("div");
-        row.className = "row";
-    
-        table.appendChild(row);
-    
-        var cell = document.createElement("div");
-        cell.className = "cell";
-    
-        row.appendChild(cell);
-    
-        for(var attr in cells[i]){
-    
-            if(typeof(cells[i][attr]) == "object" && attr == "styles"){
-        
-                for(var el in cells[i][attr]){
-          
-                    cell.style[el] = cells[i][attr][el];
-          
-                }
-        
-            } else {
-      
-                cell.setAttribute(attr, cells[i][attr]);
-      
-            }
-      
-        }
-    }
-  
-    listDrugsSets();
-}
-
 function listAllDrugs(){
     
   if(__$("selections")){
@@ -1906,90 +1702,6 @@ function listAllDrugs(){
 
 }
 
-function listDrugsSets(){
-    if(__$("selections")){
-        __$("selections").innerHTML = "";
-    
-        var ul = document.createElement("ul");
-        ul.className = "listing";
-    
-        __$("selections").appendChild(ul);
-       
-        var formulations = [];
-
-        var l = 0;
-        for(set_id in drug_sets) {
-            
-            var li = document.createElement("li");
-            li.id = "sets_" + l;
-            li.innerHTML = set_names[set_id] + " (" + set_descriptions[set_id] + ")";
-            li.style.backgroundColor = (l % 2 == 0 ? "#f8f7ec" : "#fff");
-            li.setAttribute("name", set_names[set_id]);
-            li.setAttribute("description", set_descriptions[set_id]);
-            li.setAttribute("set_id", set_id);
-            
-            if(selectedSets[li.id]){
-                li.className = "selected";
-            }
-
-            li.onclick = function(){
-                if(this.getAttribute("class") != null && this.getAttribute("class").match(/selected/)){
-
-                    var set_drugs = Object.keys(drug_sets[this.getAttribute("set_id")]);
-
-                    for (var i = 0; i < set_drugs.length; i ++){
-
-                        removeDrug(("all_" + set_drugs[i]));
-                    }
-
-                    this.className -= "selected";
-
-                    if(selectedSets[this.id])
-                        delete selectedSets[this.id];
-                    
-                } else {
-
-                    var set_drugs = Object.keys(drug_sets[this.getAttribute("set_id")]);
-                   
-                    for (var i = 0; i < set_drugs.length; i ++){
-
-                        var data = drug_sets[this.getAttribute("set_id")][set_drugs[i]];
-                        
-                        var div = document.createElement("input");
-
-                        // check for already prescribed drugs of same kind if time allow
-                        div.id = "all_" + set_drugs[i];
-                        div.style.display = "none"
-                        div.style.backgroundColor = (l % 2 == 0 ? "#f8f7ec" : "#fff");
-                        div.setAttribute("drug", data["drug_name"]);
-                        div.setAttribute("frequency", data["frequency"]);
-                        div.setAttribute("dosage", data["dosage"]);
-                        div.setAttribute("duration", data["duration"]);
-                        div.setAttribute("noneDrugduration", data["noneDrugduration"]);
-                        div.setAttribute("units", data["units"]);
-                        this.appendChild(div);
-                        addDrug(div.id);
-                        div.className = "selected";
-                        selectedDrugs[div.id] = true;
-
-                        attr_div = document.getElementById("row_all_"+set_drugs[i]);
-                        attr_div.setAttribute("dose", data["dose"])
-                        attr_div.setAttribute("units", data["units"])
-                           
-                    }                    
-                 
-                    selectedSets[this.id] = true;
-
-                    this.className = "selected";
-                }
-            }
-
-            ul.appendChild(li);
-
-            l ++;
-        }
-    }
-}
 
 function confirmAction(message) {
 
@@ -2014,31 +1726,9 @@ function confirmAction(message) {
   return false;
 
 }
-    
-function switchViews(current){
-    
-  if(current.trim().toLowerCase() == "drug sets"){
-        
-    __$("btnswitch").innerHTML = "All Drugs";
-    
-    loadDrugSets();
-    
-  } else {
-        
-    __$("btnswitch").innerHTML = "Drug Sets";
-    
-    loadAllDrugs();
-    
-  }
-  
-  resize();
 
-}
-
-function addDrug(id){
-    
-  var cells = __$("cummulative").getElementsByClassName("cell");
-    console.log(cells.length);
+function addDrug(id)
+{
   var drug = __$(id).getAttribute("drug");
   var frequency = __$(id).getAttribute("frequency");
   var dosage = __$(id).getAttribute("dosage");
