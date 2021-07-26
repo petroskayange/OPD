@@ -111,6 +111,12 @@
 <script type="text/javascript">
   var patient_id = sessionStorage.patientID;
   var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + patient_id;
+  var reset_lab;
+
+  if(sessionStorage.getItem('lab_is_set') == 'true') {
+    sessionStorage.setItem('lab_is_set', 'false');
+    reset_lab = 'done';
+  }
    
   function changeNextBtn()
   {
@@ -141,6 +147,25 @@
     }
     function redirectTo()
     {
+      if(sessionStorage.getItem('orderFlowStatus') == 'true') {
+          if(sessionStorage.getItem('radiology_is_set') == 'true') {
+            sessionStorage.setItem('radiology_order_done','true');
+            sessionStorage.setItem('lab_is_set', 'false');
+            sessionStorage.setItem('lab_order_done', 'true');
+            sessionStorage.orderFlowStatus = false;
+            nextEncounter(sessionStorage.patientID, sessionStorage.programID);
+            //history.go(-3);
+          } 
+
+          if(reset_lab == 'done') {
+            //sessionStorage.setItem('lab_is_set', 'false');
+            sessionStorage.setItem('lab_order_done', 'true');
+            sessionStorage.orderFlowStatus = false;
+            nextEncounter(sessionStorage.patientID, sessionStorage.programID);
+           // history.go(-1);
+          } 
+      }
+      
       nextEncounter(sessionStorage.patientID, sessionStorage.programID);
     }
 

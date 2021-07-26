@@ -120,6 +120,9 @@ var colorCode = [
 console.log(complaintsObs);
 
 var presentingComplaintsHash = {};
+sessionStorage.setItem('radiology_order_done','false');
+sessionStorage.setItem('lab_order_done','false');
+sessionStorage.setItem('radiology_is_set', 'false');
 
 function clearSelection(type_of_complaint) {
   presentingComplaintsHash[type_of_complaint] = [];
@@ -164,9 +167,20 @@ function buildOrderButton() {
 
   orderButton.setAttribute('id','orderButton');
   orderButton.setAttribute('class','blue button navButton');
-  orderButton.innerHTML = '<span>Order</span>';
-  orderButton.setAttribute('onmousedown','ordersPopupModal()');
+  orderButton.setAttribute('selected','false');
+  orderButton.innerHTML = '<span>Orders</span>';
+  orderButton.setAttribute('onmousedown','prepareToSave(); changeToSelected(this)');
   navButton.appendChild(orderButton);
+}
+
+function changeToSelected(e) {
+  e.setAttribute('selected','true');
+}
+
+function redirectToLabOrders(){
+  sessionStorage.setItem('lab_is_set', 'true');
+  sessionStorage.orderFlowStatus = true;
+  window.location.href= "./malaria/intermediately_blank_page.html";
 }
 
 
@@ -232,6 +246,8 @@ function presentingComplaints(concept_sets, type_of_complaint) {
       //cell.setAttribute('concept_id', concept_sets[i].concept_id);
       //cell.setAttribute('complaint-type', type_of_complaint);
       box.setAttribute('onmousedown','groupClicked(this);');
+      if (t == 0)
+      box.setAttribute('style','background-color: #aaaaf4 !important');
       column.appendChild(box);
     
       list = document.createElement('div');
@@ -435,7 +451,8 @@ function getPresentingComplaints(type_of_complaint) {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       var objs = JSON.parse(this.responseText);
-      presentingComplaints(complaintsObs, type_of_complaint);
+      presentingComplaints(obs, type_of_complaint);
+     // presentingComplaints(complaintsObs, type_of_complaint);
       console.log("print >> ");
       console.log(objs);
     }
@@ -499,11 +516,25 @@ function saveObs(encounter) {
     encounter_id: encounter["encounter_id"],
     observations: observations
   }; 
-
+  
   submitParameters(obs, "/observations", "nextPage")  
 }
 
 function nextPage(obs){
+  var odersButton = document.getElementById('orderButton');
+  console.log(odersButton);
+  var selected = odersButton.getAttribute('selected');
+  if(selected == 'true') {
+    if(sessionStorage.getItem('radiology_status') == 'true') {
+      ordersPopupModal();
+      odersButton.setAttribute('selected','false');
+      return;
+    } else {
+      odersButton.setAttribute('selected','false');
+      redirectToLabOrders();
+      return;
+    }
+  }
   nextEncounter(sessionStorage.patientID, sessionStorage.programID);
 }
 
@@ -640,6 +671,11 @@ function tick(e) {
 function closeOrdersPopupModal() {
   let page_cover = document.getElementById("page-cover");
   page_cover.style = "display: none;";
+
+  let submit_cover = document.getElementById("page-cover");
+  submit_cover.style = "display: none;";
+
+  
   var parent = document.getElementById('mateme');
   parent.setAttribute('class','');
 
@@ -655,20 +691,47 @@ function nextActivity() {
   var option_one_selected = radiology.getAttribute('ticked');
   var option_two_selected = lab.getAttribute('ticked');
 
-  sessionStorage.setItem('radiology_is_set', 'true');
-  sessionStorage.setItem('lab_is_set', 'false');
-  window.location.href = './radiology/radiology_orders.html';
+  if (option_one_selected == 'true' && option_two_selected == 'true') {
+    sessionStorage.orderFlowStatus = true;
+    sessionStorage.setItem('radiology_is_set', 'true');
+    sessionStorage.setItem('lab_is_set', 'true');
+    window.location.href = './radiology/radiology_orders.html';
+  }
 
-  console.log("..."+option_one_selected+'  >>'+option_two_selected);
-  return;
+  if(option_one_selected == 'true' && option_two_selected == 'false') {
+    sessionStorage.orderFlowStatus = true;
+    sessionStorage.setItem('radiology_is_set', 'true');
+    window.location.href = './radiology/radiology_orders.html';
+  }
+
+  if(option_two_selected == 'true' && option_one_selected == 'false') {
+    redirectToLabOrders();
+  }
 }
 
-window.onhashchange = function() {
-  closeOrdersPopupModal();
+var timer = setInterval("autoReomvePopup();", 500);
+window.timer;
+
+function autoReomvePopup(){
+  if(sessionStorage.getItem('radiology_order_done') == 'true' || sessionStorage.getItem('lab_order_done') == 'true'){
+    sessionStorage.setItem('radiology_order_done','false');
+    sessionStorage.setItem('lab_order_done','false');
+    closeOrdersPopupModal();
+    //window.clearTimeout(window.timer);
+  } else if (sessionStorage.getItem('lab_is_set') == 'true' || sessionStorage.getItem('radiology_is_set') == 'true') {
+    // sessionStorage.setItem('lab_is_set', 'false');
+    // sessionStorage.setItem('radiology_is_set', 'false');
+  }
 }
 
-function hashHandler() {
-  console.log('The hash has changed!');
+function changeOrderButtonName() {
+  var orderButton = document.getElementById('orderButton');
+  if(sessionStorage.getItem('radiology_status') == 'true') {
+    orderButton.innerHTML ='<span>Orders</span>';
+  } else {
+    orderButton.innerHTML ='<span>Lab Order</span>';
+  }
+  
 }
 
-window.addEventListener('hashchange', hashHandler, true);
+changeOrderButtonName();

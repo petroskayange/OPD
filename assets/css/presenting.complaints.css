@@ -15,8 +15,8 @@
   margin: 5px;
   border-spacing: 10px;
   position: fixed;
-  border: px solid darkgray;
-  min-height: calc(63vh);
+  border: 1px solid darkgray;
+  min-height: calc(74.5vh);
   display: table-column-group;
   width: calc(40vh);
   background-color: white;
