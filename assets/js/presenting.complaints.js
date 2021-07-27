@@ -1,124 +1,3 @@
-var complaintsObs = [
-
-  { group: 'repiratory',
-    complaints: [
-    {
-      concept_id: 16,
-      concept_name_id: 17,
-      concept_name_type: "FULLY_SPECIFIED",
-      creator: 1,
-      date_created: "2004-01-01T00:00:00.000+02:00",
-      date_voided: null,
-      locale: "en",
-      locale_preferred: 0,
-      name: "Diarrhea",
-      uuid: "b9960eaa-8d80-11d8-abbb-0024217bb78e",
-      void_reason: null,
-      voided: 0,
-      voided_by: null,
-    },
-
-    {
-      concept_id: 107,
-      concept_name_id: 110,
-      concept_name_type: "FULLY_SPECIFIED",
-      creator: 1,
-      date_created: "2004-01-01T00:00:00.000+02:00",
-      date_voided: null,
-      locale: "en",
-      locale_preferred: 0,
-      name: "Cough",
-      uuid: "b996767e-8d80-11d8-abbb-0024217bb78e",
-      void_reason: null,
-      voided: 0,
-      voided_by: null,
-    }
-    ],
-  },
-
-  { group: 'fever',
-    complaints: [
-    {
-      concept_id: 16,
-      concept_name_id: 17,
-      concept_name_type: "FULLY_SPECIFIED",
-      creator: 1,
-      date_created: "2004-01-01T00:00:00.000+02:00",
-      date_voided: null,
-      locale: "en",
-      locale_preferred: 0,
-      name: "111111",
-      uuid: "b9960eaa-8d80-11d8-abbb-0024217bb78e",
-      void_reason: null,
-      voided: 0,
-      voided_by: null,
-    },
-
-    {
-      concept_id: 107,
-      concept_name_id: 110,
-      concept_name_type: "FULLY_SPECIFIED",
-      creator: 1,
-      date_created: "2004-01-01T00:00:00.000+02:00",
-      date_voided: null,
-      locale: "en",
-      locale_preferred: 0,
-      name: "2222222",
-      uuid: "b996767e-8d80-11d8-abbb-0024217bb78e",
-      void_reason: null,
-      voided: 0,
-      voided_by: null,
-    }
-  ],
-  },
-
-  { group: 'Haema',
-    complaints: [
-    {
-      concept_id: 16,
-      concept_name_id: 17,
-      concept_name_type: "FULLY_SPECIFIED",
-      creator: 1,
-      date_created: "2004-01-01T00:00:00.000+02:00",
-      date_voided: null,
-      locale: "en",
-      locale_preferred: 0,
-      name: "3333333",
-      uuid: "b9960eaa-8d80-11d8-abbb-0024217bb78e",
-      void_reason: null,
-      voided: 0,
-      voided_by: null,
-    },
-
-    {
-      concept_id: 107,
-      concept_name_id: 110,
-      concept_name_type: "FULLY_SPECIFIED",
-      creator: 1,
-      date_created: "2004-01-01T00:00:00.000+02:00",
-      date_voided: null,
-      locale: "en",
-      locale_preferred: 0,
-      name: "444444",
-      uuid: "b996767e-8d80-11d8-abbb-0024217bb78e",
-      void_reason: null,
-      voided: 0,
-      voided_by: null,
-    }
-],
-}
-
-];
-
-var colorCode = [
-   {color: 'blue'},
-   {color: 'green'},
-   {color: 'red'}
-];
-
-
-console.log(complaintsObs);
-
 var presentingComplaintsHash = {};
 sessionStorage.setItem('radiology_order_done','false');
 sessionStorage.setItem('lab_order_done','false');
@@ -168,7 +47,9 @@ function buildOrderButton() {
   orderButton.setAttribute('id','orderButton');
   orderButton.setAttribute('class','blue button navButton');
   orderButton.setAttribute('selected','false');
-  orderButton.innerHTML = '<span>Orders</span>';
+  if(sessionStorage.radiology_status == 'true'){
+    orderButton.innerHTML = '<span>Orders</span>';
+  } else  orderButton.innerHTML = '<span>Lab Order</span>';
   orderButton.setAttribute('onmousedown','prepareToSave(); changeToSelected(this)');
   navButton.appendChild(orderButton);
 }
@@ -185,6 +66,8 @@ function redirectToLabOrders(){
 
 
 function presentingComplaints(concept_sets, type_of_complaint) {
+
+  console.log(concept_sets);
   var frame = document.getElementById('inputFrame' + tstCurrentPage);
   frame.innerHTML = null;
 
@@ -221,13 +104,13 @@ function presentingComplaints(concept_sets, type_of_complaint) {
 
   frame.appendChild(main_container);
   //var search_value = document.getElementById('search_filed').value;
-  var row_count = 1;
+ 
   var row;
   var list;
 
   concept_names = []
   for(var t = 0 ; t < concept_sets.length; t++) {
-
+ var row_count = 1;
     console.log("print >> name: "+ concept_sets[t].group);
 
     
@@ -243,8 +126,6 @@ function presentingComplaints(concept_sets, type_of_complaint) {
       box.setAttribute('id',concept_sets[t].group);
       box.innerHTML = concept_sets[t].group;
       box.setAttribute('selected', 'false');
-      //cell.setAttribute('concept_id', concept_sets[i].concept_id);
-      //cell.setAttribute('complaint-type', type_of_complaint);
       box.setAttribute('onmousedown','groupClicked(this);');
       if (t == 0)
       box.setAttribute('style','background-color: #aaaaf4 !important');
@@ -260,9 +141,6 @@ function presentingComplaints(concept_sets, type_of_complaint) {
     
 
     for(var i = 0 ; i < concept_sets[t].complaints.length; i++) {
-
-      console.log(concept_sets[t].complaints[i].name);
-
       if(row_count == 1){
                 row = document.createElement('div');
                 row.setAttribute('class','complaints-container-row');
@@ -278,67 +156,11 @@ function presentingComplaints(concept_sets, type_of_complaint) {
               cell.setAttribute('onmousedown','complaintClicked(this);');
               row.appendChild(cell);
 
-              
-            
               row_count++;
-              if(row_count == 3)
+              if(row_count == 4)
                 row_count = 1;
-
-                //autoHighLight(type_of_complaint);
-
-    // if(concept_sets[i].name.toLowerCase() == 'other')
-    //   continue;
-
-    // if(concept_sets[i].name.toLowerCase() == 'none')
-    //   continue;
-
-    // if(sessionStorage.patientGender == 'M') {
-    //   if(concept_sets[i].name.toLowerCase().match(/pregna/i)) 
-    //     continue;
-    
-    //   if(concept_sets[i].name.toLowerCase().match(/pv bleeding/i)) 
-    //     continue;
-    
-    // }
-
-    // concept_names.push(concept_sets[i].name);
   }  
   }
-  
-  // concept_names = concept_names.sort();
-  // concept_names.push('Other');
-  // concept_names.push('None');
-  
-  // for(var x = 0 ; x < concept_names.length; x++){
-  //   for(var i = 0 ; i < concept_sets.length; i++) {
-  //     if(concept_names[x].toLowerCase() != concept_sets[i].name.toLowerCase())
-  //       continue;
-
-  //     if(concept_names[x].toLowerCase().match(search_value.toLowerCase())) 
-  //     {
-  //       if(row_count == 1){
-  //         row = document.createElement('div');
-  //         row.setAttribute('class','complaints-container-row');
-  //         main_container.appendChild(row);
-  //       }
-
-  //       cell = document.createElement('div');
-  //       cell.setAttribute('class','complaints-container-cell');
-  //       cell.innerHTML = concept_sets[i].name;
-  //       cell.setAttribute('selected', 'false');
-  //       cell.setAttribute('concept_id', concept_sets[i].concept_id);
-  //       cell.setAttribute('complaint-type', type_of_complaint);
-  //       cell.setAttribute('onmousedown','complaintClicked(this);');
-  //       row.appendChild(cell);
-      
-  //       row_count++;
-  //       if(row_count == 2)
-  //         row_count = 1;
-  //     }
-  //   }
-  // }
-
-  // autoHighLight(type_of_complaint);
 }
 
 function autoHighLight(type_of_complaint) {
@@ -375,7 +197,6 @@ function complaintClicked(e) {
     e.style = 'background-color: "";';
     removeFromHash(type_of_complaint, e.getAttribute('concept_id'));
   }
-
 }
 
 function groupClicked(e){
@@ -422,9 +243,7 @@ function addToHash(key, concept_id) {
     presentingComplaintsHash[key] = [];
     if(presentingComplaintsHash[key].indexOf(concept_id) < 0)
       presentingComplaintsHash[key].push(concept_id);
-
   }
-
 }
 
 function removeFromHash(key, concept_id) {
@@ -433,16 +252,14 @@ function removeFromHash(key, concept_id) {
 
   for(var i = 0 ; i < temp.length ; i++){
     if(temp[i] != concept_id)
-      presentingComplaintsHash[key].push(temp[i])
-  
+      presentingComplaintsHash[key].push(temp[i]) 
   }
-
 }
 
 function getPresentingComplaints(type_of_complaint) {
   var complaint_concept_set = {};
   complaint_concept_set['Specific presenting complaint'] = 8677;
-  complaint_concept_set['Presenting complaint'] = 8578;
+  complaint_concept_set['Presenting complaint'] = 10540;
 
   var concept_set = complaint_concept_set[type_of_complaint];
   var url = apiProtocol+'://'+apiURL+':'+apiPort+'/api/v1/concept_set';
@@ -451,8 +268,7 @@ function getPresentingComplaints(type_of_complaint) {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       var objs = JSON.parse(this.responseText);
-      presentingComplaints(obs, type_of_complaint);
-     // presentingComplaints(complaintsObs, type_of_complaint);
+     presentingComplaints(objs, type_of_complaint);
       console.log("print >> ");
       console.log(objs);
     }
@@ -665,7 +481,6 @@ function tick(e) {
     e.setAttribute('ticked','false');
     return;
   }
- 
 }
 
 function closeOrdersPopupModal() {
@@ -675,7 +490,6 @@ function closeOrdersPopupModal() {
   let submit_cover = document.getElementById("page-cover");
   submit_cover.style = "display: none;";
 
-  
   var parent = document.getElementById('mateme');
   parent.setAttribute('class','');
 
@@ -683,6 +497,7 @@ function closeOrdersPopupModal() {
   main_container.setAttribute('class','modal fade');
   main_container.setAttribute('style','display: none');
   document.getElementsByTagName('body')[0].removeChild(main_container);
+  nextEncounter(sessionStorage.patientID, sessionStorage.programID);
 }
 
 function nextActivity() {
@@ -718,20 +533,5 @@ function autoReomvePopup(){
     sessionStorage.setItem('lab_order_done','false');
     closeOrdersPopupModal();
     //window.clearTimeout(window.timer);
-  } else if (sessionStorage.getItem('lab_is_set') == 'true' || sessionStorage.getItem('radiology_is_set') == 'true') {
-    // sessionStorage.setItem('lab_is_set', 'false');
-    // sessionStorage.setItem('radiology_is_set', 'false');
   }
 }
-
-function changeOrderButtonName() {
-  var orderButton = document.getElementById('orderButton');
-  if(sessionStorage.getItem('radiology_status') == 'true') {
-    orderButton.innerHTML ='<span>Orders</span>';
-  } else {
-    orderButton.innerHTML ='<span>Lab Order</span>';
-  }
-  
-}
-
-changeOrderButtonName();

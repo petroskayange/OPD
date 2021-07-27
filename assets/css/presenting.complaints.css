@@ -1,25 +1,24 @@
 
 
 #complaints-container {
-  display: ;
   margin: 5px;
   border-spacing: 10px;
   margin-left: calc(45vh);
   border: 1px solid black;
-  width: 63%;
+  width: 100%;
 }
 
 
 #side-bar-pre-grouped {
-  display: ;
   margin: 5px;
   border-spacing: 10px;
   position: fixed;
   border: 1px solid darkgray;
-  min-height: calc(74.5vh);
   display: table-column-group;
   width: calc(40vh);
   background-color: white;
+  height: 575;
+  overflow: scroll;
 }
 
 .complaints-list-show {
@@ -72,10 +71,6 @@
   background-color: beige;
   border: 1px solid black;
   margin-left: 10%;
-}
-
-.modal-header {
-
 }
 
 .modal-body {
