@@ -429,7 +429,7 @@ function getPresentingComplaints(type_of_complaint) {
   complaint_concept_set['Presenting complaint'] = 10540;
 
   var concept_set = complaint_concept_set[type_of_complaint];
-  var url = apiProtocol+'://'+apiURL+':'+apiPort+'/api/v1/concept_set';
+  var url = apiProtocol+'://'+apiURL+':'+apiPort+'/api/v1/presenting_complaints';
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
