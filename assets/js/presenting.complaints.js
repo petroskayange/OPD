@@ -67,7 +67,6 @@ function redirectToLabOrders(){
 
 function presentingComplaints(concept_sets, type_of_complaint) {
 
-  console.log(concept_sets);
   var frame = document.getElementById('inputFrame' + tstCurrentPage);
   frame.innerHTML = null;
 
@@ -110,9 +109,7 @@ function presentingComplaints(concept_sets, type_of_complaint) {
 
   concept_names = []
   for(var t = 0 ; t < concept_sets.length; t++) {
- var row_count = 1;
-    console.log("print >> name: "+ concept_sets[t].group);
-
+  var row_count = 1;
     
       var column = document.createElement('div');
       column.setAttribute('class','complaints-container-column');
@@ -121,8 +118,6 @@ function presentingComplaints(concept_sets, type_of_complaint) {
       var box;
       box = document.createElement('div');
       box.setAttribute('class','complaints-container-box');
-      //box.setAttribute('style', 'background-color: y'+colorCode[t].color);
-      //console.log(colorCode);
       box.setAttribute('id',concept_sets[t].group);
       box.innerHTML = concept_sets[t].group;
       box.setAttribute('selected', 'false');
@@ -161,6 +156,9 @@ function presentingComplaints(concept_sets, type_of_complaint) {
                 row_count = 1;
   }  
   }
+  var sideBarPreGrouped = document.getElementById('side-bar-pre-grouped');
+    var other = document.getElementById('Other');
+    sideBarPreGrouped.appendChild(other);
 }
 
 function autoHighLight(type_of_complaint) {
@@ -269,8 +267,6 @@ function getPresentingComplaints(type_of_complaint) {
     if (this.readyState == 4 && this.status == 200) {
       var objs = JSON.parse(this.responseText);
      presentingComplaints(objs, type_of_complaint);
-      console.log("print >> ");
-      console.log(objs);
     }
   };
   xhttp.open("GET", (url + "?id=" + concept_set + "&name="), true);
@@ -338,7 +334,6 @@ function saveObs(encounter) {
 
 function nextPage(obs){
   var odersButton = document.getElementById('orderButton');
-  console.log(odersButton);
   var selected = odersButton.getAttribute('selected');
   if(selected == 'true') {
     if(sessionStorage.getItem('radiology_status') == 'true') {
@@ -527,6 +522,8 @@ function nextActivity() {
 var timer = setInterval("autoReomvePopup();", 500);
 window.timer;
 
+count = 0;
+
 function autoReomvePopup(){
   if(sessionStorage.getItem('radiology_order_done') == 'true' || sessionStorage.getItem('lab_order_done') == 'true'){
     sessionStorage.setItem('radiology_order_done','false');
@@ -534,4 +531,13 @@ function autoReomvePopup(){
     closeOrdersPopupModal();
     //window.clearTimeout(window.timer);
   }
+  
+  if(count == 0){
+    
+    count = 1;
+  }
+
+
 }
+
+
