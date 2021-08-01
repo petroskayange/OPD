@@ -1648,6 +1648,7 @@ function listAllDrugs(){
       var li = document.createElement("li");
             
       li.id = "all_" + formulations[l].drug_id;
+      li.concept_id = formulations[l].concept_id;
             
       li.innerHTML = formulations[l].drug;
             
@@ -1679,7 +1680,7 @@ function listAllDrugs(){
           
           selectedDrugs[this.id] = true;
           
-          if(formulations[0].concept_id != 10530)
+          if(this.concept_id != 10530)
           {
             addDrug(this.id);
             loadFrequenciesAndDuration(this.id);
