@@ -32,7 +32,7 @@ button {
   min-width: 250px;
   cursor: pointer;
   min-height: 85px;
-  border-radius: 15px !important;
+  /* border-radius: 15px !important; */
   margin: 10px;
 }
 
