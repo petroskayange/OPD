@@ -140,13 +140,8 @@ function postDrugOrders(encounter) {
 
       for (selected_drug in selectedDrugs)
       {
-          try 
-          {
-            var dosage = parseInt(__$("row_quantity" + selected_drug).innerHTML);
-          } catch (error) {
             
-            var dosage = parseInt(__$("row_dosage_" + selected_drug).innerHTML);
-          }
+          var dosage = parseInt(__$("row_dosage_" + selected_drug).innerHTML);
 
           var frequency = __$("row_frequency_" + selected_drug).innerHTML;
           var duration = parseInt(__$("row_duration_" + selected_drug).innerHTML);
@@ -353,216 +348,174 @@ function __$(id){
   return document.getElementById(id);
 
 }
-      
+
 /*
  * We create a custom keyboard for the interface to fit on the available space
  */
-function showFixedKeyboard(ctrl, global_control, abc){
-    
+function showFixedKeyboard(ctrl, global_control) {
+
   var full_keyboard = "full";
-    
-  var qwerty = (typeof(abc) != "undefined" ? abc : true);
-    
+
   var div = document.createElement("div");
-    
   div.id = "divMenu";
-  
+  div.style.backgroundColor = "#EEEEEE";
   div.style.top = "0px";
-  
   div.style.left = "0px";
-  
   div.style.margin = "5px";
 
-  var row1 = (qwerty ? ["Q","W","E","R","T","Y","U","I","O","P"] : ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]);
+  var row1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
+  var row2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
+  var row3 = [ "", "Z", "X", "C", "V", "B", "N", "M" ,"", "del"];
+  var row5 = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
-  var row2 = (qwerty ? ["", "A","S","D","F","G","H","J","K","L"] : ["", "K", "L", "M", "N", "O", "P", "Q", "R", "S"]);
-
-  var row3 = (qwerty ? ["", "Z","X","C","V","B","N","M","&larr;"] : ["", "T", "U", "V", "W", "X", "Y", "Z", "&larr;"]);
-
-  var tbl = document.createElement("div");
-
+  var tbl = document.createElement("table");
   tbl.bgColor = "#fff";
-
+  tbl.cellSpacing = 2;
+  tbl.cellPadding = 10;
   tbl.id = "tblKeyboard";
+  tbl.width = "100%";
 
-  tbl.className = "table";
+  var tr5 = document.createElement("tr");
 
-  tbl.style.margin = "auto";
+  for (var i = 0; i < row5.length; i++) {
+      var td5 = document.createElement("td");
+      td5.innerHTML = row5[i];
+      td5.align = "center";
+      td5.vAlign = "middle";
+      td5.style.cursor = "pointer";
+      td5.style.fontSize = "1.5em";
+      td5.bgColor = "#EEEEEE"
+      td5.width = "30px";
+      td5.className = "btn";
 
-  var tr1 = document.createElement("div");
+      td5.onclick = function () {
+          if (!this.innerHTML.match(/^$/)) {
+              $(global_control).value += this.innerHTML.toProperCase();
+              $(global_control).value = $(global_control).value.toProperCase();
+              searchDrug();
+          }
+      }
 
-  tr1.className = "row";
+      tr5.appendChild(td5);
+  }
+
+  if (full_keyboard) {
+      tbl.appendChild(tr5);
+  }
+
+  var tr1 = document.createElement("tr");
+
+  for (var i = 0; i < row1.length; i++) {
+      var td1 = document.createElement("td");
+      td1.innerHTML = row1[i];
+      td1.align = "center";
+      td1.vAlign = "middle";
+      td1.style.cursor = "pointer";
+      td1.style.fontSize = "1.5em";
+      td1.bgColor = "#EEEEEE"
+      td1.width = "30px";
+      td1.className = "btn";
+
+      td1.onclick = function () {
+          if (!this.innerHTML.match(/^$/)) {
+              $(global_control).value += this.innerHTML.toProperCase();
+              $(global_control).value = $(global_control).value.toProperCase();
+              searchDrug();
+          }
+      }
+
+      tr1.appendChild(td1);
+  }
 
   tbl.appendChild(tr1);
 
-  var tr2 = document.createElement("div");
+  var tr2 = document.createElement("tr");
 
-  tr2.className = "row";
+  for (var i = 0; i < row2.length; i++) {
+      var td2 = document.createElement("td");
+      td2.innerHTML = row2[i];
+      td2.align = "center";
+      td2.vAlign = "middle";
+      td2.style.cursor = "pointer";
+      td2.style.fontSize = "1.5em";
+      td2.bgColor = "#EEEEEE"
+      td2.width = "30px";
+
+      if (!row2[i].trim().match(/^$/)) {
+          td2.className = "btn";
+      }
+
+      td2.onclick = function () {
+          if (!this.innerHTML.match(/^$/)) {
+              $(global_control).value += this.innerHTML.toProperCase();
+              $(global_control).value = $(global_control).value.toProperCase();
+              searchDrug();
+          }
+      }
+
+      tr2.appendChild(td2);
+  }
 
   tbl.appendChild(tr2);
 
-  var tr3 = document.createElement("div");
+  var tr3 = document.createElement("tr");
 
-  tr3.className = "row";
+  for (var i = 0; i < row3.length; i++) {
+      var td3 = document.createElement("td");
+      td3.innerHTML = row3[i];
+      td3.align = "center";
+      td3.vAlign = "middle";
+      td3.style.cursor = "pointer";
+      td3.style.fontSize = "1.5em";
+      td3.bgColor = "#EEEEEE"
+      td3.width = "30px";
+
+      if (!row3[i].trim().match(/^$/)) {
+          td3.className = "btn";
+      }
+
+      if (row3[i] == "del") {
+          td3.colSpan = 2;
+
+          td3.onclick = function () {
+              $(global_control).value = $(global_control).value.substring(0, $(global_control).value.length - 1);
+              searchDrug();
+          }
+
+      } else if (row3[i].trim() == "stat<br />dose") {
+          td3.style.fontSize = "0.9em";
+          td3.style.padding = "0px";
+          td3.style.fontWeight = "bold";
+
+          td3.onclick = function () {
+              if ($("optionOD"))
+                  $("optionOD").click();
+              if ($("group1_1-10"))
+                  $("group1_1-10").click();
+              if ($("group2_1"))
+                  $("group2_1").click();
+          }
+      } else {
+
+          td3.onclick = function () {
+              if (!this.innerHTML.match(/^$/)) {
+                  $(global_control).value += this.innerHTML.toProperCase();
+                  $(global_control).value = $(global_control).value.toProperCase();
+                  searchDrug();
+              }
+          }
+
+      }
+
+      tr3.appendChild(td3);
+  }
 
   tbl.appendChild(tr3);
 
   div.appendChild(tbl);
-
   ctrl.appendChild(div);
 
-  var cell1 = document.createElement("div");
-
-  cell1.className = "cell";
-
-  cell1.style.textAlign = "center";
-
-  tr1.appendChild(cell1);
-
-  var cell2 = document.createElement("div");
-
-  cell2.className = "cell";
-
-  cell1.style.textAlign = "center";
-
-  tr2.appendChild(cell2);
-
-  var cell3 = document.createElement("div");
-
-  cell3.className = "cell";
-
-  cell1.style.textAlign = "center";
-
-  tr3.appendChild(cell3);
-
-  for(var i = 0; i < row1.length; i++){
-
-    var td1 = document.createElement("button");
-
-    td1.className = "button_blue keyboard_button";
-
-    td1.innerHTML = row1[i];
-
-    td1.onclick = function(){
-
-      if(!this.innerHTML.match(/^$/)){
-
-        __$(global_control).value += this.innerHTML.toProperCase();
-
-        __$(global_control).value = __$(global_control).value.toProperCase();
-
-        searchDrug();
-
-      }
-  
-    }
-
-    cell1.appendChild(td1);
-
-  }
-
-  for(var i = 0; i < row2.length; i++){
-  
-    var td2 = document.createElement("button");
-  
-    td2.innerHTML = row2[i];
-
-    td2.onclick = function(){
-
-      if(!this.innerHTML.match(/^$/)){
-
-        __$(global_control).value += this.innerHTML.toProperCase();
-
-        __$(global_control).value = __$(global_control).value.toProperCase();
-
-        searchDrug();
-
-      }
-  
-    }
-
-    if(!row2[i].trim().match(/^$/)){
-
-      td2.className = "button_blue keyboard_button";
-
-      cell2.appendChild(td2);
-
-    }
-
-  }
-
-  for(var i = 0; i < row3.length; i++){
-
-    var td3 = document.createElement("button");
-
-    td3.innerHTML = row3[i];
-
-    if(row3[i] == "&larr;"){
-
-      td3.colSpan = 2;
-
-      td3.onclick = function(){
-
-        __$(global_control).value = __$(global_control).value.substring(0,__$(global_control).value.length - 1);
-
-        searchDrug();
-
-      }
-  
-    } else if(row3[i].trim() == "stat<br />dose"){            
-  
-      td3.style.fontSize = "0.9em";            
-  
-      td3.style.padding = "0px";           
-  
-      td3.style.fontWeight = "bold";
-  
-      td3.onclick = function(){
-  
-        if (__$("optionOD"))
-  
-          __$("optionOD").click();
-    
-        if (__$("group1_1-10"))
-  
-          __$("group1_1-10").click();
-    
-        if (__$("group2_1"))
-  
-          __$("group2_1").click();
-    
-      }
-      
-    } else {            
-
-      td3.onclick = function(){
-
-        if(!this.innerHTML.match(/^$/)){
-
-          __$(global_control).value += this.innerHTML.toProperCase();
-
-          __$(global_control).value = __$(global_control).value.toProperCase();
-
-          searchDrug();
-
-        }
-  
-      }
-
-    }
-
-    if(!row3[i].trim().match(/^$/)){
-
-      td3.className = "button_blue keyboard_button";
-
-      cell3.appendChild(td3);
-
-    }
-
-  }
-
 }
-
 
 function showNumber(id, global_control, showDefault){
     
@@ -572,7 +525,7 @@ function showNumber(id, global_control, showDefault){
   
   var row3 = ["7","8","9"];
   
-  if(global_control == 'dosage' || global_control == 'noneDrug')
+  if(global_control == 'dosage')
     var row4 = ["C","0","."];
   else
     var row4 = ["C","0","OK"];
@@ -845,9 +798,7 @@ function loadAllDrugs(){
         border: "1px solid #ccc",
         
         overflow: "auto",
-        
-        borderRadius: "10px",
-        
+                
         marginBottom: "2px",
         
         height: "200px",
@@ -866,7 +817,6 @@ function loadAllDrugs(){
       
         overflow: "auto",
       
-        borderRadius: "10px",
       
         textAlign: "center",
       
@@ -940,7 +890,6 @@ function loadFrequenciesAndDuration(id){
   
   table.style.height = "100%";
   
-  table.style.borderRadius = "10px";
   
   table.style.border = "1px solid #ccc";
   
@@ -992,7 +941,6 @@ function loadFrequenciesAndDuration(id){
   
   cell1.style.height = "100%";
   
-  cell1.style.borderRadius = "10px";
   
   cell1.style.textAlign = "center";
   
@@ -1010,7 +958,6 @@ function loadFrequenciesAndDuration(id){
   
   cell2.style.height = "100%";
   
-  cell2.style.borderRadius = "10px";
   
   cell2.style.textAlign = "center";
   
@@ -1032,7 +979,6 @@ function loadFrequenciesAndDuration(id){
   
   cell3.style.height = "100%";
   
-  cell3.style.borderRadius = "10px";
   
   cell3.style.textAlign = "center";
   
@@ -1193,281 +1139,6 @@ function loadFrequenciesAndDuration(id){
 
 }
 
-function loadNonDrugAmount(id)
-{
-  clearTimeout(clicksChecker);
-  
-  __$("switcher").innerHTML = "";
-  
-  __$("searchbox").value = "";
-  
-  __$("searchbox").style.display = "none";
-  
-  var table = document.createElement("div");
-  
-  table.className = "table";
-  
-  table.style.width = "100%";
-  
-  table.style.height = "100%";
-  
-  table.style.borderRadius = "10px";
-  
-  table.style.border = "1px solid #ccc";
-  
-  __$("switcher").appendChild(table);
-  
-  var row = document.createElement("div");
-  
-  row.className = "row";
-  
-  table.appendChild(row);
-  
-  var cell = document.createElement("div");
-  
-  cell.className = "cell";
-  
-  row.appendChild(cell);
-  
-  var container = document.createElement("div");
-  
-  container.id = "selections";
-  
-  container.style.width = "100%";
-  
-  cell.appendChild(container);
-  
-  resize();
-  
-  var tbl = document.createElement("div");
-  
-  tbl.className = "table";
-  
-  tbl.style.width = "100%";
-  
-  container.appendChild(tbl);
-  
-  var tr = document.createElement("div");
-  
-  tr.className = "row";
-  
-  tbl.appendChild(tr);
-  
-  var cell1 = document.createElement("div");
-  
-  cell1.className = "cell";
-  
-  cell1.style.width = "40%";
-  
-  cell1.style.border = "1px solid #ccc";
-  
-  cell1.style.height = "100%";
-  
-  cell1.style.borderRadius = "10px";
-  
-  cell1.style.textAlign = "center";
-  
-  cell1.style.backgroundColor = "#fff";
-  
-  tr.appendChild(cell1);
-  
-
-  var cell2 = document.createElement("div");
-  
-  cell2.className = "cell";
-  
-  cell2.style.width = "30%";
-  
-  cell2.style.border = "1px solid #ccc";
-  
-  cell2.style.height = "100%";
-  
-  cell2.style.borderRadius = "10px";
-  
-  cell2.style.textAlign = "center";
-  
-  cell2.style.backgroundColor = "#fff";
-  
-  cell2.id = "noneDrugControl";
-  
-  cell2.style.paddingBottom = "10px";
-  
-  tr.appendChild(cell2);
-
-  var cell4 = document.createElement("div");
-  
-  cell4.className = "cell";
-  
-  cell4.style.width = "30%";
-  
-  cell4.style.border = "1px solid #ccc";
-  
-  cell4.style.height = "100%";
-  
-  cell4.style.borderRadius = "10px";
-  
-  cell4.style.textAlign = "center";
-  
-  cell4.style.backgroundColor = "#fff";
-  
-  cell4.id = "durationControl";
-  
-  cell4.style.paddingBottom = "10px";
-  
-  tr.appendChild(cell4);
-  
-  var freqHead = document.createElement("div");
-  
-  freqHead.style.paddingTop = "10px";
-  
-  freqHead.style.paddingBottom = "10px";
-  
-  freqHead.style.fontSize = "36px";
-  
-  freqHead.innerHTML = "Frequency";
-  
-  freqHead.style.width = "100%";
-  
-  freqHead.style.textAlign = "center";
-  
-  cell1.appendChild(freqHead);
-  
-
-  var quaHead = document.createElement("div");
-
-  quaHead.style.paddingTop = "10px";
-  
-  quaHead.style.paddingBottom = "10px";
-  
-  quaHead.style.fontSize = "36px";
-  
-  quaHead.innerHTML = "Quantity";
-  
-  quaHead.style.width = "100%";
-  
-  quaHead.style.textAlign = "center";
-  
-  cell2.appendChild(quaHead);
-
-  var durHead = document.createElement("div");
-
-  durHead.style.paddingTop = "10px";
-  
-  durHead.style.paddingBottom = "10px";
-  
-  durHead.style.fontSize = "36px";
-  
-  durHead.innerHTML = "Duration (days)";
-  
-  durHead.style.width = "100%";
-  
-  durHead.style.textAlign = "center";
-  
-  cell4.appendChild(durHead);
-  
-  var ul = document.createElement("ul");
-  
-  ul.className = "listing";
-  
-  ul.style.overflow = "auto";
-  
-  ul.style.height = "370px";
-  
-  ul.style.width = "100%"
-  
-  ul.id = "ul";
-  
-  ul.style.fontSize = "0.8em";
-  
-  cell1.appendChild(ul);
-  
-  var frequencies = ["Once a day (OD)", "Twice a day (BD)", "Three a day (TDS)",
-  
-    "Four times a day (QID)", "Five times a day (5X/D)", "Six times a day (Q4HRS)",
-  
-    "In the morning (QAM)", "Once a week (QWK)", "Once a month", "Twice a month"]; //"TBD", "NOCTE",
-  
-  for(var i = 0; i < frequencies.length; i++){
-  
-    var li = document.createElement("li");
-  
-    li.innerHTML = frequencies[i];
-  
-    li.style.backgroundColor = (i % 2 == 0 ? "#f8f7ec" : "#fff");
-  
-    li.setAttribute("frequency", frequencies[i]);
-  
-    li.setAttribute("tag", id);
-  
-    li.style.textAlign = "left";
-  
-    li.id = "li_" + i;
-  
-    li.onclick = function(){
-    
-      if(this.getAttribute("frequency") != null && this.getAttribute("tag") != null){
-    
-        if(__$("row_frequency_" + this.getAttribute("tag"))){
-    
-          __$("row_frequency_" + this.getAttribute("tag")).innerHTML = this.getAttribute("frequency");
-    
-        }
-    
-      }
-
-      for(var j = 0; j < __$("ul").children.length; j++){
-                
-        __$("ul").children[j].className -= "selected";
-            
-      }
-      
-      this.className = "selected";
-        
-    }
-    
-    ul.appendChild(li);
-    
-  }
-
-
-
-  var input = document.createElement("input");
-    
-  input.setAttribute("type", "text");
-    
-  input.id = "noneDrug";
-  
-  input.className = "input";
-  
-  input.style.width = "64%";
-  
-  input.style.textAlign = "center";
-  
-  input.style.fontSize = "32px";
-  
-  cell2.appendChild(input);
-  
-  showNumber("noneDrugControl", "noneDrug");
-
-  var input = document.createElement("input");
-    
-  input.setAttribute("type", "text");
-    
-  input.id = "noneDrugduration";
-  
-  input.className = "input";
-  
-  input.style.width = "64%";
-  
-  input.style.textAlign = "center";
-  
-  input.style.fontSize = "32px";
-  
-  cell4.appendChild(input);
-  
-  showNumber("durationControl", "noneDrugduration");
-}
-
 
 function checkParams(){
 
@@ -1538,33 +1209,7 @@ function setAmounts() {
         }
     }
 
-  var noneDrugduration = null
-    if (__$("noneDrugduration"))
-    {
-      noneDrugduration = __$("noneDrugduration").value;
-      var cell3s = document.getElementsByClassName("noneDrugdurations");
-
-      for(var i = (cell3s.length - 1); i >= 0; i--)
-      {
-        if(cell3s[i].innerHTML.length < 1 )
-        {
-          if(noneDrugduration != '')
-            cell3s[i].innerHTML = (noneDrugduration != null ? (noneDrugduration > 1 ? noneDrugduration + " days" : noneDrugduration + " day") : noneDrugduration);
-          else
-            cell3s[i].innerHTML = noneDrugduration;
-          break;
-        }
-        else 
-        if(cell3s[i].innerHTML.length > 1 )
-        {
-          if(noneDrugduration != '')
-            cell3s[i].innerHTML = (noneDrugduration != null ? (noneDrugduration > 1 ? noneDrugduration + " days" : noneDrugduration + " day") : noneDrugduration);
-          else
-            cell3s[i].innerHTML = noneDrugduration;
-          break;
-        }
-      }
-    }
+ 
 
     var dosage = null
     if (__$("dosage")){
@@ -1588,27 +1233,7 @@ function setAmounts() {
       
     }
 
-    var noneDrug = null
-    if (__$("noneDrug"))
-    {
-      noneDrug = __$("noneDrug").value;
-      var cell3s = document.getElementsByClassName("noneDrugs");
-      for(var i = (cell3s.length - 1); i >= 0; i--)
-      {
-          cell3s[i].innerHTML = "";
-          if(cell3s[i].innerHTML.length < 1 )
-          {
-              cell3s[i].innerHTML = noneDrug;
-              break;
-          }
-          else 
-          if(cell3s[i].innerHTML.length >= 1 )
-          {
-              cell3s[i].innerHTML = noneDrug;
-              break;
-          }
-      }
-    }
+
 }
 
 function listAllDrugs(){
@@ -1648,6 +1273,7 @@ function listAllDrugs(){
       var li = document.createElement("li");
             
       li.id = "all_" + formulations[l].drug_id;
+      li.concept_id = formulations[l].concept_id;
             
       li.innerHTML = formulations[l].drug;
             
@@ -1679,16 +1305,9 @@ function listAllDrugs(){
           
           selectedDrugs[this.id] = true;
           
-          if(formulations[0].concept_id != 10530)
-          {
             addDrug(this.id);
             loadFrequenciesAndDuration(this.id);
-          }
-          else
-          {
-            addNonDrug(this.id);
-            loadNonDrugAmount(this.id);
-          }
+          
           
         }
         
@@ -1814,90 +1433,6 @@ function addDrug(id)
   cell5.appendChild(img);
 }
 
-function addNonDrug(id)
-{
-  var drug = __$(id).getAttribute("drug");
-    var frequency = __$(id).getAttribute("frequency");
-    var noneDrug = __$(id).getAttribute("noneDrug");
-    var noneDrugduration = __$(id).getAttribute("noneDrugduration");
-  
-    
-    var row = document.createElement("div");
-    row.className = "row";
-    row.id = "row_" + id;
-    row.setAttribute("d-name", drug);
-  
-    __$("nonDrugs").appendChild(row);
-    scroll(__$("scroll_me"));
-   
-    
-  
-    var cell1 = document.createElement("div");
-    cell1.className = "cell borderRightBottom";
-    cell1.innerHTML = drug;
-    cell1.style.padding = "5px";
-    cell1.style.width = "45%";
-    cell1.style.verticalAlign = "middle";
-  
-    row.appendChild(cell1);
-  
-    var cell2 = document.createElement("div");
-    cell2.className = "cell borderRightBottom";
-    cell2.innerHTML = frequency;
-    cell2.style.padding = "5px";
-    cell2.style.width = "24%";
-    cell2.style.textAlign = "center";
-    cell2.style.verticalAlign = "middle";
-    cell2.id = "row_frequency_" + id;
-  
-    row.appendChild(cell2);
-  
-    var cell3 = document.createElement("div");
-    cell3.className = "cell borderRightBottom noneDrugs";
-    cell3.innerHTML = noneDrug ;
-    cell3.style.padding = "1px";
-    cell3.style.width = "10%";
-    cell3.style.textAlign = "center";
-    cell3.style.verticalAlign = "middle";
-    cell3.id = "row_quantity" + id;
-
-  
-    row.appendChild(cell3);
-
-    var cell4 = document.createElement("div");
-    cell4.className = "cell borderRightBottom noneDrugdurations";
-    cell4.innerHTML = (noneDrugduration != null ? (noneDrugduration > 1 ? noneDrugduration + " days" : noneDrugduration + " day") : noneDrugduration);
-    cell4.style.padding = "1px";
-    cell4.style.width = "10%";
-    cell4.style.textAlign = "center";
-    cell4.style.verticalAlign = "middle";
-    cell4.id = "row_duration_" + id;
-  
-  
-    row.appendChild(cell4);
-
-    var cell5 = document.createElement("div");
-    cell5.className = "cell borderBottom";
-    cell5.style.padding = "1px";
-    cell5.style.width = "60px";
-    cell5.style.textAlign = "center";
-    cell5.style.verticalAlign = "middle";
-  
-    row.appendChild(cell5);
-  
-    var img = document.createElement("img");
-    img.setAttribute("tag", id);
-    img.setAttribute("src", imgvoid);
-    img.setAttribute("height", "40px");
-    img.style.cursor = "pointer";
-  
-    img.onclick = function(){
-
-        removeDrug(this.getAttribute("tag"));   
-    }
-  
-    cell5.appendChild(img);
-}
 function removeDrug(id){
     
   if(__$("row_" + id)){
