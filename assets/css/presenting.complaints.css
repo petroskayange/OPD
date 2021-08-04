@@ -76,3 +76,16 @@
 .modal-body {
   position: initial;
 }
+
+.td-st {
+  font-size: 22px;
+  background: white;
+  border: solid 3px;
+  padding: 3;
+  background: #ac5c5c;
+}
+
+.table-st {
+  max-height: 300px;
+  overflow: scroll;
+}

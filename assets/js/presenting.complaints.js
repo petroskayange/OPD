@@ -1,11 +1,14 @@
 var presentingComplaintsHash = {};
+var presentingComplaintsNameHash = {};
 sessionStorage.setItem('radiology_order_done','false');
 sessionStorage.setItem('lab_order_done','false');
 sessionStorage.setItem('radiology_is_set', 'false');
 
 function clearSelection(type_of_complaint) {
   presentingComplaintsHash[type_of_complaint] = [];
+  presentingComplaintsNameHash = [];
   buildPresentaingComplaints(type_of_complaint);
+  messageBar.style.display = "none";
 }
 
 /* function build_search_field()
@@ -50,7 +53,7 @@ function buildOrderButton() {
   if(sessionStorage.radiology_status == 'true'){
     orderButton.innerHTML = '<span>Orders</span>';
   } else  orderButton.innerHTML = '<span>Lab Order</span>';
-  orderButton.setAttribute('onmousedown','prepareToSave(); changeToSelected(this)');
+  orderButton.setAttribute('onmousedown','prepareToSaveForOrders(); changeToSelected(this)');
   navButton.appendChild(orderButton);
 }
 
@@ -148,6 +151,7 @@ function presentingComplaints(concept_sets, type_of_complaint) {
               cell.setAttribute('selected', 'false');
               cell.setAttribute('concept_id', concept_sets[t].complaints[i].concept_id);
               cell.setAttribute('complaint-type', type_of_complaint);
+              cell.setAttribute('name', concept_sets[t].complaints[i].name);
               cell.setAttribute('onmousedown','complaintClicked(this);');
               row.appendChild(cell);
 
@@ -180,7 +184,7 @@ function autoHighLight(type_of_complaint) {
 
 function complaintClicked(e) {
   var type_of_complaint = e.getAttribute('complaint-type');
-
+  
   if(e.getAttribute('selected') == 'false'){
     if(e.innerHTML.toUpperCase() == 'NONE'){
       deSelectAll(type_of_complaint);
@@ -189,11 +193,13 @@ function complaintClicked(e) {
     }
     e.setAttribute('selected', 'true');
     e.style = 'background-color: lightblue;';
-    addToHash(type_of_complaint, e.getAttribute('concept_id'));    
+    addToHash(type_of_complaint, e.getAttribute('concept_id'));
+    addToNameHash(e.getAttribute('name'));    
   }else{
     e.setAttribute('selected', 'false');
     e.style = 'background-color: "";';
     removeFromHash(type_of_complaint, e.getAttribute('concept_id'));
+    removeFromNameHash(e.getAttribute('name'));
   }
 }
 
@@ -227,6 +233,29 @@ function deSelectNone(key) {
       removeFromHash(key, list[i].getAttribute('concept_id'));
     }
   }
+}
+
+function addToNameHash(e) {
+  if(isHashEmpty(presentingComplaintsNameHash))
+  presentingComplaintsNameHash = [];
+
+  try {
+    presentingComplaintsNameHash.push(e);
+  }catch(e) {
+    //presentingComplaintsNameHash = [];
+    presentingComplaintsNameHash.push(e);
+  }
+}
+
+function removeFromNameHash(e) {
+  var temp = presentingComplaintsNameHash;
+  presentingComplaintsNameHash= [];
+
+  for(var i = 0 ; i < temp.length ; i++){
+    if(temp[i] != e){
+      presentingComplaintsNameHash.push(temp[i])
+    }
+  } 
 }
 
 function addToHash(key, concept_id) {
@@ -311,6 +340,59 @@ function prepareToSave() {
   submitParameters(encounter, "/encounters", "saveObs");
 }
 
+//modified function for when orders/Lab oders button is selected
+function prepareToSaveForOrders() {
+  
+  if(isHashEmpty(presentingComplaintsHash)) {
+    showMessage('No selection made. Please selection one or more complaints');
+    return;
+  }
+
+  var observations = [];
+  var keys = []
+  
+  for(key in presentingComplaintsHash) {
+    var concept_id = key == 'Presenting complaint' ? 8578 : 8677;
+    var temp = presentingComplaintsHash[key];
+    for(var i = 0 ; i < temp.length ; i++){
+      observations.push({concept_id: concept_id, value_coded: temp[i]})
+    }
+  }
+  
+  if(observations.length < 1) {
+    showMessage('No selection made. Please selection one or more complaints');
+    return;
+  }
+
+  showValidate();
+}
+
+function showValidate() {
+  console.log(presentingComplaintsNameHash);
+  var message = "Complaints Selected";
+  var msg = "Are you sure you want to proced?";
+  var td_string = "";
+  var trial = "<td class=\"td-st\" >Trial</td>";
+  for (var i = 0; i < presentingComplaintsNameHash.length; i++) {
+    td_string+="<div class=\"td-st\">"+presentingComplaintsNameHash[i]+"</div>";
+  }
+
+  //document.getElementById('messageBar').style.width = "700px";
+  //console.log(document.getElementById('messageBar'));
+  messageBar.innerHTML = "";
+  messageBar.innerHTML += "<p>" + message +
+     
+      "<div class='table-st'>"+td_string+"</div>"+
+      "</p><div style='display: block;'>" +
+      "<p style=\" \">" + msg +
+      "</p>"+
+      "<button class='button' style='float: none;' onclick='this.offsetParent.style.display=\"none\";  prepareToSave();' onmousedown='this.offsetParent.style.display=\"none\"; prepareToSave();'" +
+      "><span>Yes</span></button><button class='button' " +
+      "style='float: none; right: 3px;' onmousedown='this.offsetParent.style.display=\"none\"; '>" +
+      "<span>No</span></button>";
+  messageBar.style.display = "block";
+}
+
 function saveObs(encounter) { 
   
   var observations = [];
@@ -350,8 +432,6 @@ function nextPage(obs){
 }
 
 function ordersPopupModal() {
-  let page_cover = document.getElementById("page-cover");
-  page_cover.style = "display: inline;";
   var parent = document.getElementById('mateme');
   var main_container = document.createElement('div');
   parent.setAttribute('class','modal-open');
@@ -522,8 +602,6 @@ function nextActivity() {
 var timer = setInterval("autoReomvePopup();", 500);
 window.timer;
 
-count = 0;
-
 function autoReomvePopup(){
   if(sessionStorage.getItem('radiology_order_done') == 'true' || sessionStorage.getItem('lab_order_done') == 'true'){
     sessionStorage.setItem('radiology_order_done','false');
@@ -531,13 +609,6 @@ function autoReomvePopup(){
     closeOrdersPopupModal();
     //window.clearTimeout(window.timer);
   }
-  
-  if(count == 0){
-    
-    count = 1;
-  }
-
-
 }
 
 
