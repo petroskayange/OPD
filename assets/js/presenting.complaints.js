@@ -53,7 +53,7 @@ function buildOrderButton() {
   if(sessionStorage.radiology_status == 'true'){
     orderButton.innerHTML = '<span>Orders</span>';
   } else  orderButton.innerHTML = '<span>Lab Order</span>';
-  orderButton.setAttribute('onmousedown','prepareToSaveForOrders(); changeToSelected(this)');
+  orderButton.setAttribute('onmousedown','nextPageForLabOrders(); changeToSelected(this)');
   navButton.appendChild(orderButton);
 }
 
@@ -185,6 +185,17 @@ function autoHighLight(type_of_complaint) {
 function complaintClicked(e) {
   var type_of_complaint = e.getAttribute('complaint-type');
   
+  var groupID = e.parentElement.parentElement.getAttribute('id').split('list-');
+  console.log('groupID: ', groupID[1]);
+  //console.log(getElementById(groupID[1]));
+  var groupSelected = document.getElementById(groupID[1]);
+  var childNodes = e.parentElement.parentElement.childNodes;
+  
+
+  console.log('type_of_complaint: ', e.parentElement.parentElement.getAttribute('id'));
+
+
+  
   if(e.getAttribute('selected') == 'false'){
     if(e.innerHTML.toUpperCase() == 'NONE'){
       deSelectAll(type_of_complaint);
@@ -194,12 +205,32 @@ function complaintClicked(e) {
     e.setAttribute('selected', 'true');
     e.style = 'background-color: lightblue;';
     addToHash(type_of_complaint, e.getAttribute('concept_id'));
-    addToNameHash(e.getAttribute('name'));    
+    addToNameHash(e.getAttribute('name'));
+    for (var i =0; i < childNodes.length; i++ ) {
+      for (var j=0; j < childNodes[i].childNodes.length; j++) {
+        //console.log('Child: ', childNodes[i].childNodes[j].getAttribute('selected'));
+        if ( childNodes[i].childNodes[j].getAttribute('selected') == 'true') {
+          groupSelected.setAttribute('selected', 'true');
+          groupSelected.style = 'background-color: #aaaaf4 !important;';
+        }
+      }
+    }   
   }else{
     e.setAttribute('selected', 'false');
     e.style = 'background-color: "";';
     removeFromHash(type_of_complaint, e.getAttribute('concept_id'));
     removeFromNameHash(e.getAttribute('name'));
+    var find_selected = 0;
+    for (var i =0; i < childNodes.length; i++ ) {
+      for (var j=0; j < childNodes[i].childNodes.length; j++) {
+          if (childNodes[i].childNodes[j].getAttribute('selected') == 'true') 
+          find_selected +=1;   
+      }
+    }
+    if (find_selected == '0') {
+        groupSelected.setAttribute('selected', 'false');
+        groupSelected.style = 'background-color: #aaaaf4 !important;';
+    }
   }
 }
 
@@ -209,10 +240,12 @@ function groupClicked(e){
   var currentVisabList = document.getElementsByClassName('complaints-list-show');
   var groupList = document.getElementsByClassName('complaints-container-box');
 
-  for(var i=0; i<groupList.length; i++)
-  groupList[i].setAttribute('style','background-color: none !important');
+  for(var i=0; i<groupList.length; i++) {
+    if(groupList[i].getAttribute('selected') == 'false')
+    groupList[i].setAttribute('style','background-color: none !important');
+  }
   e.setAttribute('style','background-color: #aaaaf4 !important');
-  
+
   currentVisabList[0].setAttribute('class','complaints-list-hide');
   container_list.setAttribute('class','complaints-list-show');
 }
@@ -431,7 +464,27 @@ function nextPage(obs){
   nextEncounter(sessionStorage.patientID, sessionStorage.programID);
 }
 
+//overriden function for placing lab orders
+function nextPageForLabOrders(){
+  var odersButton = document.getElementById('orderButton');
+  //var selected = odersButton.getAttribute('selected');
+
+    if(sessionStorage.getItem('radiology_status') == 'true') {
+      ordersPopupModal();
+      odersButton.setAttribute('selected','false');
+      return;
+    } else {
+      odersButton.setAttribute('selected','false');
+      redirectToLabOrders();
+      return;
+    }
+  
+}
+
 function ordersPopupModal() {
+  let submit_cover = document.getElementById("page-cover");
+  submit_cover.style = "display: block;";
+
   var parent = document.getElementById('mateme');
   var main_container = document.createElement('div');
   parent.setAttribute('class','modal-open');
@@ -572,7 +625,7 @@ function closeOrdersPopupModal() {
   main_container.setAttribute('class','modal fade');
   main_container.setAttribute('style','display: none');
   document.getElementsByTagName('body')[0].removeChild(main_container);
-  nextEncounter(sessionStorage.patientID, sessionStorage.programID);
+  //nextEncounter(sessionStorage.patientID, sessionStorage.programID);
 }
 
 function nextActivity() {
@@ -610,5 +663,4 @@ function autoReomvePopup(){
     //window.clearTimeout(window.timer);
   }
 }
-
 
