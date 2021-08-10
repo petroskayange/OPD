@@ -309,7 +309,7 @@ function checkClicks(){
   
   if(__$("search").value.trim().length != prevLen){
        
-    __$('searchbox').style.display = 'block';
+    __$('searchbox').style.display = 'flex';
     
     ticks = 0;
     
@@ -323,21 +323,21 @@ function checkClicks(){
 
 function resize(){
     
-  __$('container').style.height = (window.innerHeight - 25) + 'px';
+  // __$('container').style.height = (window.innerHeight - 25) + 'px';
   
-  if(__$("selections")){
+  // if(__$("selections")){
     
-    if(__$("keying")){
+  //   if(__$("keying")){
     
-      __$("selections").style.height = (__$('container').offsetHeight - __$("keying").offsetHeight - __$("cummulative").offsetHeight - 35) + "px";
+  //     __$("selections").style.height = (__$('container').offsetHeight - __$("keying").offsetHeight - __$("cummulative").offsetHeight - 35) + "px";
         
-    } else {
+  //   } else {
     
-      __$("selections").style.height = (__$('container').offsetHeight - __$("cummulative").offsetHeight - 55) + "px";
+  //     __$("selections").style.height = (__$('container').offsetHeight - __$("cummulative").offsetHeight - 55) + "px";
     
-    }
+  //   }
     
-  }
+  // }
   
   scroll(__$("scroll_me"));
 

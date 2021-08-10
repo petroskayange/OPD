@@ -50,7 +50,7 @@ var tt_cancel_destination = "/views/patient_dashboard.html?patient_id=" + sessio
 
 function changeNextButton() {
   var nextButton = document.getElementById('nextButton');
-  nextButton.setAttribute('onmousedown','prepareToSave();');
+  nextButton.setAttribute('onmousedown','save_encounter();');
 }
 
 </script>
@@ -61,7 +61,7 @@ function changeNextButton() {
  
       <form>
         <input type="text" name="summary"
-          tt_onLoad="changeNextButton();__$('keyboard').style.display = 'none';buildPresentaingComplaints('Presenting complaint');buildOrderButton()"
+          tt_onLoad="changeNextButton();__$('keyboard').style.display = 'none';buildPresentaingComplaints('Presenting complaint');"
           tt_pageStyleClass= "NoControls" helpText="Radiology Orders" optional = "true"/>
 
         <!--input type="text" name="summary"
