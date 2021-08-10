@@ -608,14 +608,6 @@ function labOrdersContainer(arg1,arg2) {
   var radiology_is_set = arg1;
   var lab_is_set = arg2;
 
-  if(sessionStorage.getItem('radiology_status') == 'false') {
-    let submit_cover = document.getElementById("page-cover");
-    submit_cover.style = "display: block;";
-  } else {
-    let submit_cover = document.getElementById("page-cover");
-    submit_cover.style = "display: block;";
-  }
-
   var parent = document.getElementById('mateme');
   var mainLabOrdersContainer = document.createElement('div');
   mainLabOrdersContainer.setAttribute('id','mainLabOrdersContainer');
@@ -661,6 +653,8 @@ function labOrdersContainer(arg1,arg2) {
   }
 
    if (radiology_is_set == 'false' && lab_is_set == 'true') {
+
+    if (sessionStorage.getItem('radiology_status') == 'true')
     closeOrdersPopupModal();
     let submit_cover = document.getElementById("page-cover");
     submit_cover.style = "display: block;";
