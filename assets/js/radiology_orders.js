@@ -1,8 +1,8 @@
 var presentingComplaintsHash = {};
 var presentingComplaintsNameHash = {};
-sessionStorage.setItem('radiology_order_done','false');
-sessionStorage.setItem('lab_order_done','false');
-sessionStorage.setItem('radiology_is_set', 'false');
+// sessionStorage.setItem('radiology_order_done','false');
+// sessionStorage.setItem('lab_order_done','false');
+// sessionStorage.setItem('radiology_is_set', 'false');
 
 function clearSelection(type_of_complaint) {
   presentingComplaintsHash[type_of_complaint] = [];
@@ -10,6 +10,9 @@ function clearSelection(type_of_complaint) {
   buildPresentaingComplaints(type_of_complaint);
   messageBar.style.display = "none";
 }
+
+console.log(sessionStorage.radiology_is_set);
+
 
 /* function build_search_field()
 {
@@ -40,7 +43,14 @@ function buildPresentaingComplaints(type_of_complaint) {
 
   getPresentingComplaints();
   var clearButton = document.getElementById('clearButton');
-  clearButton.setAttribute('onmousedown',"clearSelection('" + type_of_complaint + "');"); 
+  clearButton.setAttribute('onmousedown',"clearSelection('" + type_of_complaint + "');");
+  
+  
+if (sessionStorage.radiology_is_set == 'true') {
+  var cancelButton = document.getElementById('cancelButton');
+  cancelButton.setAttribute('onmousedown','closeOrdersPopupModal()');
+  console.log('aaa: ',cancelButton);
+}
 }
 
 
@@ -641,20 +651,23 @@ function tick(e) {
 }
 
 function closeOrdersPopupModal() {
-  let page_cover = document.getElementById("page-cover");
+  let page_cover = window.parent.document.getElementById("page-cover");
   page_cover.style = "display: none;";
 
-  let submit_cover = document.getElementById("page-cover");
+  let submit_cover = window.parent.document.getElementById("page-cover");
   submit_cover.style = "display: none;";
 
-  var parent = document.getElementById('mateme');
+  var parent = window.parent.document.getElementById('mateme');
   parent.setAttribute('class','');
-
-  var main_container = document.getElementsByTagName('body')[0].lastElementChild;
+  
+  //var main_container = window.parent.document.getElementsByTagName('body')[0].lastElementChild;
+  var main_container = window.parent.document.getElementById('ordersModal');
   main_container.setAttribute('class','modal fade');
   main_container.setAttribute('style','display: none');
-  document.getElementsByTagName('body')[0].removeChild(main_container);
-  //nextEncounter(sessionStorage.patientID, sessionStorage.programID);
+  window.parent.document.getElementsByTagName('body')[0].removeChild(main_container);
+
+  var someIframe = window.parent.document.getElementById('labIframe');
+  someIframe.parentNode.removeChild(someIframe);
 }
 
 function nextActivity() {
