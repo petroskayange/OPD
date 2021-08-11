@@ -11,9 +11,6 @@ function clearSelection(type_of_complaint) {
   messageBar.style.display = "none";
 }
 
-console.log(sessionStorage.radiology_is_set);
-
-
 /* function build_search_field()
 {
 
@@ -49,7 +46,6 @@ function buildPresentaingComplaints(type_of_complaint) {
 if (sessionStorage.radiology_is_set == 'true') {
   var cancelButton = document.getElementById('cancelButton');
   cancelButton.setAttribute('onmousedown','closeOrdersPopupModal()');
-  console.log('aaa: ',cancelButton);
 }
 }
 
@@ -433,10 +429,8 @@ function postRadiologyOrders(encounter) {
     var tests_ordered_concept_id = 8426;
 
   var observations = [];
-  var keys = []
-//   console.log(presentingComplaintsNameHash);
-  
-      
+  var keys = [];
+
     for(var i = 0 ; i < presentingComplaintsNameHash.length ; i++){
         var data = presentingComplaintsNameHash[i].split(";");
         
