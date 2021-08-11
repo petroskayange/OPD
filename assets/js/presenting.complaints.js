@@ -602,9 +602,6 @@ function ordersPopupModal() {
 }
 
 function labOrdersContainer(arg1,arg2) {
-
-  
-
   var radiology_is_set = arg1;
   var lab_is_set = arg2;
 
@@ -618,7 +615,6 @@ function labOrdersContainer(arg1,arg2) {
   mainLabOrdersContainer.setAttribute('data-keyboard','false');
   mainLabOrdersContainer.setAttribute('role','dialog');
   mainLabOrdersContainer.setAttribute('style','display: block');
-
 
   var modal_dialog = document.createElement('div');
   modal_dialog.setAttribute('style','width: 75%; hieght: 75%; top: -3%; height: 100vh;');
@@ -661,9 +657,7 @@ function labOrdersContainer(arg1,arg2) {
     iframe.setAttribute('src','/../views/patient/labs.html');
   }
 
-
   modal_content.appendChild(iframe);
-
 
   parent.appendChild(mainLabOrdersContainer);
 }
@@ -725,6 +719,7 @@ function nextActivity() {
   if(option_one_selected == 'false' && option_two_selected == 'true') {
     //redirectToLabOrders();
     sessionStorage.setItem('lab_is_set', 'true');
+    sessionStorage.orderFlowStatus = true;
     labOrdersContainer('false','true');
   }
 }
@@ -736,7 +731,7 @@ function autoReomvePopup(){
   if(sessionStorage.getItem('radiology_order_done') == 'true' || sessionStorage.getItem('lab_order_done') == 'true'){
     sessionStorage.setItem('radiology_order_done','false');
     sessionStorage.setItem('lab_order_done','false');
-    closeOrdersPopupModal();
+    //closeOrdersPopupModal();
     //window.clearTimeout(window.timer);
   }
 }
