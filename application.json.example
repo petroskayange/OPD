@@ -8,7 +8,7 @@
     "vitals": {
       "available": true,
       "activitiesIcon": "/assets/images/vitals.png",
-      "url": "/apps/OPD/views/encounters/vitals.html"
+      "url": "/views/patient/vitals.html"
     },
     "presenting complaints": {
       "available": true,
