@@ -28,24 +28,6 @@
           height: unset;
           line-height: unset;
       }
-      .buttonsDiv {
-top: unset !important;
-    bottom: 0 ;
-}
-#footer button, div.buttonsDiv button {
-    margin-top: -9px !important;
-}
-.buttonsDiv {
-    
-    height: 65px !important;
-}
- #divMenu {
-    display: flex;
-    justify-content: center;
-}
-#divMenu #tblKeyboard {
-    max-width: 1000px;
-} 
     </style>
     <!--link rel="stylesheet" href="styles.css" type="text/css"-->
     <!-- %= stylesheet_link_tag "prescription/styles" % -->
@@ -90,20 +72,14 @@ top: unset !important;
 
                     </div>
                   
-                    <div id="searchbox" style="
-                    display: none;
-                    justify-content: center;
-                    z-index: 1200;
-                    position: absolute;
-                    top: 188px;">
-                      <input type="text" style="margin: 0 auto; width: 95vw;" id="search" value="" class="input" />
-                    </div>
                   </div>
 
                 </div>
               </div>
               <div class="row">
-                <div class="cell" id="switcher" style="border: 0px solid #fff; overflow: auto;  border: 0px #999 solid; background-color: #fff; ">
+                <div class="cell" id="switcher" style="border: 0px solid #fff; overflow: auto; 
+                     border: 0px #999 solid; background-color: #fff; ">
+
                   <div class="table" style="width: 100%; height: 100%;">
                     <div class="row">
                       <div id="selections" class="cell" style="border: 0px solid #fff; height: 200pxpx; background-color: #c8e1d3;">
@@ -112,34 +88,39 @@ top: unset !important;
                     </div>
                     <div class="row">
                       <div id="keying" class="cell" style="border: 1px solid #999; overflow: auto; text-align: center; height: 200px;">
+
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
-            </div>
-          </div>
          
 
+            </div>
+          </div>
+          <div class="cell" style="background-color: #f7f7f7;
+          border: solid 1px #999; width: 150px; text-align: center; vertical-align: top;">
+            <!--button class='button_red' id='btncancel' style='float: none;'-->
+            <button class='big_button button_green' id='btndone' style='float: none;' onmousedown = 'submitTreatmentEncounter();'>
+              Finish
+            </button>
+            <button class='big_button button_blue' id='btnback' style='float: none;' onmousedown="clearAll();">
+              Clear
+            </button>
+            <button class='big_button button_red' id='btncancel' style='float: none;' onmousedown="window.location = tt_cancel_destination">
+              Cancel
+            </button>
+
+
+            <div id="searchbox" style="position: absolute; bottom: 0; left: 10px; width: 82.5%; display: none;">
+              <input type="text" style="margin: 0 auto;" id="search" value="" class="input" />
+            </div>
+          </div>
         </div>
       </div>
-      <div id="buttons" class="buttonsDiv">
-       
-          <button id="nextButton" class="button green navButton" onmousedown = 'submitTreatmentEncounter();'>
-            <span>Finish</span></button>
-            
-              <button id="clearButton" class="button blue navButton" onmousedown="clearAll();">
-                <span>Clear</span></button><div id="tt_extraButtons"></div>
-                <button class="button navButton red" id="cancelButton" onmousedown="window.location = tt_cancel_destination"><span>Cancel</span></button>
-              </div>
-
     </div>
-
-
-  
   </body>
-
-
 </html>
 
 <script>
