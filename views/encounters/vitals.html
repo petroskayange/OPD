@@ -444,6 +444,8 @@
     function setVital(e) {
         var validInput = validateUserInput();
 
+        console.log("WE: "+validInput);
+        
         if (!validInput)
             return;
 
@@ -492,8 +494,8 @@
 
 console.log("viatDDD:  "+vitalData);
 
-if(vitalData == 'nil')
-           return 'nil';
+// if(vitalData == 'nil')
+//            return 'nil';
 
 
         if (validation_result == true)
@@ -837,19 +839,25 @@ if(vitalData == 'nil')
             setOPDActivities();
 
         if(show_bp_only == false) {
-        //   if (document.getElementById("td-Weight").innerHTML.length < 1) {
-        //       showMessage("Weight can not be empty");
-        //       return;
-        //   }
-        //   if (document.getElementById("td-Height").innerHTML.length < 1 && sessionStorage.patientAge < 18) {
-        //       showMessage("Height can not be empty");
-        //       return;
-        //   }
-        //   if (document.getElementById("td-Height").innerHTML.length < 1 && sessionStorage.currentHeight == 0) {
-        //       showMessage("Height can not be empty");
-        //       return;
-        //   }
+          if (document.getElementById("td-Weight").innerHTML.length < 1 && sessionStorage.programID != 14) {
+              showMessage("Weight can not be empty");
+              return;
+          }
+          if (document.getElementById("td-Height").innerHTML.length < 1 && sessionStorage.patientAge < 18 && sessionStorage.programID != 14) {
+              showMessage("Height can not be empty");
+              return;
+          }
+          if (document.getElementById("td-Height").innerHTML.length < 1 && sessionStorage.currentHeight == 0 && sessionStorage.programID != 14) {
+              showMessage("Height can not be empty");
+              return;
+          }
         }
+
+        if(document.getElementById("td-Weight").innerHTML.length < 1 && sessionStorage.programID == 14 && document.getElementById("td-Height").innerHTML.length < 1) {
+            nextPage();
+        }
+        
+        else 
         if (validationANS == true)
         submitVitals();
     }
