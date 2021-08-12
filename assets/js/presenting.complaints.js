@@ -150,6 +150,8 @@ function presentingComplaints(concept_sets, type_of_complaint) {
               cell.innerHTML = concept_sets[t].complaints[i].name;
               cell.setAttribute('selected', 'false');
               cell.setAttribute('concept_id', concept_sets[t].complaints[i].concept_id);
+              cell.setAttribute('group_concept_id', concept_sets[t].concept_id);
+              cell.setAttribute('group_name', concept_sets[t].group);
               cell.setAttribute('complaint-type', type_of_complaint);
               cell.setAttribute('name', concept_sets[t].complaints[i].name);
               cell.setAttribute('onmousedown','complaintClicked(this);');
@@ -205,7 +207,7 @@ function complaintClicked(e) {
     e.setAttribute('selected', 'true');
     e.style = 'background-color: lightblue;';
     addToHash(type_of_complaint, e.getAttribute('concept_id'));
-    addToNameHash(e.getAttribute('name'));
+    addToNameHash(e.getAttribute('group_concept_id')+';'+e.getAttribute('name')+';'+e.getAttribute('group_name'));
     for (var i =0; i < childNodes.length; i++ ) {
       for (var j=0; j < childNodes[i].childNodes.length; j++) {
         //console.log('Child: ', childNodes[i].childNodes[j].getAttribute('selected'));
@@ -427,17 +429,22 @@ function showValidate() {
 }
 
 function saveObs(encounter) { 
-  
   var observations = [];
-  var keys = []
-  
-  for(key in presentingComplaintsHash) {
-    var concept_id = key == 'Presenting complaint' ? 8578 : 8677;
-    var temp = presentingComplaintsHash[key];
-    for(var i = 0 ; i < temp.length ; i++){
-      observations.push({concept_id: concept_id, value_coded: temp[i]})
+
+    var concept_id =  8578;
+    for(var i = 0 ; i < presentingComplaintsNameHash.length ; i++)
+    {
+      var data = presentingComplaintsNameHash[i].split(";");
+      observations.push({
+        concept_id: concept_id, 
+        value_text:data[2],
+        child: {
+          concept_id: data[0],
+          value_text: data[1]
+      }
+      })
     }
-  }
+  
   
   var obs = {
     encounter_id: encounter["encounter_id"],
