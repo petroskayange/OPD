@@ -742,7 +742,7 @@ function showNumber(id, global_control, showDefault){
 
     btn.onclick = function(){
 
-      if(this.innerHTML.match(/<span>(.+)<\/span>/)[1] == "C"){
+      if(this.innerHTML.match(/<span>(.+)<\/span>/)[1] == "del"){
 
         __$(global_control).value = __$(global_control).value.substring(0,__$(global_control).value.length - 1);
 
