@@ -700,7 +700,7 @@ function closeOrdersPopupModal() {
   main_container.setAttribute('style','display: none');
   document.getElementsByTagName('body')[0].removeChild(main_container);
   //nextEncounter(sessionStorage.patientID, sessionStorage.programID);
-  document.getElementById('orderButton').odersButton.setAttribute('selected','false');
+  document.getElementById('orderButton').setAttribute('selected','false');
 }
 
 function nextActivity() {
