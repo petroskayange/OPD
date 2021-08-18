@@ -18,10 +18,8 @@ function buildRadiologyOrders() {
   if (sessionStorage.radiology_is_set == 'true') {
     var cancelButton = document.getElementById('cancelButton');
     cancelButton.setAttribute('onmousedown','closeOrdersPopupModal()');
-    console.log('aaa: ',cancelButton);
   }
 }
-
 
 function RadiologyOrders(concept_sets, type_of_complaint) {
 
@@ -348,6 +346,8 @@ function print_barcode()
 }
 
 function closeOrdersPopupModal() {
+  sessionStorage.setItem('radiology_is_set', 'false');
+  sessionStorage.setItem('lab_is_set', 'false');
   let page_cover = window.parent.document.getElementById("page-cover");
   page_cover.style = "display: none;";
 
