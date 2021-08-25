@@ -1,14 +1,34 @@
 {
   "encounters": {
+    "patient registration": {
+      "available": true,
+      "activitiesIcon": "/assets/images/attributes.png",
+      "url": "/apps/OPD/views/encounters/clinic_visit_attributes.html"
+    },
     "vitals": {
       "available": true,
       "activitiesIcon": "/assets/images/vitals.png",
       "url": "/views/patient/vitals.html"
     },
+    "presenting complaints": {
+      "available": true,
+      "activitiesIcon": "/assets/images/complaints.png",
+      "url": "/apps/OPD/views/encounters/presenting_complaints.html"
+    },
     "outpatient diagnosis": {
       "available": true,
       "activitiesIcon": "/assets/images/diagnosis.png",
       "url": "/apps/OPD/views/encounters/diagnosis.html"
+    },
+    "prescription": {
+      "available": true,
+      "activitiesIcon": "/assets/images/clinical-notes.png",
+      "url": "/apps/OPD/views/encounters/prescription.html"
+    },
+    "dispensing": {
+      "available": true,
+      "activitiesIcon": "/assets/images/dispensing.png",
+      "url": "/views/patient/dispensing.html"
     },
     "Outcome status": {
       "available": true,
@@ -20,36 +40,6 @@
       "activitiesIcon": "/assets/images/clinical-notes.png",
       "url": "/apps/OPD/views/encounters/clinical_notes.html"
     },
-    "lab orders": {
-      "available": true,
-      "activitiesIcon": "/assets/images/clinical-notes.png",
-      "url": "/views/patient/labs.html"
-    },
-    "lab results": {
-      "available": true,
-      "activitiesIcon": "/assets/images/clinical-notes.png",
-      "url": "/apps/OPD/views/encounters/malaria/lab_results.html"
-    },
-    "prescription": {
-      "available": true,
-      "activitiesIcon": "/assets/images/clinical-notes.png",
-      "url": "/apps/OPD/views/encounters/malaria/prescription.html"
-    },
-    "dispensation": {
-      "available": true,
-      "activitiesIcon": "/assets/images/dispensing.png",
-      "url": "/views/patient/dispensing.html"
-    },
-    "patient registration": {
-      "available": true,
-      "activitiesIcon": "/assets/images/attributes.png",
-      "url": "/apps/OPD/views/encounters/clinic_visit_attributes.html"
-    },
-    "presenting complaints": {
-      "available": true,
-      "activitiesIcon": "/assets/images/complaints.png",
-      "url": "/apps/OPD/views/encounters/presenting_complaints.html"
-    },
     "social history": {
       "available": true,
       "activitiesIcon": "/assets/images/medical-report.png",
@@ -59,22 +49,27 @@
       "available": true,
       "activitiesIcon": "/assets/images/drugs-given.png",
       "url": "/apps/OPD/views/encounters/medication_given.html"
-    },
-      "radiology orders": {
-      "available": false,
-      "activitiesIcon": "/assets/images/radiology_types.png",
-      "url": "/apps/OPD/views/encounters/radiology/radiology_orders.html"
-    },
-    "view radiology results": {
-      "available": false,
-      "activitiesIcon": "/assets/images/radioG1.png",
-      "url": "/apps/OPD/views/encounters/radiology/view_radiology_results.html"
     }
   },
   "activities": {
-    "url": "",
+    "url": "/apps/OPD/views/activities.html",
     "tasks": [
-
+      [
+        "Vitals",
+        "vitals"
+      ],
+      [
+        "Presenting complaints",
+        "presenting complaints"
+      ],
+      [
+        "Outpatient diagnosis",
+        "outpatient diagnosis"
+      ],
+      [
+        "Prescription",
+        "prescription"
+      ]
     ]
   },
   "others": [
@@ -92,6 +87,24 @@
       "url": "/views/patient/labs.html",
       "activitiesDescription": "Print Patient Visit Summary",
       "comment": "these are examples, add another application with this template at the end of these curly braces by adding a comma and copying this template"
+    },
+    {
+       "activitiesName": "lab results",
+      "available": true,
+      "activitiesIcon": "/assets/images/clinical-notes.png",
+      "url": "/views/patient/lab/test_without_results.html"
+    },
+    {
+      "activitiesName": "radiology examination",
+      "available": true,
+      "activitiesIcon": "/assets/images/radiology_types.png",
+      "url": "/apps/OPD/views/encounters/radiology/radiology_orders.html"
+    },
+    {
+      "activitiesName": "view radiology results",
+      "available": true,
+      "activitiesIcon": "/assets/images/radioG1.png",
+      "url": "/apps/OPD/views/encounters/radiology/view_radiology_results.html"
     },
     {
       "activitiesName": "Demographics (Edit)",
